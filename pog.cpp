@@ -742,7 +742,7 @@ class Move_gen{
                 }
             }
         }
-        void w_rook_moves(){
+        void w_rook(){
             for(int raf = 1; raf < 8; raf++){ // down
                 if(move_y + raf > 7){
                     break;
@@ -808,7 +808,7 @@ class Move_gen{
                 }
             }
         }
-        void b_rook_moves(){
+        void b_rook(){
             for(int raf = 1; raf < 8; raf++){ // down
                 if(move_y + raf > 7){
                     break;
@@ -874,15 +874,15 @@ class Move_gen{
                 }
             }
         }
-        void w_queen_moves(){
+        void w_queen(){
             w_bishop();
-            w_rook_moves();
+            w_rook();
         }
-        void b_queen_moves(){
+        void b_queen(){
             b_bishop();
-            b_rook_moves();
+            b_rook();
         }
-        void w_king_moves(){
+        void w_king(){
             if(chessBoard[move_y + 1][move_x] == empty_square || chessBoard[move_y + 1][move_x] >= 11){
                 if(move_y + 1 <= 7){
                     moveTo_y = move_y + 1;
@@ -950,7 +950,7 @@ class Move_gen{
                 insertMove_white();
             }
         }
-        void b_king_moves(){
+        void b_king(){
             if(chessBoard[move_y + 1][move_x] <= 6){
                 if(move_y + 1 <= 7){
                     moveTo_y = move_y + 1;
@@ -1179,11 +1179,11 @@ void generateMoves_white(){
             } else if(chessBoard[move_y][move_x] == white_bishop){
                 Movegen.w_bishop();
             } else if(chessBoard[move_y][move_x] == white_rook){
-                Movegen.w_rook_moves();
+                Movegen.w_rook();
             } else if(chessBoard[move_y][move_x] == white_queen){
-                Movegen.w_queen_moves();
+                Movegen.w_queen();
             } else if(chessBoard[move_y][move_x] == white_king){
-                Movegen.w_king_moves();
+                Movegen.w_king();
             } else{
             }
         }
@@ -1202,11 +1202,11 @@ void generateMoves_black(){
             } else if(chessBoard[move_y][move_x] == black_bishop){
                 Movegen.b_bishop();
             } else if(chessBoard[move_y][move_x] == black_rook){
-                Movegen.b_rook_moves();
+                Movegen.b_rook();
             } else if(chessBoard[move_y][move_x] == black_queen){
-                Movegen.b_queen_moves();
+                Movegen.b_queen();
             } else if(chessBoard[move_y][move_x] == black_king){
-                Movegen.b_king_moves();
+                Movegen.b_king();
             } else{
             }
         }
