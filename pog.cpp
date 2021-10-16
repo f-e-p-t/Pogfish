@@ -1012,7 +1012,7 @@ class Move_gen{
             }
         }
 };
-Move_gen Movegen;
+Move_gen moveGen;
 
 void initializeBoard(){
     int FENpos = 0;
@@ -1166,17 +1166,17 @@ void generateMoves_white(){
         for(int jm = 0; jm < 8; jm++){
             move_x = jm;
             if(chessBoard[move_y][move_x] == white_pawn){
-                Movegen.w_pawn();
+                moveGen.w_pawn();
             } else if(chessBoard[move_y][move_x] == white_knight){
-                Movegen.w_knight();
+                moveGen.w_knight();
             } else if(chessBoard[move_y][move_x] == white_bishop){
-                Movegen.w_bishop();
+                moveGen.w_bishop();
             } else if(chessBoard[move_y][move_x] == white_rook){
-                Movegen.w_rook();
+                moveGen.w_rook();
             } else if(chessBoard[move_y][move_x] == white_queen){
-                Movegen.w_queen();
+                moveGen.w_queen();
             } else if(chessBoard[move_y][move_x] == white_king){
-                Movegen.w_king();
+                moveGen.w_king();
             } else{
             }
         }
@@ -1189,17 +1189,17 @@ void generateMoves_black(){
         for(int jm = 0; jm < 8; jm ++){
             move_x = jm;
             if(chessBoard[move_y][move_x] == black_pawn){
-                Movegen.b_pawn();
+                moveGen.b_pawn();
             } else if(chessBoard[move_y][move_x] == black_knight){
-                Movegen.b_knight();
+                moveGen.b_knight();
             } else if(chessBoard[move_y][move_x] == black_bishop){
-                Movegen.b_bishop();
+                moveGen.b_bishop();
             } else if(chessBoard[move_y][move_x] == black_rook){
-                Movegen.b_rook();
+                moveGen.b_rook();
             } else if(chessBoard[move_y][move_x] == black_queen){
-                Movegen.b_queen();
+                moveGen.b_queen();
             } else if(chessBoard[move_y][move_x] == black_king){
-                Movegen.b_king();
+                moveGen.b_king();
             } else{
             }
         }
@@ -1293,7 +1293,6 @@ int getMove_black(){
 int main(){
 
     initializeBoard();
-
     printBoard();
     
     search(4, 4);
