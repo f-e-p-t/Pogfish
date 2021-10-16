@@ -429,7 +429,7 @@ void insertMove_black(){
 // (castling through check & en passant)
 class Move_gen{
     public:
-        void w_pawn_moves(){
+        void w_pawn(){
             if(chessBoard[move_y - 1][move_x] == 0){
                 moveTo_y = move_y - 1;
                 moveTo_x = move_x;
@@ -457,7 +457,7 @@ class Move_gen{
                 }
             } 
         }
-        void b_pawn_moves(){
+        void b_pawn(){
             if(chessBoard[move_y + 1][move_x] == 0){
                 moveTo_y = move_y + 1;
                 moveTo_x = move_x;
@@ -485,7 +485,7 @@ class Move_gen{
                 }
             } 
         }
-        void w_knight_moves(){
+        void w_knight(){
             if(chessBoard[move_y + 1][move_x + 2] >= 11 || chessBoard[move_y + 1][move_x + 2] == 0){
                 if(move_y + 1 <= 7 && move_x + 2 <= 7){
                     moveTo_y = move_y + 1;
@@ -544,7 +544,7 @@ class Move_gen{
                 }
             }
         }
-        void b_knight_moves(){
+        void b_knight(){
             if(chessBoard[move_y + 1][move_x + 2] <= 6 || chessBoard[move_y + 1][move_x + 2] == 0){
                 if(move_y + 1 <= 7 && move_x + 2 <= 7){
                     moveTo_y = move_y + 1;
@@ -602,7 +602,7 @@ class Move_gen{
                 }
             }
         }
-        void w_bishop_moves(){
+        void w_bishop(){
             for(int diag = 1; diag < 8; diag++){ // down & right
                 if(move_y + diag > 7 || move_x + diag > 7){
                     break;
@@ -672,7 +672,7 @@ class Move_gen{
                 }
             }
         }
-        void b_bishop_moves(){
+        void b_bishop(){
             for(int diag = 1; diag < 8; diag++){ // down & right
                 if(move_y + diag > 7 || move_x + diag > 7){
                     break;
@@ -875,11 +875,11 @@ class Move_gen{
             }
         }
         void w_queen_moves(){
-            w_bishop_moves();
+            w_bishop();
             w_rook_moves();
         }
         void b_queen_moves(){
-            b_bishop_moves();
+            b_bishop();
             b_rook_moves();
         }
         void w_king_moves(){
@@ -1173,11 +1173,11 @@ void generateMoves_white(){
         for(int jm = 0; jm < 8; jm++){
             move_x = jm;
             if(chessBoard[move_y][move_x] == white_pawn){
-                Movegen.w_pawn_moves();
+                Movegen.w_pawn();
             } else if(chessBoard[move_y][move_x] == white_knight){
-                Movegen.w_knight_moves();
+                Movegen.w_knight();
             } else if(chessBoard[move_y][move_x] == white_bishop){
-                Movegen.w_bishop_moves();
+                Movegen.w_bishop();
             } else if(chessBoard[move_y][move_x] == white_rook){
                 Movegen.w_rook_moves();
             } else if(chessBoard[move_y][move_x] == white_queen){
@@ -1196,11 +1196,11 @@ void generateMoves_black(){
         for(int jm = 0; jm < 8; jm ++){
             move_x = jm;
             if(chessBoard[move_y][move_x] == black_pawn){
-                Movegen.b_pawn_moves();
+                Movegen.b_pawn();
             } else if(chessBoard[move_y][move_x] == black_knight){
-                Movegen.b_knight_moves();
+                Movegen.b_knight();
             } else if(chessBoard[move_y][move_x] == black_bishop){
-                Movegen.b_bishop_moves();
+                Movegen.b_bishop();
             } else if(chessBoard[move_y][move_x] == black_rook){
                 Movegen.b_rook_moves();
             } else if(chessBoard[move_y][move_x] == black_queen){
@@ -1248,6 +1248,9 @@ double search(int depth, int max_depth){
             search(depth, max_depth);
             return 0;
         }
+        if(staticEval_wtm() == -9){
+            cout << "Queen blundered! ";
+        }
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
         TEST++;
     }
@@ -1256,7 +1259,6 @@ double search(int depth, int max_depth){
         depth++;
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
         search(depth, max_depth);
-        return 0;
     }
     return 0;
 }
