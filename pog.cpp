@@ -133,7 +133,7 @@ void playMove_CC(){
     chessBoard_CC[move_y][move_x] = empty_square;
 }
 
-void getKingPos_white(){
+bool check_white(){
     for(int y = 0; y <= 7; y++){
         for(int x = 0; x <= 7; x++){
             if(chessBoard_CC[y][x] == white_king){
@@ -143,20 +143,6 @@ void getKingPos_white(){
             }
         }
     }
-}
-void getKingPos_black(){
-    for(int y = 0; y <= 7; y++){
-        for(int x = 0; x <= 7; x++){
-            if(chessBoard_CC[y][x] == black_king){
-                bkp_y = y;
-                bkp_x = x;
-                break;
-            }
-        }
-    }
-}
-bool check_white(){
-    getKingPos_white();
     for(int cs = 1; cs < 8; cs++){ // down & right
         if(wkp_y + cs > 7 || wkp_x + cs > 7){
             break;
@@ -278,7 +264,15 @@ bool check_white(){
     return false;
 }
 bool check_black(){
-    getKingPos_black();
+    for(int y = 0; y <= 7; y++){
+        for(int x = 0; x <= 7; x++){
+            if(chessBoard_CC[y][x] == black_king){
+                bkp_y = y;
+                bkp_x = x;
+                break;
+            }
+        }
+    }
     for(int cs = 1; cs < 8; cs++){ // down & right
         if(bkp_y + cs > 7 || bkp_x + cs > 7){
             break;    
@@ -1247,9 +1241,6 @@ double search(int depth, int max_depth){
             depth--;
             search(depth, max_depth);
             return 0;
-        }
-        if(staticEval_wtm() == -9){
-            cout << "Queen blundered! ";
         }
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
         TEST++;
