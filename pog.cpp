@@ -36,6 +36,7 @@ const int black_queen = 15;
 const int black_king = 16;
 
 int n;
+int o;
 int se;
 int depth;
 int TEST;
@@ -443,11 +444,11 @@ void insertMove_white(int se){
         if(check_white()){
             memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
         } else{
-            evalMoveList[0][n] = move_y;
-            evalMoveList[1][n] = move_x;
-            evalMoveList[2][n] = moveTo_y;
-            evalMoveList[3][n] = moveTo_x;
-            n++;
+            evalMoveList[0][o] = move_y;
+            evalMoveList[1][o] = move_x;
+            evalMoveList[2][o] = moveTo_y;
+            evalMoveList[3][o] = moveTo_x;
+            o++;
             memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
         }
     }
@@ -470,11 +471,11 @@ void insertMove_black(int se){
         if(check_black()){
             memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
         } else{
-            evalMoveList[0][n] = move_y;
-            evalMoveList[1][n] = move_x;
-            evalMoveList[2][n] = moveTo_y;
-            evalMoveList[3][n] = moveTo_x;
-            n++;
+            evalMoveList[0][o] = move_y;
+            evalMoveList[1][o] = move_x;
+            evalMoveList[2][o] = moveTo_y;
+            evalMoveList[3][o] = moveTo_x;
+            o++;
             memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
         }
     }
@@ -1218,7 +1219,11 @@ int playMove(){
 }
 
 void generateMoves_white(int se){
-    n = 0;
+    if(se == 1){
+        n = 0;
+    } else{
+        o = 0;
+    }
     for(int im = 0; im < 8; im++){
          move_y = im;
         for(int jm = 0; jm < 8; jm++){
@@ -1241,7 +1246,11 @@ void generateMoves_white(int se){
     }
 }
 void generateMoves_black(int se){
-    n = 0;
+    if(se == 1){
+        n = 0;
+    } else{
+        o = 0;
+    }
     for(int im = 0; im < 8; im++){
         move_y = im;
         for(int jm = 0; jm < 8; jm ++){
@@ -1264,16 +1273,16 @@ void generateMoves_black(int se){
     }
 }
 
-// NEEDS OWN MOVE GEN
 double staticEval_wtm(){
+    generateMoves_white(2);
     double eval = 0;
-    double moves = n;
+    double moves = o;
     eval = material() + moves/100;
     return eval;
 }
 double staticEval_btm(){
     double eval = 0;
-    double moves = n;
+    double moves = o;
     eval = material() + moves/100;
     return eval;
 }
@@ -1296,15 +1305,15 @@ double search(int depth, int max_depth){
             break;
         }
         playMove();
-        //staticEval_wtm();
         depthProgress[depth]++;
         if(depth > 1){
             depth--;
             search(depth, max_depth);
             return 0;
         }
+        generateMoves_white(2);
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
-        TEST++;
+        TEST += o;
     }
     if(depth < max_depth){
         depthProgress[depth] = 0;
@@ -1356,15 +1365,6 @@ int main(){
 
     initializeBoard();
     printBoard();
-    
-    /*generateMoves_white();
-    for(int i = 0; i < 4; i++){
-        for(int j = 0; j < 60; j++){
-            cout << moveList[i][j] << " ";
-        }
-        cout << endl;
-    }
-    cout << n << endl;        */
 
     search(4, 4);
     cout << "Positions scanned - " << TEST << endl;
