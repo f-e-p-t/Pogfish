@@ -1281,6 +1281,7 @@ double staticEval_wtm(){
     return eval;
 }
 double staticEval_btm(){
+    generateMoves_black(2);
     double eval = 0;
     double moves = o;
     eval = material() + moves/100;
@@ -1307,8 +1308,7 @@ double search(int depth, int max_depth){
         playMove();
         depthProgress[depth]++;
         if(depth > 1){
-            depth--;
-            search(depth, max_depth);
+            search(depth - 1, max_depth);
             return 0;
         }
         generateMoves_white(2);
