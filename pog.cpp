@@ -84,8 +84,17 @@ double value(int piece){
     }
     return pieceValue;
 }
+double getMax(double values[]){
+    double bestResponse = values[0];
+    for(int i = 0; i < o; i++){
+        if(values[i] > bestResponse){
+            bestResponse = values[i];
+        }
+    }
+    return bestResponse;
+}
 
-string FEN = "rnbqkbnrppppppppooooooooooooooooooooooooooooooooPPPPPPPPRNBQKBNR";
+string FEN = "rnbqkbnropppppppoooooqoooooooooooooooooooooBooooPPPPPPPPRNBQKBNR";
 
 int chessBoard[8][8] = {
     {0, 0, 0, 0, 0, 0, 0, 0},
@@ -111,8 +120,8 @@ int chessBoard_CC[8][8] = {
 int boardStates[50][8][8];
 int depthProgress[50];
 int moveList[4][218];
-int evalMoveList[4][218];
-int clearMoveList[4][218];
+int eml[4][218];
+int cml[4][218];
 
 // ----------------------------------------------------------------------- Rules of chess -----------------------------------------------------------------------
 
@@ -402,9 +411,9 @@ bool check_black(){
         return true;
     } else if(chessBoard_CC[bkp_y - 2][bkp_x - 1] == white_knight && bkp_y - 2 >= 0 && bkp_x - 1 >= 0){
         return true;
-    } else if(chessBoard_CC[bkp_y + 1][bkp_x + 1] == white_pawn && bkp_y - 1 >= 0 && bkp_x + 1 <= 7){ // pawn checks ~
+    } else if(chessBoard_CC[bkp_y + 1][bkp_x + 1] == white_pawn && bkp_y + 1 >= 0 && bkp_x + 1 <= 7){ // pawn checks ~
         return true;
-    } else if(chessBoard_CC[bkp_y + 1][bkp_x - 1] == white_pawn && bkp_y - 1 >= 0 && bkp_x - 1 >= 0){
+    } else if(chessBoard_CC[bkp_y + 1][bkp_x - 1] == white_pawn && bkp_y + 1 <= 7 && bkp_x - 1 >= 0){
         return true;
     } else if(chessBoard_CC[bkp_y + 1][bkp_x + 1] == white_king && bkp_y + 1 <= 7 && bkp_x + 1 <= 7){ // king 'checks' ~
         return true;
@@ -444,10 +453,10 @@ void insertMove_white(int se){
         if(check_white()){
             memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
         } else{
-            evalMoveList[0][o] = move_y;
-            evalMoveList[1][o] = move_x;
-            evalMoveList[2][o] = moveTo_y;
-            evalMoveList[3][o] = moveTo_x;
+            eml[0][o] = move_y;
+            eml[1][o] = move_x;
+            eml[2][o] = moveTo_y;
+            eml[3][o] = moveTo_x;
             o++;
             memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
         }
@@ -471,10 +480,10 @@ void insertMove_black(int se){
         if(check_black()){
             memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
         } else{
-            evalMoveList[0][o] = move_y;
-            evalMoveList[1][o] = move_x;
-            evalMoveList[2][o] = moveTo_y;
-            evalMoveList[3][o] = moveTo_x;
+            eml[0][o] = move_y;
+            eml[1][o] = move_x;
+            eml[2][o] = moveTo_y;
+            eml[3][o] = moveTo_x;
             o++;
             memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
         }
@@ -1274,23 +1283,28 @@ void generateMoves_black(int se){
 }
 
 double staticEval_wtm(){
-    generateMoves_white(2);
     double eval = 0;
-    double moves = o;
-    eval = material() + moves/100;
+    generateMoves_white(2);
+    double responses[o];
+    for(int i = 0; i < o; i++){
+        if(value(chessBoard[eml[2][i]][eml[3][i]]) > value(chessBoard[eml[0][i]][eml[1][i]])){
+            responses[i] = value(chessBoard[eml[2][i]][eml[3][i]]) - value(chessBoard[eml[0][i]][eml[1][i]]);
+        }
+    }
+    memcpy(eml, cml, sizeof(eml));
+    eval = material() + getMax(responses);
     return eval;
 }
 double staticEval_btm(){
-    generateMoves_black(2);
     double eval = 0;
-    double moves = o;
-    eval = material() + moves/100;
+    generateMoves_black(2);
+    eval = material();
     return eval;
 }
 
 // search (removes castling rights)
 double search(int depth, int max_depth){
-    memcpy(moveList, clearMoveList, sizeof(moveList));
+    memcpy(moveList, cml, sizeof(moveList));
     if(depth % 2 == 0){
         generateMoves_white(1);
     } else{
@@ -1311,9 +1325,8 @@ double search(int depth, int max_depth){
             search(depth - 1, max_depth);
             return 0;
         }
-        generateMoves_white(2);
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
-        TEST += o;
+        TEST++;
     }
     if(depth < max_depth){
         depthProgress[depth] = 0;
@@ -1366,8 +1379,10 @@ int main(){
     initializeBoard();
     printBoard();
 
-    search(4, 4);
+    //search(4, 4);
     cout << "Positions scanned - " << TEST << endl;
+
+    cout << staticEval_wtm() << " ";
 
     while(move_move <= 5949){
         cout << "Move - " << move_move << endl;
@@ -1380,7 +1395,7 @@ int main(){
         if(n == 0 && check_black() == true){
             printBoard();
             cout << staticEval_btm() << endl;
-            cout << "Checkmate - white is victorious" << endl;
+            cout << "Checkmate - white wins" << endl;
             break;
         } else if(n == 0 && check_black() == false){
             printBoard();
@@ -1402,7 +1417,7 @@ int main(){
         if(n == 0 && check_white() == true){
             printBoard();
             cout << staticEval_wtm() << endl;
-            cout << "Checkmate - black is victorious" << endl;
+            cout << "Checkmate - black wins" << endl;
             break;
         } else if(n == 0 && check_white() == false){
             printBoard();
