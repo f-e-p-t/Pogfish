@@ -1324,6 +1324,13 @@ double staticEval_btm(){
     return eval;
 }
 
+void move_filter_max(){
+    int moveScores[];
+}
+void move_filter_min(){
+    //
+}
+
 // search (removes castling rights)
 double search(int depth, int max_depth){
     memcpy(moveList, cml, sizeof(moveList));
