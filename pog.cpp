@@ -10,11 +10,8 @@ bool KSCastlingRights_white = true;
 bool QSCastlingRights_white = true;
 bool KSCastlingRights_black = true;
 bool QSCastlingRights_black = true;
-
-int wkp_y;
-int wkp_x;
-int bkp_y;
-int bkp_x;
+double infinity = 1000000000;
+double negativeInfinity = -1000000000;
 
 int move_y;
 int move_x;
@@ -94,7 +91,7 @@ double getMax(double values[]){
     return bestResponse;
 }
 
-string FEN = "rnbqkbnropppppppoooooopooooooooooooooooooooBooooPPPPPPPPRNBQKBNR";
+string FEN = "rnbqkbnrppppppppooooooooooooooooooooooooooooooooPPPPPPPPRNBQKBNR";
 
 int chessBoard[8][8] = {
     {0, 0, 0, 0, 0, 0, 0, 0},
@@ -176,6 +173,8 @@ int playMove_CC(){
 }
 
 bool check_white(){
+    int wkp_y = 0;
+    int wkp_x = 0;
     for(int y = 0; y <= 7; y++){
         for(int x = 0; x <= 7; x++){
             if(chessBoard_CC[y][x] == white_king){
@@ -306,6 +305,8 @@ bool check_white(){
     return false;
 }
 bool check_black(){
+    int bkp_y = 0;
+    int bkp_x = 0;
     for(int y = 0; y <= 7; y++){
         for(int x = 0; x <= 7; x++){
             if(chessBoard_CC[y][x] == black_king){
@@ -1285,6 +1286,13 @@ void generateMoves_black(int se){
 double staticEval_wtm(){
     double eval = 0;
     generateMoves_white(2);
+    if(o == 0){
+        if(check_white()){
+            return negativeInfinity;
+        } else{
+            return 0;
+        }
+    }
     double responses[o];
     for(int i = 0; i < o; i++){
         if(value(chessBoard[eml[2][i]][eml[3][i]]) > value(chessBoard[eml[0][i]][eml[1][i]])){
@@ -1298,7 +1306,21 @@ double staticEval_wtm(){
 double staticEval_btm(){
     double eval = 0;
     generateMoves_black(2);
-    eval = material();
+    if(o == 0){
+        if(check_black()){
+            return infinity;
+        } else{
+            return 0;
+        }
+    }
+    double responses[o];
+    for(int i = 0; i < o; i++){
+        if(value(chessBoard[eml[2][i]][eml[3][i]]) > value(chessBoard[eml[0][i]][eml[1][i]])){
+            responses[i] = value(chessBoard[eml[2][i]][eml[3][i]]) - value(chessBoard[eml[0][i]][eml[1][i]]);
+        }
+    }
+    memcpy(eml, cml, sizeof(eml));
+    eval = material() - getMax(responses);
     return eval;
 }
 
@@ -1325,6 +1347,7 @@ double search(int depth, int max_depth){
             search(depth - 1, max_depth);
             return 0;
         }
+        staticEval_wtm();
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
         TEST++;
     }
@@ -1379,10 +1402,8 @@ int main(){
     initializeBoard();
     printBoard();
 
-    //search(4, 4);
+    search(4, 4);
     cout << "Positions scanned - " << TEST << endl;
-
-    cout << staticEval_wtm() << " ";
 
     while(move_move <= 5949){
         cout << "Move - " << move_move << endl;
