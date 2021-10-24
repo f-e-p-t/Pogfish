@@ -94,7 +94,7 @@ double getMax(double values[]){
     return bestResponse;
 }
 
-string FEN = "rnbqkbnropppppppoooooqoooooooooooooooooooooBooooPPPPPPPPRNBQKBNR";
+string FEN = "rnbqkbnropppppppoooooopooooooooooooooooooooBooooPPPPPPPPRNBQKBNR";
 
 int chessBoard[8][8] = {
     {0, 0, 0, 0, 0, 0, 0, 0},
