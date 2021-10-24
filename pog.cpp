@@ -1324,8 +1324,11 @@ double staticEval_btm(){
     return eval;
 }
 
+// remove blunders, recalculate n
 void move_filter_max(){
-    int moveScores[];
+    for(int i = 0; i < n; i++){
+        
+    }
 }
 void move_filter_min(){
     //
