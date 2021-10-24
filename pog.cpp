@@ -10,6 +10,7 @@ bool KSCastlingRights_white = true;
 bool QSCastlingRights_white = true;
 bool KSCastlingRights_black = true;
 bool QSCastlingRights_black = true;
+int best_index;
 double infinity = 1000000000;
 double negativeInfinity = -1000000000;
 
@@ -82,13 +83,15 @@ double value(int piece){
     return pieceValue;
 }
 double getMax(double values[]){
-    double bestResponse = values[0];
-    for(int i = 0; i < o; i++){
-        if(values[i] > bestResponse){
-            bestResponse = values[i];
+    double best = values[0];
+    best_index = 0;
+    for(int i = 0; i < n; i++){
+        if(values[i] > best){
+            best = values[i];
+            best_index = i;
         }
     }
-    return bestResponse;
+    return best;
 }
 
 string FEN = "rnbqkbnrppppppppooooooooooooooooooooooooooooooooPPPPPPPPRNBQKBNR";
@@ -184,82 +187,82 @@ bool check_white(){
             }
         }
     }
-    for(int cs = 1; cs < 8; cs++){ // down & right
-        if(wkp_y + cs > 7 || wkp_x + cs > 7){
+    for(int i = 1; i < 8; i++){ // down & right
+        if(wkp_y + i > 7 || wkp_x + i > 7){
             break;
-        } else if(chessBoard_CC[wkp_y + cs][wkp_x + cs] == black_bishop || chessBoard_CC[wkp_y + cs][wkp_x + cs] == black_queen){
+        } else if(chessBoard_CC[wkp_y + i][wkp_x + i] == black_bishop || chessBoard_CC[wkp_y + i][wkp_x + i] == black_queen){
             return true;
-        } else if(chessBoard_CC[wkp_y + cs][wkp_x + cs] >= 1 && chessBoard_CC[wkp_y + cs][wkp_x + cs] != black_bishop && chessBoard_CC[wkp_y + cs][wkp_x + cs] != black_queen){
+        } else if(chessBoard_CC[wkp_y + i][wkp_x + i] >= 1 && chessBoard_CC[wkp_y + i][wkp_x + i] != black_bishop && chessBoard_CC[wkp_y + i][wkp_x + i] != black_queen){
             break;
         } else{
         }
     }
-    for(int cs = 1; cs < 8; cs++){ // down & left
-        if(wkp_y + cs > 7 || wkp_x - cs < 0){
+    for(int i = 1; i < 8; i++){ // down & left
+        if(wkp_y + i > 7 || wkp_x - i < 0){
             break;
-        } else if(chessBoard_CC[wkp_y + cs][wkp_x - cs] == black_bishop || chessBoard_CC[wkp_y + cs][wkp_x - cs] == black_queen){
+        } else if(chessBoard_CC[wkp_y + i][wkp_x - i] == black_bishop || chessBoard_CC[wkp_y + i][wkp_x - i] == black_queen){
             return true;
-        } else if(chessBoard_CC[wkp_y + cs][wkp_x - cs] >= 1 && chessBoard_CC[wkp_y + cs][wkp_x - cs] != black_bishop && chessBoard_CC[wkp_y + cs][wkp_x - cs] != black_queen){
+        } else if(chessBoard_CC[wkp_y + i][wkp_x - i] >= 1 && chessBoard_CC[wkp_y + i][wkp_x - i] != black_bishop && chessBoard_CC[wkp_y + i][wkp_x - i] != black_queen){
             break;
         } else{
         }
     }
-    for(int cs = 1; cs < 8; cs++){ // up & left
-        if(wkp_y - cs < 0 || wkp_x - cs < 0){
+    for(int i = 1; i < 8; i++){ // up & left
+        if(wkp_y - i < 0 || wkp_x - i < 0){
             break;
-        } else if(chessBoard_CC[wkp_y - cs][wkp_x - cs] == black_bishop || chessBoard_CC[wkp_y - cs][wkp_x - cs] == black_queen){
+        } else if(chessBoard_CC[wkp_y - i][wkp_x - i] == black_bishop || chessBoard_CC[wkp_y - i][wkp_x - i] == black_queen){
             return true;
-        } else if(chessBoard_CC[wkp_y - cs][wkp_x - cs] >= 1 && chessBoard_CC[wkp_y - cs][wkp_x - cs] != black_bishop && chessBoard_CC[wkp_y - cs][wkp_x - cs] != black_queen){
+        } else if(chessBoard_CC[wkp_y - i][wkp_x - i] >= 1 && chessBoard_CC[wkp_y - i][wkp_x - i] != black_bishop && chessBoard_CC[wkp_y - i][wkp_x - i] != black_queen){
             break;
         } else{
         }
     }
-    for(int cs = 1; cs < 8; cs++){ // up & right
-        if(wkp_y - cs < 0 || wkp_x + cs > 7){
+    for(int i = 1; i < 8; i++){ // up & right
+        if(wkp_y - i < 0 || wkp_x + i > 7){
             break;
-        } else if(chessBoard_CC[wkp_y - cs][wkp_x + cs] == black_bishop || chessBoard_CC[wkp_y - cs][wkp_x + cs] == black_queen){
+        } else if(chessBoard_CC[wkp_y - i][wkp_x + i] == black_bishop || chessBoard_CC[wkp_y - i][wkp_x + i] == black_queen){
             return true;
-        } else if(chessBoard_CC[wkp_y - cs][wkp_x + cs] >= 1 && chessBoard_CC[wkp_y - cs][wkp_x + cs] != black_bishop && chessBoard_CC[wkp_y - cs][wkp_x + cs] != black_queen){
+        } else if(chessBoard_CC[wkp_y - i][wkp_x + i] >= 1 && chessBoard_CC[wkp_y - i][wkp_x + i] != black_bishop && chessBoard_CC[wkp_y - i][wkp_x + i] != black_queen){
             break;
         } else{
         }
     }
-    for(int cs = 1; cs < 8; cs++){ // down
-        if(wkp_y + cs > 7){
+    for(int i = 1; i < 8; i++){ // down
+        if(wkp_y + i > 7){
             break;
-        } else if(chessBoard_CC[wkp_y + cs][wkp_x] == black_rook || chessBoard_CC[wkp_y + cs][wkp_x] == black_queen){
+        } else if(chessBoard_CC[wkp_y + i][wkp_x] == black_rook || chessBoard_CC[wkp_y + i][wkp_x] == black_queen){
             return true;
-        } else if(chessBoard_CC[wkp_y + cs][wkp_x] >= 1 && chessBoard_CC[wkp_y + cs][wkp_x] != black_rook && chessBoard_CC[wkp_y + cs][wkp_x] != black_queen){
+        } else if(chessBoard_CC[wkp_y + i][wkp_x] >= 1 && chessBoard_CC[wkp_y + i][wkp_x] != black_rook && chessBoard_CC[wkp_y + i][wkp_x] != black_queen){
             break;
         } else{
         }
     }
-    for(int cs = 1; cs < 8; cs++){ // left
-        if(wkp_x - cs < 0){
+    for(int i = 1; i < 8; i++){ // left
+        if(wkp_x - i < 0){
             break;
-        } else if(chessBoard_CC[wkp_y][wkp_x - cs] == black_rook || chessBoard_CC[wkp_y][wkp_x - cs] == black_queen){
+        } else if(chessBoard_CC[wkp_y][wkp_x - i] == black_rook || chessBoard_CC[wkp_y][wkp_x - i] == black_queen){
             return true;
-        } else if(chessBoard_CC[wkp_y][wkp_x - cs] >= 1 && chessBoard_CC[wkp_y][wkp_x - cs] != black_rook && chessBoard_CC[wkp_y][wkp_x - cs] != black_queen){
+        } else if(chessBoard_CC[wkp_y][wkp_x - i] >= 1 && chessBoard_CC[wkp_y][wkp_x - i] != black_rook && chessBoard_CC[wkp_y][wkp_x - i] != black_queen){
             break;
         } else{
         }
     }
-    for(int cs = 1; cs < 8; cs++){ // up
-        if(wkp_y - cs < 0){
+    for(int i = 1; i < 8; i++){ // up
+        if(wkp_y - i < 0){
             break;
-        } else if(chessBoard_CC[wkp_y - cs][wkp_x] == black_rook || chessBoard_CC[wkp_y - cs][wkp_x] == black_queen){
+        } else if(chessBoard_CC[wkp_y - i][wkp_x] == black_rook || chessBoard_CC[wkp_y - i][wkp_x] == black_queen){
             return true;
-        } else if(chessBoard_CC[wkp_y - cs][wkp_x] >= 1 && chessBoard_CC[wkp_y - cs][wkp_x] != black_rook && chessBoard_CC[wkp_y - cs][wkp_x] != black_queen){
+        } else if(chessBoard_CC[wkp_y - i][wkp_x] >= 1 && chessBoard_CC[wkp_y - i][wkp_x] != black_rook && chessBoard_CC[wkp_y - i][wkp_x] != black_queen){
             break;
         } else{
         }
     }
-    for(int cs = 1; cs < 8; cs++){ // right
-        if(wkp_x + cs > 7){
+    for(int i = 1; i < 8; i++){ // right
+        if(wkp_x + i > 7){
             break;
-        } else if(chessBoard_CC[wkp_y][wkp_x + cs] == black_rook || chessBoard_CC[wkp_y][wkp_x + cs] == black_queen){
+        } else if(chessBoard_CC[wkp_y][wkp_x + i] == black_rook || chessBoard_CC[wkp_y][wkp_x + i] == black_queen){
             return true;
-        } else if(chessBoard_CC[wkp_y][wkp_x + cs] >= 1 && chessBoard_CC[wkp_y][wkp_x + cs] != black_rook && chessBoard_CC[wkp_y][wkp_x + cs] != black_queen){
+        } else if(chessBoard_CC[wkp_y][wkp_x + i] >= 1 && chessBoard_CC[wkp_y][wkp_x + i] != black_rook && chessBoard_CC[wkp_y][wkp_x + i] != black_queen){
             break;
         } else{
         }
@@ -316,82 +319,82 @@ bool check_black(){
             }
         }
     }
-    for(int cs = 1; cs < 8; cs++){ // down & right
-        if(bkp_y + cs > 7 || bkp_x + cs > 7){
+    for(int i = 1; i < 8; i++){ // down & right
+        if(bkp_y + i > 7 || bkp_x + i > 7){
             break;    
-        } else if(chessBoard_CC[bkp_y + cs][bkp_x + cs] == white_bishop || chessBoard_CC[bkp_y + cs][bkp_x + cs] == white_queen){
+        } else if(chessBoard_CC[bkp_y + i][bkp_x + i] == white_bishop || chessBoard_CC[bkp_y + i][bkp_x + i] == white_queen){
             return true;
-        } else if(chessBoard_CC[bkp_y + cs][bkp_x + cs] >= 1 && chessBoard_CC[bkp_y + cs][bkp_x + cs] != white_bishop && chessBoard_CC[bkp_y + cs][bkp_x + cs] != white_queen){
+        } else if(chessBoard_CC[bkp_y + i][bkp_x + i] >= 1 && chessBoard_CC[bkp_y + i][bkp_x + i] != white_bishop && chessBoard_CC[bkp_y + i][bkp_x + i] != white_queen){
             break;
         } else{
         }
     }
-    for(int cs = 1; cs < 8; cs++){ // down & left
-        if(bkp_y + cs > 7 || bkp_x - cs < 0){
+    for(int i = 1; i < 8; i++){ // down & left
+        if(bkp_y + i > 7 || bkp_x - i < 0){
             break;
-        } else if(chessBoard_CC[bkp_y + cs][bkp_x - cs] == white_bishop || chessBoard_CC[bkp_y + cs][bkp_x - cs] == white_queen){
+        } else if(chessBoard_CC[bkp_y + i][bkp_x - i] == white_bishop || chessBoard_CC[bkp_y + i][bkp_x - i] == white_queen){
             return true;
-        } else if(chessBoard_CC[bkp_y + cs][bkp_x - cs] >= 1 && chessBoard_CC[bkp_y + cs][bkp_x - cs] != white_bishop && chessBoard_CC[bkp_y + cs][bkp_x - cs] != white_queen){
+        } else if(chessBoard_CC[bkp_y + i][bkp_x - i] >= 1 && chessBoard_CC[bkp_y + i][bkp_x - i] != white_bishop && chessBoard_CC[bkp_y + i][bkp_x - i] != white_queen){
             break;
         } else{
         }
     }
-    for(int cs = 1; cs < 8; cs++){ // up & left
-        if(bkp_y - cs < 0 || bkp_x - cs < 0){
+    for(int i = 1; i < 8; i++){ // up & left
+        if(bkp_y - i < 0 || bkp_x - i < 0){
             break;   
-        } else if(chessBoard_CC[bkp_y - cs][bkp_x - cs] == white_bishop || chessBoard_CC[bkp_y - cs][bkp_x - cs] == white_queen){
+        } else if(chessBoard_CC[bkp_y - i][bkp_x - i] == white_bishop || chessBoard_CC[bkp_y - i][bkp_x - i] == white_queen){
             return true;
-        } else if(chessBoard_CC[bkp_y - cs][bkp_x - cs] >= 1 && chessBoard_CC[bkp_y - cs][bkp_x - cs] != white_bishop && chessBoard_CC[bkp_y - cs][bkp_x - cs] != white_queen){
+        } else if(chessBoard_CC[bkp_y - i][bkp_x - i] >= 1 && chessBoard_CC[bkp_y - i][bkp_x - i] != white_bishop && chessBoard_CC[bkp_y - i][bkp_x - i] != white_queen){
             break;
         } else{
         }
     }
-    for(int cs = 1; cs < 8; cs++){ // up & right
-        if(bkp_y - cs < 0 || bkp_x + cs > 7){
+    for(int i = 1; i < 8; i++){ // up & right
+        if(bkp_y - i < 0 || bkp_x + i > 7){
             break;   
-        } else if(chessBoard_CC[bkp_y - cs][bkp_x + cs] == white_bishop || chessBoard_CC[bkp_y - cs][bkp_x + cs] == white_queen){
+        } else if(chessBoard_CC[bkp_y - i][bkp_x + i] == white_bishop || chessBoard_CC[bkp_y - i][bkp_x + i] == white_queen){
             return true;
-        } else if(chessBoard_CC[bkp_y - cs][bkp_x + cs] >= 1 && chessBoard_CC[bkp_y - cs][bkp_x + cs] != white_bishop && chessBoard_CC[bkp_y - cs][bkp_x + cs] != white_queen){
+        } else if(chessBoard_CC[bkp_y - i][bkp_x + i] >= 1 && chessBoard_CC[bkp_y - i][bkp_x + i] != white_bishop && chessBoard_CC[bkp_y - i][bkp_x + i] != white_queen){
             break;
         } else{
         }
     }
-    for(int cs = 1; cs < 8; cs++){ // down
-        if(bkp_x + cs > 7){
+    for(int i = 1; i < 8; i++){ // down
+        if(bkp_x + i > 7){
             break;
-        } else if(chessBoard_CC[bkp_y + cs][bkp_x] == white_rook || chessBoard_CC[bkp_y + cs][bkp_x] == white_queen){
+        } else if(chessBoard_CC[bkp_y + i][bkp_x] == white_rook || chessBoard_CC[bkp_y + i][bkp_x] == white_queen){
             return true;
-        } else if(chessBoard_CC[bkp_y + cs][bkp_x] >= 1 && chessBoard_CC[bkp_y + cs][bkp_x] != white_rook && chessBoard_CC[bkp_y + cs][bkp_x] != white_queen){
+        } else if(chessBoard_CC[bkp_y + i][bkp_x] >= 1 && chessBoard_CC[bkp_y + i][bkp_x] != white_rook && chessBoard_CC[bkp_y + i][bkp_x] != white_queen){
             break;
         } else{
         }
     }
-    for(int cs = 1; cs < 8; cs++){ // left
-        if(bkp_x - cs < 0){
+    for(int i = 1; i < 8; i++){ // left
+        if(bkp_x - i < 0){
             break;
-        } else if(chessBoard_CC[bkp_y][bkp_x - cs] == white_rook || chessBoard_CC[bkp_y][bkp_x - cs] == white_queen){
+        } else if(chessBoard_CC[bkp_y][bkp_x - i] == white_rook || chessBoard_CC[bkp_y][bkp_x - i] == white_queen){
             return true;
-        } else if(chessBoard_CC[bkp_y][bkp_x - cs] >= 1 && chessBoard_CC[bkp_y][bkp_x - cs] != white_rook && chessBoard_CC[bkp_y][bkp_x - cs] != white_queen){
+        } else if(chessBoard_CC[bkp_y][bkp_x - i] >= 1 && chessBoard_CC[bkp_y][bkp_x - i] != white_rook && chessBoard_CC[bkp_y][bkp_x - i] != white_queen){
             break;
         } else{
         }
     }
-    for(int cs = 1; cs < 8; cs++){ // up
-        if(bkp_y - cs < 0){
+    for(int i = 1; i < 8; i++){ // up
+        if(bkp_y - i < 0){
             break;
-        } else if(chessBoard_CC[bkp_y - cs][bkp_x] == white_rook || chessBoard_CC[bkp_y - cs][bkp_x] == white_queen){
+        } else if(chessBoard_CC[bkp_y - i][bkp_x] == white_rook || chessBoard_CC[bkp_y - i][bkp_x] == white_queen){
             return true;
-        } else if(chessBoard_CC[bkp_y - cs][bkp_x] >= 1 && chessBoard_CC[bkp_y - cs][bkp_x] != white_rook && chessBoard_CC[bkp_y - cs][bkp_x] != white_queen){
+        } else if(chessBoard_CC[bkp_y - i][bkp_x] >= 1 && chessBoard_CC[bkp_y - i][bkp_x] != white_rook && chessBoard_CC[bkp_y - i][bkp_x] != white_queen){
             break;
         } else{
         }
     }
-    for(int cs = 1; cs < 8; cs++){ // right
-        if(bkp_x + cs > 7){
+    for(int i = 1; i < 8; i++){ // right
+        if(bkp_x + i > 7){
             break;
-        } else if(chessBoard_CC[bkp_y][bkp_x + cs] == white_rook || chessBoard_CC[bkp_y][bkp_x + cs] == white_queen){
+        } else if(chessBoard_CC[bkp_y][bkp_x + i] == white_rook || chessBoard_CC[bkp_y][bkp_x + i] == white_queen){
             return true;
-        } else if(chessBoard_CC[bkp_y][bkp_x + cs] >= 1 && chessBoard_CC[bkp_y][bkp_x + cs] != white_rook && chessBoard_CC[bkp_y][bkp_x + cs] != white_queen){
+        } else if(chessBoard_CC[bkp_y][bkp_x + i] >= 1 && chessBoard_CC[bkp_y][bkp_x + i] != white_rook && chessBoard_CC[bkp_y][bkp_x + i] != white_queen){
             break;
         } else{
         }
@@ -668,272 +671,272 @@ class Move_gen{
             }
         }
         void w_bishop(int se){
-            for(int diag = 1; diag < 8; diag++){ // down & right
-                if(move_y + diag > 7 || move_x + diag > 7){
+            for(int i = 1; i < 8; i++){ // down & right
+                if(move_y + i > 7 || move_x + i > 7){
                     break;
                 }
-                if(chessBoard[move_y + diag][move_x + diag] == empty_square){
-                    moveTo_y = move_y + diag;
-                    moveTo_x = move_x + diag;
+                if(chessBoard[move_y + i][move_x + i] == empty_square){
+                    moveTo_y = move_y + i;
+                    moveTo_x = move_x + i;
                     insertMove_white(se);
-                } else if(chessBoard[move_y + diag][move_x + diag] <= 6 && chessBoard[move_y + diag][move_x + diag] != empty_square){
+                } else if(chessBoard[move_y + i][move_x + i] <= 6 && chessBoard[move_y + i][move_x + i] != empty_square){
                     break;
-                } else if(chessBoard[move_y + diag][move_x + diag] >= 11){
-                    moveTo_y = move_y + diag;
-                    moveTo_x = move_x + diag;
-                    insertMove_white(se);
-                    break;
-                }
-            }
-            for(int diag = 1; diag < 8; diag++){ // down & left
-                if(move_y + diag > 7 || move_x - diag < 0){
-                    break;
-                }
-                if(chessBoard[move_y + diag][move_x - diag] == empty_square){
-                    moveTo_y = move_y + diag;
-                    moveTo_x = move_x - diag;
-                    insertMove_white(se);
-                } else if(chessBoard[move_y + diag][move_x - diag] <= 6 && chessBoard[move_y + diag][move_x - diag] != empty_square){
-                    break;
-                } else if(chessBoard[move_y + diag][move_x - diag] >= 11){
-                    moveTo_y = move_y + diag;
-                    moveTo_x = move_x - diag;
+                } else if(chessBoard[move_y + i][move_x + i] >= 11){
+                    moveTo_y = move_y + i;
+                    moveTo_x = move_x + i;
                     insertMove_white(se);
                     break;
                 }
             }
-            for(int diag = 1; diag < 8; diag++){ // up & left
-                if(move_y - diag < 0 || move_x - diag < 0){
+            for(int i = 1; i < 8; i++){ // down & left
+                if(move_y + i > 7 || move_x - i < 0){
                     break;
                 }
-                if(chessBoard[move_y - diag][move_x - diag] == empty_square){
-                    moveTo_y = move_y - diag;
-                    moveTo_x = move_x - diag;
+                if(chessBoard[move_y + i][move_x - i] == empty_square){
+                    moveTo_y = move_y + i;
+                    moveTo_x = move_x - i;
                     insertMove_white(se);
-                } else if(chessBoard[move_y - diag][move_x - diag] <= 6 && chessBoard[move_y - diag][move_x - diag] != empty_square){
+                } else if(chessBoard[move_y + i][move_x - i] <= 6 && chessBoard[move_y + i][move_x - i] != empty_square){
                     break;
-                } else if(chessBoard[move_y - diag][move_x - diag] >= 11){
-                    moveTo_y = move_y - diag;
-                    moveTo_x = move_x - diag;
+                } else if(chessBoard[move_y + i][move_x - i] >= 11){
+                    moveTo_y = move_y + i;
+                    moveTo_x = move_x - i;
                     insertMove_white(se);
                     break;
                 }
             }
-            for(int diag = 1; diag < 8; diag++){ // up & right
-                if(move_y - diag < 0 || move_x + diag > 7){
+            for(int i = 1; i < 8; i++){ // up & left
+                if(move_y - i < 0 || move_x - i < 0){
                     break;
                 }
-                if(chessBoard[move_y - diag][move_x + diag] == empty_square){
-                    moveTo_y = move_y - diag;
-                    moveTo_x = move_x + diag;
+                if(chessBoard[move_y - i][move_x - i] == empty_square){
+                    moveTo_y = move_y - i;
+                    moveTo_x = move_x - i;
                     insertMove_white(se);
-                } else if(chessBoard[move_y - diag][move_x + diag] <= 6 && chessBoard[move_y - diag][move_x + diag] != empty_square){
+                } else if(chessBoard[move_y - i][move_x - i] <= 6 && chessBoard[move_y - i][move_x - i] != empty_square){
                     break;
-                } else if(chessBoard[move_y - diag][move_x + diag] >= 11){
-                    moveTo_y = move_y - diag;
-                    moveTo_x = move_x + diag;
+                } else if(chessBoard[move_y - i][move_x - i] >= 11){
+                    moveTo_y = move_y - i;
+                    moveTo_x = move_x - i;
+                    insertMove_white(se);
+                    break;
+                }
+            }
+            for(int i = 1; i < 8; i++){ // up & right
+                if(move_y - i < 0 || move_x + i > 7){
+                    break;
+                }
+                if(chessBoard[move_y - i][move_x + i] == empty_square){
+                    moveTo_y = move_y - i;
+                    moveTo_x = move_x + i;
+                    insertMove_white(se);
+                } else if(chessBoard[move_y - i][move_x + i] <= 6 && chessBoard[move_y - i][move_x + i] != empty_square){
+                    break;
+                } else if(chessBoard[move_y - i][move_x + i] >= 11){
+                    moveTo_y = move_y - i;
+                    moveTo_x = move_x + i;
                     insertMove_white(se);
                     break;
                 }
             }
         }
         void b_bishop(int se){
-            for(int diag = 1; diag < 8; diag++){ // down & right
-                if(move_y + diag > 7 || move_x + diag > 7){
+            for(int i = 1; i < 8; i++){ // down & right
+                if(move_y + i > 7 || move_x + i > 7){
                     break;
                 }
-                if(chessBoard[move_y + diag][move_x + diag] == empty_square){
-                    moveTo_y = move_y + diag;
-                    moveTo_x = move_x + diag;
+                if(chessBoard[move_y + i][move_x + i] == empty_square){
+                    moveTo_y = move_y + i;
+                    moveTo_x = move_x + i;
                     insertMove_black(se);
-                } else if(chessBoard[move_y + diag][move_x + diag] >= 11){
+                } else if(chessBoard[move_y + i][move_x + i] >= 11){
                     break;
-                } else if(chessBoard[move_y + diag][move_x + diag] <= 6 && chessBoard[move_y + diag][move_x + diag] != 0){
-                    moveTo_y = move_y + diag;
-                    moveTo_x = move_x + diag;
-                    insertMove_black(se);
-                    break;
-                }
-            }
-            for(int diag = 1; diag < 8; diag++){ // down & left
-                if(move_y + diag > 7 || move_x - diag < 0){
-                    break;
-                }
-                if(chessBoard[move_y + diag][move_x - diag] == empty_square){
-                    moveTo_y = move_y + diag;
-                    moveTo_x = move_x - diag;
-                    insertMove_black(se);
-                } else if(chessBoard[move_y + diag][move_x - diag] >= 11){
-                    break;
-                } else if(chessBoard[move_y + diag][move_x - diag] <= 6 && chessBoard[move_y + diag][move_x - diag] != 0){
-                    moveTo_y = move_y + diag;
-                    moveTo_x = move_x - diag;
+                } else if(chessBoard[move_y + i][move_x + i] <= 6 && chessBoard[move_y + i][move_x + i] != 0){
+                    moveTo_y = move_y + i;
+                    moveTo_x = move_x + i;
                     insertMove_black(se);
                     break;
                 }
             }
-            for(int diag = 1; diag < 8; diag++){ // up & left
-                if(move_y - diag < 0 || move_x - diag < 0){
+            for(int i = 1; i < 8; i++){ // down & left
+                if(move_y + i > 7 || move_x - i < 0){
                     break;
                 }
-                if(chessBoard[move_y - diag][move_x - diag] == empty_square){
-                    moveTo_y = move_y - diag;
-                    moveTo_x = move_x - diag;
+                if(chessBoard[move_y + i][move_x - i] == empty_square){
+                    moveTo_y = move_y + i;
+                    moveTo_x = move_x - i;
                     insertMove_black(se);
-                } else if(chessBoard[move_y - diag][move_x - diag] >= 11){
+                } else if(chessBoard[move_y + i][move_x - i] >= 11){
                     break;
-                } else if(chessBoard[move_y - diag][move_x - diag] <= 6 && chessBoard[move_y - diag][move_x - diag] != empty_square){
-                    moveTo_y = move_y - diag;
-                    moveTo_x = move_x - diag;
+                } else if(chessBoard[move_y + i][move_x - i] <= 6 && chessBoard[move_y + i][move_x - i] != 0){
+                    moveTo_y = move_y + i;
+                    moveTo_x = move_x - i;
                     insertMove_black(se);
                     break;
                 }
             }
-            for(int diag = 1; diag < 8; diag++){ // up & right
-                if(move_y - diag < 0 || move_x + diag > 7){
+            for(int i = 1; i < 8; i++){ // up & left
+                if(move_y - i < 0 || move_x - i < 0){
                     break;
                 }
-                if(chessBoard[move_y - diag][move_x + diag] == empty_square){
-                    moveTo_y = move_y - diag;
-                    moveTo_x = move_x + diag;
+                if(chessBoard[move_y - i][move_x - i] == empty_square){
+                    moveTo_y = move_y - i;
+                    moveTo_x = move_x - i;
                     insertMove_black(se);
-                } else if(chessBoard[move_y - diag][move_x + diag] >= 11){
+                } else if(chessBoard[move_y - i][move_x - i] >= 11){
                     break;
-                } else if(chessBoard[move_y - diag][move_x + diag] <= 6 && chessBoard[move_y - diag][move_x + diag] != empty_square){
-                    moveTo_y = move_y - diag;
-                    moveTo_x = move_x + diag;
+                } else if(chessBoard[move_y - i][move_x - i] <= 6 && chessBoard[move_y - i][move_x - i] != empty_square){
+                    moveTo_y = move_y - i;
+                    moveTo_x = move_x - i;
+                    insertMove_black(se);
+                    break;
+                }
+            }
+            for(int i = 1; i < 8; i++){ // up & right
+                if(move_y - i < 0 || move_x + i > 7){
+                    break;
+                }
+                if(chessBoard[move_y - i][move_x + i] == empty_square){
+                    moveTo_y = move_y - i;
+                    moveTo_x = move_x + i;
+                    insertMove_black(se);
+                } else if(chessBoard[move_y - i][move_x + i] >= 11){
+                    break;
+                } else if(chessBoard[move_y - i][move_x + i] <= 6 && chessBoard[move_y - i][move_x + i] != empty_square){
+                    moveTo_y = move_y - i;
+                    moveTo_x = move_x + i;
                     insertMove_black(se);
                     break;
                 }
             }
         }
         void w_rook(int se){
-            for(int raf = 1; raf < 8; raf++){ // down
-                if(move_y + raf > 7){
+            for(int i = 1; i < 8; i++){ // down
+                if(move_y + i > 7){
                     break;
-                } else if(chessBoard[move_y + raf][move_x] == empty_square){
-                    moveTo_y = move_y + raf;
+                } else if(chessBoard[move_y + i][move_x] == empty_square){
+                    moveTo_y = move_y + i;
                     moveTo_x = move_x;
                     insertMove_white(se);
-                } else if(chessBoard[move_y + raf][move_x] <= 6 && chessBoard[move_y + raf][move_x] != empty_square){
+                } else if(chessBoard[move_y + i][move_x] <= 6 && chessBoard[move_y + i][move_x] != empty_square){
                     break;
-                } else if(chessBoard[move_y + raf][move_x] >= 11){
-                    moveTo_y = move_y + raf;
-                    moveTo_x = move_x;
-                    insertMove_white(se);
-                    break;
-                }
-            }
-            for(int raf = 1; raf < 8; raf++){ // left
-                if(move_x - raf < 0){
-                    break;
-                } else if(chessBoard[move_y][move_x - raf] == empty_square){
-                    moveTo_y = move_y;
-                    moveTo_x = move_x - raf;
-                    insertMove_white(se);
-                } else if(chessBoard[move_y][move_x - raf] <= 6 && chessBoard[move_y][move_x - raf] != empty_square){
-                    break;
-                } else if(chessBoard[move_y][move_x - raf] >= 11){
-                    moveTo_y = move_y;
-                    moveTo_x = move_x - raf;
-                    insertMove_white(se);
-                    break;
-                }
-            }
-            for(int raf = 1; raf < 8; raf++){ // up
-                if(move_y - raf < 0){
-                    break;
-                } else if(chessBoard[move_y - raf][move_x] == empty_square){
-                    moveTo_y = move_y - raf;
-                    moveTo_x = move_x;
-                    insertMove_white(se);
-                } else if(chessBoard[move_y - raf][move_x] <= 6 && chessBoard[move_y - raf][move_x] != empty_square){
-                    break;
-                } else if(chessBoard[move_y - raf][move_x] >= 11){
-                    moveTo_y = move_y - raf;
+                } else if(chessBoard[move_y + i][move_x] >= 11){
+                    moveTo_y = move_y + i;
                     moveTo_x = move_x;
                     insertMove_white(se);
                     break;
                 }
             }
-            for(int raf = 1; raf < 8; raf++){ // right
-                if(move_x + raf > 7){
+            for(int i = 1; i < 8; i++){ // left
+                if(move_x - i < 0){
                     break;
-                } else if(chessBoard[move_y][move_x + raf] == empty_square){
+                } else if(chessBoard[move_y][move_x - i] == empty_square){
                     moveTo_y = move_y;
-                    moveTo_x = move_x + raf;
+                    moveTo_x = move_x - i;
                     insertMove_white(se);
-                } else if(chessBoard[move_y][move_x + raf] <= 6 && chessBoard[move_y][move_x + raf] != empty_square){
+                } else if(chessBoard[move_y][move_x - i] <= 6 && chessBoard[move_y][move_x - i] != empty_square){
                     break;
-                } else if(chessBoard[move_y][move_x + raf] >= 11){
+                } else if(chessBoard[move_y][move_x - i] >= 11){
                     moveTo_y = move_y;
-                    moveTo_x = move_x + raf;
+                    moveTo_x = move_x - i;
+                    insertMove_white(se);
+                    break;
+                }
+            }
+            for(int i = 1; i < 8; i++){ // up
+                if(move_y - i < 0){
+                    break;
+                } else if(chessBoard[move_y - i][move_x] == empty_square){
+                    moveTo_y = move_y - i;
+                    moveTo_x = move_x;
+                    insertMove_white(se);
+                } else if(chessBoard[move_y - i][move_x] <= 6 && chessBoard[move_y - i][move_x] != empty_square){
+                    break;
+                } else if(chessBoard[move_y - i][move_x] >= 11){
+                    moveTo_y = move_y - i;
+                    moveTo_x = move_x;
+                    insertMove_white(se);
+                    break;
+                }
+            }
+            for(int i = 1; i < 8; i++){ // right
+                if(move_x + i > 7){
+                    break;
+                } else if(chessBoard[move_y][move_x + i] == empty_square){
+                    moveTo_y = move_y;
+                    moveTo_x = move_x + i;
+                    insertMove_white(se);
+                } else if(chessBoard[move_y][move_x + i] <= 6 && chessBoard[move_y][move_x + i] != empty_square){
+                    break;
+                } else if(chessBoard[move_y][move_x + i] >= 11){
+                    moveTo_y = move_y;
+                    moveTo_x = move_x + i;
                     insertMove_white(se);
                     break;
                 }
             }
         }
         void b_rook(int se){
-            for(int raf = 1; raf < 8; raf++){ // down
-                if(move_y + raf > 7){
+            for(int i = 1; i < 8; i++){ // down
+                if(move_y + i > 7){
                     break;
-                } else if(chessBoard[move_y + raf][move_x] == empty_square){
-                    moveTo_y = move_y + raf;
+                } else if(chessBoard[move_y + i][move_x] == empty_square){
+                    moveTo_y = move_y + i;
                     moveTo_x = move_x;
                     insertMove_black(se);
-                } else if(chessBoard[move_y + raf][move_x] >= 11){
+                } else if(chessBoard[move_y + i][move_x] >= 11){
                     break;
-                } else if(chessBoard[move_y + raf][move_x] <= 6 && chessBoard[move_y + raf][move_x] != empty_square){
-                    moveTo_y = move_y + raf;
-                    moveTo_x = move_x;
-                    insertMove_black(se);
-                    break;
-                }
-            }
-            for(int raf = 1; raf < 8; raf++){ // left
-                if(move_x - raf < 0){
-                    break;
-                } else if(chessBoard[move_y][move_x - raf] == empty_square){
-                    moveTo_y = move_y;
-                    moveTo_x = move_x - raf;
-                    insertMove_black(se);
-                } else if(chessBoard[move_y][move_x - raf] >= 11){
-                    break;
-                } else if(chessBoard[move_y + raf][move_x] <= 6 && chessBoard[move_y + raf][move_x] != empty_square){
-                    moveTo_y = move_y;
-                    moveTo_x = move_x - raf;
-                    insertMove_black(se);
-                    break;
-                }
-            }
-            for(int raf = 1; raf < 8; raf++){ // up
-                if(move_y - raf < 0){
-                    break;
-                } else if(chessBoard[move_y - raf][move_x] == empty_square){
-                    moveTo_y = move_y - raf;
-                    moveTo_x = move_x;
-                    insertMove_black(se);
-                } else if(chessBoard[move_y - raf][move_x] >= 11){
-                    break;
-                } else if(chessBoard[move_y + raf][move_x] <= 6 && chessBoard[move_y + raf][move_x] != empty_square){
-                    moveTo_y = move_y - raf;
+                } else if(chessBoard[move_y + i][move_x] <= 6 && chessBoard[move_y + i][move_x] != empty_square){
+                    moveTo_y = move_y + i;
                     moveTo_x = move_x;
                     insertMove_black(se);
                     break;
                 }
             }
-            for(int raf = 1; raf < 8; raf++){ // right
-                if(move_x + raf > 7){
+            for(int i = 1; i < 8; i++){ // left
+                if(move_x - i < 0){
                     break;
-                } else if(chessBoard[move_y][move_x + raf] == empty_square){
+                } else if(chessBoard[move_y][move_x - i] == empty_square){
                     moveTo_y = move_y;
-                    moveTo_x = move_x + raf;
+                    moveTo_x = move_x - i;
                     insertMove_black(se);
-                } else if(chessBoard[move_y][move_x + raf] >= 11){
+                } else if(chessBoard[move_y][move_x - i] >= 11){
                     break;
-                } else if(chessBoard[move_y + raf][move_x] <= 6 && chessBoard[move_y + raf][move_x] != empty_square){
+                } else if(chessBoard[move_y + i][move_x] <= 6 && chessBoard[move_y + i][move_x] != empty_square){
                     moveTo_y = move_y;
-                    moveTo_x = move_x + raf;
+                    moveTo_x = move_x - i;
+                    insertMove_black(se);
+                    break;
+                }
+            }
+            for(int i = 1; i < 8; i++){ // up
+                if(move_y - i < 0){
+                    break;
+                } else if(chessBoard[move_y - i][move_x] == empty_square){
+                    moveTo_y = move_y - i;
+                    moveTo_x = move_x;
+                    insertMove_black(se);
+                } else if(chessBoard[move_y - i][move_x] >= 11){
+                    break;
+                } else if(chessBoard[move_y + i][move_x] <= 6 && chessBoard[move_y + i][move_x] != empty_square){
+                    moveTo_y = move_y - i;
+                    moveTo_x = move_x;
+                    insertMove_black(se);
+                    break;
+                }
+            }
+            for(int i = 1; i < 8; i++){ // right
+                if(move_x + i > 7){
+                    break;
+                } else if(chessBoard[move_y][move_x + i] == empty_square){
+                    moveTo_y = move_y;
+                    moveTo_x = move_x + i;
+                    insertMove_black(se);
+                } else if(chessBoard[move_y][move_x + i] >= 11){
+                    break;
+                } else if(chessBoard[move_y + i][move_x] <= 6 && chessBoard[move_y + i][move_x] != empty_square){
+                    moveTo_y = move_y;
+                    moveTo_x = move_x + i;
                     insertMove_black(se);
                     break;
                 }
@@ -1324,14 +1327,43 @@ double staticEval_btm(){
     return eval;
 }
 
-// remove blunders, recalculate n
+// white wants max & black wants min
 void move_filter_max(){
+    int movesFromPosition = 5;
+    int moveHolder[4][movesFromPosition];
+    int boardState[8][8];
+    double moveScores[n];
+    memcpy(boardState, chessBoard, sizeof(chessBoard));
     for(int i = 0; i < n; i++){
-        
+        move_y = moveList[0][i];
+        move_x = moveList[1][i];
+        moveTo_y = moveList[2][i];
+        moveTo_x = moveList[3][i];
+        if(move_y == 0 && move_x == 0 && moveTo_y == 0 && moveTo_x == 0){
+            break;
+        }
+        playMove();
+        moveScores[i] = staticEval_btm();
+        memcpy(chessBoard, boardState, sizeof(chessBoard));
     }
+    for(int i = 0; i < movesFromPosition; i++){
+        getMax(moveScores);
+        moveHolder[0][i] = moveList[0][best_index];
+        moveHolder[1][i] = moveList[1][best_index];
+        moveHolder[2][i] = moveList[2][best_index];
+        moveHolder[3][i] = moveList[3][best_index];
+        moveScores[best_index] = negativeInfinity;
+    }
+    memcpy(moveList, cml, sizeof(moveList));
+    for(int i = 0; i < movesFromPosition; i++){
+        moveList[0][i] = moveHolder[0][i];
+        moveList[1][i] = moveHolder[1][i];
+        moveList[2][i] = moveHolder[2][i];
+        moveList[3][i] = moveHolder[3][i];
+    }
+    n = movesFromPosition;
 }
 void move_filter_min(){
-    //
 }
 
 // search (removes castling rights)
@@ -1339,6 +1371,10 @@ double search(int depth, int max_depth){
     memcpy(moveList, cml, sizeof(moveList));
     if(depth % 2 == 0){
         generateMoves_white(1);
+        if(depth == max_depth){
+        } else{
+            move_filter_max();
+        }
     } else{
         generateMoves_black(1);
     }
@@ -1348,7 +1384,7 @@ double search(int depth, int max_depth){
         move_x = moveList[1][depthProgress[depth]];
         moveTo_y = moveList[2][depthProgress[depth]];
         moveTo_x = moveList[3][depthProgress[depth]];
-        if(move_x == 0 && move_y == 0 && moveTo_x == 0 && moveTo_y == 0){
+        if(move_y == 0 && move_x == 0 && moveTo_y == 0 && moveTo_x == 0){
             break;
         }
         playMove();
@@ -1414,6 +1450,17 @@ int main(){
 
     search(4, 4);
     cout << "Positions scanned - " << TEST << endl;
+
+    /*memcpy(moveList, cml, sizeof(moveList));
+    generateMoves_white(1);
+    move_filter_max();
+    for(int i = 0; i < 4; i++){
+        for(int j = 0; j < 60; j++){
+            cout << moveList[i][j] << " ";
+        }
+        cout << endl;
+    }
+    cout << n << endl; */
 
     while(move_move <= 5949){
         cout << "Move - " << move_move << endl;
