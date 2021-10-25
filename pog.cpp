@@ -93,8 +93,19 @@ double getMax(double values[]){
     }
     return best;
 }
+double getMin(double values[]){
+    double best = values[0];
+    best_index = 0;
+    for(int i = 0; i < n; i++){
+        if(values[i] < best){
+            best = values[i];
+            best_index = i;
+        }
+    }
+    return best;
+}
 
-string FEN = "rnbqkbnrppppppppooooooooooooooooooooooooooooooooPPPPPPPPRNBQKBNR";
+string FEN = "rooqnrkoooonbppppoopbooooooopoPoopooPPoooNooBoooPPPQNooPooKRoBoR";
 
 int chessBoard[8][8] = {
     {0, 0, 0, 0, 0, 0, 0, 0},
@@ -1234,8 +1245,10 @@ int playMove(){
 void generateMoves_white(int se){
     if(se == 1){
         n = 0;
+        memcpy(moveList, cml, sizeof(moveList));
     } else{
         o = 0;
+        memcpy(eml, cml, sizeof(eml));
     }
     for(int im = 0; im < 8; im++){
          move_y = im;
@@ -1261,8 +1274,10 @@ void generateMoves_white(int se){
 void generateMoves_black(int se){
     if(se == 1){
         n = 0;
+        memcpy(moveList, cml, sizeof(moveList));
     } else{
         o = 0;
+        memcpy(eml, cml, sizeof(eml));
     }
     for(int im = 0; im < 8; im++){
         move_y = im;
@@ -1286,11 +1301,13 @@ void generateMoves_black(int se){
     }
 }
 
+// add checks to enemy moves eval
 double staticEval_wtm(){
     double eval = 0;
     generateMoves_white(2);
     if(o == 0){
         if(check_white()){
+            //cout << "White mated lol ";
             return negativeInfinity;
         } else{
             return 0;
@@ -1298,11 +1315,10 @@ double staticEval_wtm(){
     }
     double responses[o];
     for(int i = 0; i < o; i++){
-        if(value(chessBoard[eml[2][i]][eml[3][i]]) > value(chessBoard[eml[0][i]][eml[1][i]])){
+        if(value(chessBoard[eml[2][i]][eml[3][i]]) >= value(chessBoard[eml[0][i]][eml[1][i]])){
             responses[i] = value(chessBoard[eml[2][i]][eml[3][i]]) - value(chessBoard[eml[0][i]][eml[1][i]]);
         }
     }
-    memcpy(eml, cml, sizeof(eml));
     eval = material() + getMax(responses);
     return eval;
 }
@@ -1311,6 +1327,7 @@ double staticEval_btm(){
     generateMoves_black(2);
     if(o == 0){
         if(check_black()){
+            //cout << "Black mated lol ";
             return infinity;
         } else{
             return 0;
@@ -1322,15 +1339,14 @@ double staticEval_btm(){
             responses[i] = value(chessBoard[eml[2][i]][eml[3][i]]) - value(chessBoard[eml[0][i]][eml[1][i]]);
         }
     }
-    memcpy(eml, cml, sizeof(eml));
     eval = material() - getMax(responses);
     return eval;
 }
 
 // white wants max & black wants min
+const int moveorder_exclusion_strength = 4;
 void move_filter_max(){
-    int movesFromPosition = 5;
-    int moveHolder[4][movesFromPosition];
+    int moveHolder[4][moveorder_exclusion_strength];
     int boardState[8][8];
     double moveScores[n];
     memcpy(boardState, chessBoard, sizeof(chessBoard));
@@ -1346,7 +1362,7 @@ void move_filter_max(){
         moveScores[i] = staticEval_btm();
         memcpy(chessBoard, boardState, sizeof(chessBoard));
     }
-    for(int i = 0; i < movesFromPosition; i++){
+    for(int i = 0; i < moveorder_exclusion_strength; i++){
         getMax(moveScores);
         moveHolder[0][i] = moveList[0][best_index];
         moveHolder[1][i] = moveList[1][best_index];
@@ -1355,20 +1371,51 @@ void move_filter_max(){
         moveScores[best_index] = negativeInfinity;
     }
     memcpy(moveList, cml, sizeof(moveList));
-    for(int i = 0; i < movesFromPosition; i++){
+    for(int i = 0; i < moveorder_exclusion_strength; i++){
         moveList[0][i] = moveHolder[0][i];
         moveList[1][i] = moveHolder[1][i];
         moveList[2][i] = moveHolder[2][i];
         moveList[3][i] = moveHolder[3][i];
     }
-    n = movesFromPosition;
+    n = moveorder_exclusion_strength;
 }
 void move_filter_min(){
+    int moveHolder[4][moveorder_exclusion_strength];
+    int boardState[8][8];
+    double moveScores[n];
+    memcpy(boardState, chessBoard, sizeof(chessBoard));
+    for(int i = 0; i < n; i++){
+        move_y = moveList[0][i];
+        move_x = moveList[1][i];
+        moveTo_y = moveList[2][i];
+        moveTo_x = moveList[3][i];
+        if(move_y == 0 && move_x == 0 && moveTo_y == 0 && moveTo_x == 0){
+            break;
+        }
+        playMove();
+        moveScores[i] = staticEval_wtm();
+        memcpy(chessBoard, boardState, sizeof(chessBoard));
+    }
+    for(int i = 0; i < moveorder_exclusion_strength; i++){
+        getMin(moveScores);
+        moveHolder[0][i] = moveList[0][best_index];
+        moveHolder[1][i] = moveList[1][best_index];
+        moveHolder[2][i] = moveList[2][best_index];
+        moveHolder[3][i] = moveList[3][best_index];
+        moveScores[best_index] = infinity;
+    }
+    memcpy(moveList, cml, sizeof(moveList));
+    for(int i = 0; i < moveorder_exclusion_strength; i++){
+        moveList[0][i] = moveHolder[0][i];
+        moveList[1][i] = moveHolder[1][i];
+        moveList[2][i] = moveHolder[2][i];
+        moveList[3][i] = moveHolder[3][i];
+    }
+    n = moveorder_exclusion_strength;
 }
 
 // search (removes castling rights)
 double search(int depth, int max_depth){
-    memcpy(moveList, cml, sizeof(moveList));
     if(depth % 2 == 0){
         generateMoves_white(1);
         if(depth == max_depth){
@@ -1377,6 +1424,10 @@ double search(int depth, int max_depth){
         }
     } else{
         generateMoves_black(1);
+        if(depth == max_depth){
+        } else{
+            move_filter_min();
+        }
     }
     memcpy(boardStates[depth], chessBoard, sizeof(chessBoard));
     for(int ms = 0; ms < n; ms++){
@@ -1395,7 +1446,7 @@ double search(int depth, int max_depth){
         }
         staticEval_wtm();
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
-        TEST++;
+        TEST+=o;
     }
     if(depth < max_depth){
         depthProgress[depth] = 0;
@@ -1448,11 +1499,10 @@ int main(){
     initializeBoard();
     printBoard();
 
-    search(4, 4);
+    search(6, 6);
     cout << "Positions scanned - " << TEST << endl;
 
-    /*memcpy(moveList, cml, sizeof(moveList));
-    generateMoves_white(1);
+    /*generateMoves_white(1);
     move_filter_max();
     for(int i = 0; i < 4; i++){
         for(int j = 0; j < 60; j++){
