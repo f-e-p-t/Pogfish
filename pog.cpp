@@ -133,6 +133,8 @@ int boardStates[50][8][8];
 int depthProgress[50];
 int moveList[4][218];
 int eml[4][218];
+double candidateScores[20000];
+double avg_taker[50];
 double alpha_beta[50][2][218];
 
 // ----------------------------------------------------------------------- Rules of chess -----------------------------------------------------------------------
@@ -1251,10 +1253,10 @@ void generateMoves_white(int se){
         o = 0;
         memset(eml, 0, sizeof(eml));
     }
-    for(int im = 0; im < 8; im++){
-         move_y = im;
-        for(int jm = 0; jm < 8; jm++){
-            move_x = jm;
+    for(int y = 0; y < 8; y++){
+         move_y = y;
+        for(int x = 0; x < 8; x++){
+            move_x = x;
             if(chessBoard[move_y][move_x] == white_pawn){
                 moveGen.w_pawn(se);
             } else if(chessBoard[move_y][move_x] == white_knight){
@@ -1437,6 +1439,9 @@ double search(int depth, int max_depth){
         if(move_y == 0 && move_x == 0 && moveTo_y == 0 && moveTo_x == 0){
             break;
         }
+        if(depth == max_depth){
+            avg_taker[max_depth - depth] = staticEval_btm();
+        }
         playMove();
         depthProgress[depth]++;
         if(depth > 1){
@@ -1500,16 +1505,6 @@ int main(){
 
     search(4, 4);
     cout << "Positions scanned - " << TEST << endl;
-
-    /*generateMoves_white(1);
-    move_filter_max();
-    for(int i = 0; i < 4; i++){
-        for(int j = 0; j < 60; j++){
-            cout << moveList[i][j] << " ";
-        }
-        cout << endl;
-    }
-    cout << n << endl; */
 
     while(move_move <= 5949){
         cout << "Move - " << move_move << endl;
