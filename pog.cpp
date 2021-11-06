@@ -1,6 +1,7 @@
 #include<iostream>
 #include<cmath>
-#include<string>
+#include<string.h>
+#include<algorithm>
 using namespace std;
 
 int tempo = 1;
@@ -105,7 +106,7 @@ double getMin(double values[]){
     return best;
 }
 
-string FEN = "rooqnrkoooonbppppoopbooooooopoPoopooPPoooNooBoooPPPQNooPooKRoBoR";
+string FEN = "rnbqkbnrppppppppooooooooooooooooooooooooooooooooPPPPPPPPRNBQKBNR";
 
 int chessBoard[8][8] = {
     {0, 0, 0, 0, 0, 0, 0, 0},
@@ -132,7 +133,7 @@ int boardStates[50][8][8];
 int depthProgress[50];
 int moveList[4][218];
 int eml[4][218];
-int cml[4][218];
+double alpha_beta[50][2][218];
 
 // ----------------------------------------------------------------------- Rules of chess -----------------------------------------------------------------------
 
@@ -1245,10 +1246,10 @@ int playMove(){
 void generateMoves_white(int se){
     if(se == 1){
         n = 0;
-        memcpy(moveList, cml, sizeof(moveList));
+        memset(moveList, 0, sizeof(moveList));
     } else{
         o = 0;
-        memcpy(eml, cml, sizeof(eml));
+        memset(eml, 0, sizeof(eml));
     }
     for(int im = 0; im < 8; im++){
          move_y = im;
@@ -1274,10 +1275,10 @@ void generateMoves_white(int se){
 void generateMoves_black(int se){
     if(se == 1){
         n = 0;
-        memcpy(moveList, cml, sizeof(moveList));
+        memset(moveList, 0, sizeof(moveList));
     } else{
         o = 0;
-        memcpy(eml, cml, sizeof(eml));
+        memset(eml, 0, sizeof(eml));
     }
     for(int im = 0; im < 8; im++){
         move_y = im;
@@ -1307,7 +1308,6 @@ double staticEval_wtm(){
     generateMoves_white(2);
     if(o == 0){
         if(check_white()){
-            //cout << "White mated lol ";
             return negativeInfinity;
         } else{
             return 0;
@@ -1327,7 +1327,6 @@ double staticEval_btm(){
     generateMoves_black(2);
     if(o == 0){
         if(check_black()){
-            //cout << "Black mated lol ";
             return infinity;
         } else{
             return 0;
@@ -1344,7 +1343,7 @@ double staticEval_btm(){
 }
 
 // white wants max & black wants min
-const int moveorder_exclusion_strength = 4;
+int moveorder_exclusion_strength = 4;
 void move_filter_max(){
     int moveHolder[4][moveorder_exclusion_strength];
     int boardState[8][8];
@@ -1370,7 +1369,7 @@ void move_filter_max(){
         moveHolder[3][i] = moveList[3][best_index];
         moveScores[best_index] = negativeInfinity;
     }
-    memcpy(moveList, cml, sizeof(moveList));
+    memset(moveList, 0, sizeof(moveList));
     for(int i = 0; i < moveorder_exclusion_strength; i++){
         moveList[0][i] = moveHolder[0][i];
         moveList[1][i] = moveHolder[1][i];
@@ -1404,7 +1403,7 @@ void move_filter_min(){
         moveHolder[3][i] = moveList[3][best_index];
         moveScores[best_index] = infinity;
     }
-    memcpy(moveList, cml, sizeof(moveList));
+    memset(moveList, 0, sizeof(moveList));
     for(int i = 0; i < moveorder_exclusion_strength; i++){
         moveList[0][i] = moveHolder[0][i];
         moveList[1][i] = moveHolder[1][i];
@@ -1420,13 +1419,13 @@ double search(int depth, int max_depth){
         generateMoves_white(1);
         if(depth == max_depth){
         } else{
-            move_filter_max();
+            //move_filter_max();
         }
     } else{
         generateMoves_black(1);
         if(depth == max_depth){
         } else{
-            move_filter_min();
+            //move_filter_min();
         }
     }
     memcpy(boardStates[depth], chessBoard, sizeof(chessBoard));
@@ -1499,7 +1498,7 @@ int main(){
     initializeBoard();
     printBoard();
 
-    search(6, 6);
+    search(4, 4);
     cout << "Positions scanned - " << TEST << endl;
 
     /*generateMoves_white(1);
