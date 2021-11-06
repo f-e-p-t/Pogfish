@@ -1325,7 +1325,7 @@ int staticEval_wtm(){
             responses[i] = value(chessBoard[eml[2][i]][eml[3][i]]) - value(chessBoard[eml[0][i]][eml[1][i]]);
         }
     }
-    eval = material() + o + getMax(responses);
+    eval = material() + getMax(responses);
     return eval;
 }
 int staticEval_btm(){
