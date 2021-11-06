@@ -12,8 +12,8 @@ bool QSCastlingRights_white = true;
 bool KSCastlingRights_black = true;
 bool QSCastlingRights_black = true;
 int best_index;
-double infinity = 1000000000;
-double negativeInfinity = -1000000000;
+int infinity = 1000000000;
+int negativeInfinity = -1000000000;
 
 int move_y;
 int move_x;
@@ -44,41 +44,41 @@ int se;
 int depth;
 int TEST;
 
-double value(int piece){
-    double pieceValue;
+int value(int piece){
+    int pieceValue;
     switch(piece){
         case 1:
-            pieceValue = 1;
+            pieceValue = 100;
             break;
         case 2:
-            pieceValue = 3;
+            pieceValue = 300;
             break;
         case 3:
-            pieceValue = 3;
+            pieceValue = 300;
             break;
         case 4:
-            pieceValue = 5;
+            pieceValue = 500;
             break;
         case 5:
-            pieceValue = 9;
+            pieceValue = 900;
             break;
         case 6:
             pieceValue = 0;
             break;
         case 11:
-            pieceValue = 1;
+            pieceValue = 100;
             break;
         case 12:
-            pieceValue = 3;
+            pieceValue = 300;
             break;
         case 13:
-            pieceValue = 3;
+            pieceValue = 300;
             break;
         case 14:
-            pieceValue = 5;
+            pieceValue = 500;
             break;
         case 15:
-            pieceValue = 9;
+            pieceValue = 900;
             break;
         case 16:
             pieceValue = 0;
@@ -87,10 +87,10 @@ double value(int piece){
     }
     return pieceValue;
 }
-double getMax(double values[]){
-    double best = values[0];
+int getMax(int values[]){
+    int best = values[0];
     best_index = 0;
-    for(int i = 0; i < n; i++){
+    for(int i = 0; i < o; i++){
         if(values[i] > best){
             best = values[i];
             best_index = i;
@@ -98,10 +98,10 @@ double getMax(double values[]){
     }
     return best;
 }
-double getMin(double values[]){
-    double best = values[0];
+int getMin(int values[]){
+    int best = values[0];
     best_index = 0;
-    for(int i = 0; i < n; i++){
+    for(int i = 0; i < o; i++){
         if(values[i] < best){
             best = values[i];
             best_index = i;
@@ -110,7 +110,7 @@ double getMin(double values[]){
     return best;
 }
 
-string FEN = "rnbqkbnrppppppppooooooooooooooooooooooooooooooooPPPPPPPPRNBQKBNR";
+string FEN = "ooooookopppoopppooooooooooooooooooooooooooooooooPPPooPPPoooRooKo";
 
 int chessBoard[8][8] = {
     {0, 0, 0, 0, 0, 0, 0, 0},
@@ -137,11 +137,11 @@ int boardStates[50][8][8];
 int depthProgress[50];
 int moveList[4][218];
 int eml[4][218];
-double candidateScores[20000];
-double avg_taker[50];
-double alpha_beta[50][2][218];
+int candidateScores[20000];
+int avg_taker[50];
+int alpha_beta[50][2][218];
 
-// ----------------------------------------------------------------------- Rules of chess -----------------------------------------------------------------------
+// ------------------------------------------------------------------------- Rules of chess --------------------------------------------------------------------------
 
 int playMove_CC(){
     // castling
@@ -1181,14 +1181,14 @@ void printBoard(){
 
 // ----------------------------------------------------------------------- Search & Evaluation -----------------------------------------------------------------------
 
-double material(){
-    double material_eval = 0;
-    for(int y = 0; y < 8; y++){
-        for(int x = 0; x < 8; x++){
-            if(chessBoard[y][x] <= 6 && chessBoard[y][x] != 0){
-                material_eval += value(chessBoard[y][x]);
-            } else if(chessBoard[y][x] >= 11){
-                material_eval -= value(chessBoard[y][x]);
+int material(){
+    int material_eval = 0;
+    for(int i = 0; i < 8; i++){
+        for(int j = 0; j < 8; j++){
+            if(chessBoard[i][j] <= 6 && chessBoard[i][j] != 0){
+                material_eval += value(chessBoard[i][j]);
+            } else if(chessBoard[i][j] >= 11){
+                material_eval -= value(chessBoard[i][j]);
             }
         }
     }
@@ -1309,8 +1309,8 @@ void generateMoves_black(int se){
 }
 
 // add checks to enemy moves eval
-double staticEval_wtm(){
-    double eval = 0;
+int staticEval_wtm(){
+    int eval = 0;
     generateMoves_white(2);
     if(o == 0){
         if(check_white()){
@@ -1319,17 +1319,17 @@ double staticEval_wtm(){
             return 0;
         }
     }
-    double responses[o];
+    int responses[o] = {0};
     for(int i = 0; i < o; i++){
         if(value(chessBoard[eml[2][i]][eml[3][i]]) >= value(chessBoard[eml[0][i]][eml[1][i]])){
             responses[i] = value(chessBoard[eml[2][i]][eml[3][i]]) - value(chessBoard[eml[0][i]][eml[1][i]]);
         }
     }
-    eval = material() + getMax(responses);
+    eval = material() + o + getMax(responses);
     return eval;
 }
-double staticEval_btm(){
-    double eval = 0;
+int staticEval_btm(){
+    int eval = 0;
     generateMoves_black(2);
     if(o == 0){
         if(check_black()){
@@ -1338,7 +1338,7 @@ double staticEval_btm(){
             return 0;
         }
     }
-    double responses[o];
+    int responses[o] = {0};
     for(int i = 0; i < o; i++){
         if(value(chessBoard[eml[2][i]][eml[3][i]]) > value(chessBoard[eml[0][i]][eml[1][i]])){
             responses[i] = value(chessBoard[eml[2][i]][eml[3][i]]) - value(chessBoard[eml[0][i]][eml[1][i]]);
@@ -1353,7 +1353,7 @@ int moveorder_exclusion_strength = 4;
 void move_filter_max(){
     int moveHolder[4][moveorder_exclusion_strength];
     int boardState[8][8];
-    double moveScores[n];
+    int moveScores[n];
     memcpy(boardState, chessBoard, sizeof(chessBoard));
     for(int i = 0; i < n; i++){
         move_y = moveList[0][i];
@@ -1387,7 +1387,7 @@ void move_filter_max(){
 void move_filter_min(){
     int moveHolder[4][moveorder_exclusion_strength];
     int boardState[8][8];
-    double moveScores[n];
+    int moveScores[n];
     memcpy(boardState, chessBoard, sizeof(chessBoard));
     for(int i = 0; i < n; i++){
         move_y = moveList[0][i];
@@ -1420,7 +1420,7 @@ void move_filter_min(){
 }
 
 // search (removes castling rights)
-double search(int depth, int max_depth){
+int search(int depth, int max_depth){
     if(depth % 2 == 0){
         generateMoves_white(1);
         if(depth == max_depth){
@@ -1443,10 +1443,12 @@ double search(int depth, int max_depth){
         if(move_y == 0 && move_x == 0 && moveTo_y == 0 && moveTo_x == 0){
             break;
         }
-        if(depth == max_depth){
-            //avg_taker[max_depth - depth] = staticEval_btm();
-        }
         playMove();
+        if(depth == max_depth){
+            avg_taker[max_depth - depth] = staticEval_btm();
+            //cout << avg_taker[max_depth - depth] << " ";
+            //cout << "- (" << move_y << " " << move_x << " " << moveTo_y << " " << moveTo_x << "), ";
+        }
         depthProgress[depth]++;
         if(depth > 1){
             search(depth - 1, max_depth);
