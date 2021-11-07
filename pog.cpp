@@ -116,7 +116,7 @@ int mean(int values[], int numValues){
     return sum/numValues;
 }
 
-string FEN = "ooooookopppoopppooooooooooooooooooooooooooooooooPPPooPPPoooRooKo";
+string FEN = "ooooookopoooopppooooooooooooroooooooooooooooooooPooooPPPoooRooKo";
 
 int chessBoard[8][8] = {
     {0, 0, 0, 0, 0, 0, 0, 0},
@@ -146,8 +146,6 @@ int eml[4][218] = {0};
 int candidate_scores[218][50000] = {0};
 int max_depth_scores[218] = {0};
 int alpha_beta[50][2][218] = {0};
-
-int dsuga;
 
 // ------------------------------------------------------------------------- Rules of chess --------------------------------------------------------------------------
 
@@ -1446,6 +1444,7 @@ int search(int depth, int depth_cap){
         if(move_y == 0 && move_x == 0 && moveTo_y == 0 && moveTo_x == 0){
             break;
         }
+        depthProgress[depth]++;
         playMove();
         if(depth == depth_cap){
             cs_index = 0;
@@ -1463,7 +1462,6 @@ int search(int depth, int depth_cap){
                 cs_index++;
             }
         }
-        depthProgress[depth]++;
         if(depth > 1 && o != 0){
             search(depth - 1, depth_cap);
             return 0;
@@ -1531,7 +1529,7 @@ int main(){
     cout << "Positions scanned - " << TEST << endl;
 
     for(int i = 0; i < 500; i++){
-        cout << candidate_scores[21][i] << " ";
+        cout << candidate_scores[17][i] << " ";
     }
 
     while(move_move <= 5949){
