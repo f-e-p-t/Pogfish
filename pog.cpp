@@ -40,8 +40,7 @@ const int black_king = 16;
 
 int n;
 int o;
-//int se;
-//int depth;
+int cs_index = 0;
 int TEST;
 
 int value(int piece){
@@ -112,7 +111,7 @@ int getMin(int values[], int numValues){
 int mean(int values[], int numValues){
     int sum = 0;
     for(int i = 0; i < numValues; i++){
-        sum+=values[i];
+        sum += values[i];
     }
     return sum/numValues;
 }
@@ -1432,16 +1431,8 @@ void move_filter_min(){
 int search(int depth, int depth_cap){
     if(depth % 2 == 0){
         generateMoves_white(1);
-        if(depth == depth_cap){
-        } else{
-            //move_filter_max();
-        }
     } else{
         generateMoves_black(1);
-        if(depth == depth_cap){
-        } else{
-            //move_filter_min();
-        }
     }
     if(depth == 1){
         memset(max_depth_scores, 0, sizeof(max_depth_scores));
@@ -1456,9 +1447,24 @@ int search(int depth, int depth_cap){
             break;
         }
         playMove();
-        //
+        if(depth == depth_cap){
+            cs_index = 0;
+        }
+        if(depth % 2 == 0){
+            generateMoves_black(2);
+            if(o == 0){
+                candidate_scores[depthProgress[depth_cap]][cs_index] = staticEval_btm();
+                cs_index++;
+            }
+        } else{
+            generateMoves_white(2);
+            if(o == 0){
+                candidate_scores[depthProgress[depth_cap]][cs_index] = staticEval_wtm();
+                cs_index++;
+            }
+        }
         depthProgress[depth]++;
-        if(depth > 1){
+        if(depth > 1 && o != 0){
             search(depth - 1, depth_cap);
             return 0;
         }
@@ -1469,6 +1475,8 @@ int search(int depth, int depth_cap){
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
     }
     if(depth < depth_cap){
+        candidate_scores[depthProgress[depth_cap]][cs_index] = getMax(max_depth_scores, n);
+        cs_index++;
         depthProgress[depth] = 0;
         depth++;
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
@@ -1521,6 +1529,10 @@ int main(){
 
     search(4, 4);
     cout << "Positions scanned - " << TEST << endl;
+
+    for(int i = 0; i < 500; i++){
+        cout << candidate_scores[21][i] << " ";
+    }
 
     while(move_move <= 5949){
         cout << "Move - " << move_move << endl;
