@@ -87,10 +87,10 @@ int value(int piece){
     }
     return pieceValue;
 }
-int getMax(int values[]){
+int getMax(int values[], int numValues){
     int best = values[0];
     best_index = 0;
-    for(int i = 0; i < o; i++){
+    for(int i = 0; i < numValues; i++){
         if(values[i] > best){
             best = values[i];
             best_index = i;
@@ -98,16 +98,23 @@ int getMax(int values[]){
     }
     return best;
 }
-int getMin(int values[]){
+int getMin(int values[], int numValues){
     int best = values[0];
     best_index = 0;
-    for(int i = 0; i < o; i++){
+    for(int i = 0; i < numValues; i++){
         if(values[i] < best){
             best = values[i];
             best_index = i;
         }
     }
     return best;
+}
+int mean(int values[], int numValues){
+    int sum = 0;
+    for(int i = 0; i < numValues; i++){
+        sum+=values[i];
+    }
+    return sum/numValues;
 }
 
 string FEN = "ooooookopppoopppooooooooooooooooooooooooooooooooPPPooPPPoooRooKo";
@@ -133,13 +140,14 @@ int chessBoard_CC[8][8] = {
     {0, 0, 0, 0, 0, 0, 0, 0}
 };
 
-int boardStates[50][8][8];
-int depthProgress[50];
-int moveList[4][218];
-int eml[4][218];
-int candidateScores[20000];
-int avg_taker[50];
-int alpha_beta[50][2][218];
+int boardStates[50][8][8] = {0};
+int depthProgress[50] = {0};
+int moveList[4][218] = {0};
+int eml[4][218] = {0};
+int candidate_scores[218][50000] = {0};
+int max_depth_scores[218] = {0};
+int line_scores[50] = {0};
+int alpha_beta[50][2][218] = {0};
 
 // ------------------------------------------------------------------------- Rules of chess --------------------------------------------------------------------------
 
@@ -1325,7 +1333,7 @@ int staticEval_wtm(){
             responses[i] = value(chessBoard[eml[2][i]][eml[3][i]]) - value(chessBoard[eml[0][i]][eml[1][i]]);
         }
     }
-    eval = material() + getMax(responses);
+    eval = material() + getMax(responses, o);
     return eval;
 }
 int staticEval_btm(){
@@ -1344,7 +1352,7 @@ int staticEval_btm(){
             responses[i] = value(chessBoard[eml[2][i]][eml[3][i]]) - value(chessBoard[eml[0][i]][eml[1][i]]);
         }
     }
-    eval = material() - getMax(responses);
+    eval = material() - getMax(responses, o);
     return eval;
 }
 
@@ -1368,7 +1376,7 @@ void move_filter_max(){
         memcpy(chessBoard, boardState, sizeof(chessBoard));
     }
     for(int i = 0; i < moveorder_exclusion_strength; i++){
-        getMax(moveScores);
+        getMax(moveScores, n);
         moveHolder[0][i] = moveList[0][best_index];
         moveHolder[1][i] = moveList[1][best_index];
         moveHolder[2][i] = moveList[2][best_index];
@@ -1402,7 +1410,7 @@ void move_filter_min(){
         memcpy(chessBoard, boardState, sizeof(chessBoard));
     }
     for(int i = 0; i < moveorder_exclusion_strength; i++){
-        getMin(moveScores);
+        getMin(moveScores, n);
         moveHolder[0][i] = moveList[0][best_index];
         moveHolder[1][i] = moveList[1][best_index];
         moveHolder[2][i] = moveList[2][best_index];
@@ -1419,23 +1427,23 @@ void move_filter_min(){
     n = moveorder_exclusion_strength;
 }
 
-// search (removes castling rights)
-int search(int depth, int max_depth){
+// search (removes castling rights), currently set up for the computer to play as white
+int search(int depth, int depth_cap){
     if(depth % 2 == 0){
         generateMoves_white(1);
-        if(depth == max_depth){
+        if(depth == depth_cap){
         } else{
             //move_filter_max();
         }
     } else{
         generateMoves_black(1);
-        if(depth == max_depth){
+        if(depth == depth_cap){
         } else{
             //move_filter_min();
         }
     }
     memcpy(boardStates[depth], chessBoard, sizeof(chessBoard));
-    for(int ms = 0; ms < n; ms++){
+    for(int i = 0; i < n; i++){
         move_y = moveList[0][depthProgress[depth]];
         move_x = moveList[1][depthProgress[depth]];
         moveTo_y = moveList[2][depthProgress[depth]];
@@ -1444,26 +1452,31 @@ int search(int depth, int max_depth){
             break;
         }
         playMove();
-        if(depth == max_depth){
-            avg_taker[max_depth - depth] = staticEval_btm();
-            //cout << avg_taker[max_depth - depth] << " ";
+        if(depth != 1){
+            line_scores[depth_cap - depth] = staticEval_btm();
+            //cout << line_scores[depth_cap - depth] << " ";
             //cout << "- (" << move_y << " " << move_x << " " << moveTo_y << " " << moveTo_x << "), ";
         }
         depthProgress[depth]++;
         if(depth > 1){
-            search(depth - 1, max_depth);
+            search(depth - 1, depth_cap);
             return 0;
         }
-        staticEval_wtm();
+        max_depth_scores[i] = staticEval_wtm(); // this changes depending on which side the computer is playing as
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
         TEST+=o;
     }
-    if(depth < max_depth){
+    if(depth < depth_cap){
+        if(depth == 1){
+            line_scores[depth_cap - depth] = getMax(max_depth_scores, o);
+            //candidate_scores[depthProgress[depth_cap]][index] = mean(line_scores, depth_cap - 1);
+        }
         depthProgress[depth] = 0;
         depth++;
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
-        search(depth, max_depth);
+        search(depth, depth_cap);
     }
+    cout << "Dsuga ";
     return 0;
 }
 
@@ -1511,6 +1524,8 @@ int main(){
 
     search(4, 4);
     cout << "Positions scanned - " << TEST << endl;
+
+    //cout << mean()
 
     while(move_move <= 5949){
         cout << "Move - " << move_move << endl;
