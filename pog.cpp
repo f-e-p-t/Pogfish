@@ -40,8 +40,8 @@ const int black_king = 16;
 
 int n;
 int o;
-int se;
-int depth;
+//int se;
+//int depth;
 int TEST;
 
 int value(int piece){
@@ -146,8 +146,9 @@ int moveList[4][218] = {0};
 int eml[4][218] = {0};
 int candidate_scores[218][50000] = {0};
 int max_depth_scores[218] = {0};
-int line_scores[50] = {0};
 int alpha_beta[50][2][218] = {0};
+
+int dsuga;
 
 // ------------------------------------------------------------------------- Rules of chess --------------------------------------------------------------------------
 
@@ -1442,6 +1443,9 @@ int search(int depth, int depth_cap){
             //move_filter_min();
         }
     }
+    if(depth == 1){
+        memset(max_depth_scores, 0, sizeof(max_depth_scores));
+    }
     memcpy(boardStates[depth], chessBoard, sizeof(chessBoard));
     for(int i = 0; i < n; i++){
         move_y = moveList[0][depthProgress[depth]];
@@ -1452,31 +1456,24 @@ int search(int depth, int depth_cap){
             break;
         }
         playMove();
-        if(depth != 1){
-            line_scores[depth_cap - depth] = staticEval_btm();
-            //cout << line_scores[depth_cap - depth] << " ";
-            //cout << "- (" << move_y << " " << move_x << " " << moveTo_y << " " << moveTo_x << "), ";
-        }
+        //
         depthProgress[depth]++;
         if(depth > 1){
             search(depth - 1, depth_cap);
             return 0;
         }
-        max_depth_scores[i] = staticEval_wtm(); // this changes depending on which side the computer is playing as
+        if(depth == 1){
+            max_depth_scores[i] = staticEval_wtm();
+            TEST+=o;
+        }
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
-        TEST+=o;
     }
     if(depth < depth_cap){
-        if(depth == 1){
-            line_scores[depth_cap - depth] = getMax(max_depth_scores, o);
-            //candidate_scores[depthProgress[depth_cap]][index] = mean(line_scores, depth_cap - 1);
-        }
         depthProgress[depth] = 0;
         depth++;
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
         search(depth, depth_cap);
     }
-    cout << "Dsuga ";
     return 0;
 }
 
@@ -1524,8 +1521,6 @@ int main(){
 
     search(4, 4);
     cout << "Positions scanned - " << TEST << endl;
-
-    //cout << mean()
 
     while(move_move <= 5949){
         cout << "Move - " << move_move << endl;
