@@ -114,8 +114,7 @@ int mean(int values[], int numValues){
     }
     return sum/numValues;
 }
-
-string FEN = "ooooookopoooppppooooooooooooooooooooooooooooooooPooooPPPoooRooKo";
+string FEN = "ooooooooooooooooooooooooooooooooKoQoorokoooooooooooooooooooooooo";
 
 int chessBoard[8][8] = {
     {0, 0, 0, 0, 0, 0, 0, 0},
@@ -383,7 +382,7 @@ bool check_black(){
         }
     }
     for(int i = 1; i < 8; i++){ // down
-        if(bkp_x + i > 7){
+        if(bkp_y + i > 7){
             break;
         } else if(chessBoard_CC[bkp_y + i][bkp_x] == white_rook || chessBoard_CC[bkp_y + i][bkp_x] == white_queen){
             return true;
@@ -1469,7 +1468,7 @@ int search(int depth, int depth_cap){
             return 0;
         }
         if(depth == 1){
-            move_scores[depth][i] = staticEval(1);
+            move_scores[1][i] = staticEval(1);
             TEST+=o;
         }
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
@@ -1482,6 +1481,7 @@ int search(int depth, int depth_cap){
             move_scores[depth + 1][branchIndex[depth + 1]] = getMin(move_scores[depth], n);
         }
         branchIndex[depth + 1]++;
+        branchIndex[depth] = 0;
         depth++;
         memset(move_scores[depth - 1], 0, sizeof(move_scores[depth - 1]));
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
@@ -1526,26 +1526,38 @@ int getMove_black(){
     cout << "Illegal Move!" << endl;
     return 0;
 }
+void move_engine(int _depth){
+    int searchDepth = _depth - 1;
+    search(searchDepth, searchDepth);
+    cout << "positions scanned - " << TEST << endl;
+    generateMoves_white(2);
+    getMax(move_scores[searchDepth], o);
+    move_y = eml[0][best_index];
+    move_x = eml[1][best_index];
+    moveTo_y = eml[2][best_index];
+    moveTo_x = eml[3][best_index];
+    playMove();
+    memset(move_scores, 0, sizeof(move_scores));
+    memset(branchIndex, 0, sizeof(branchIndex));
+    memset(depthProgress, 0, sizeof(depthProgress));
+    TEST = 0;
+}
 
 int main(){
 
     initializeBoard();
     printBoard();
 
-    search(2, 2);
-    cout << "Positions scanned - " << TEST << endl;
-
-    for(int i = 0; i < 218; i++){
-        cout << move_scores[2][i] << " ";
-    }
-    cout << endl;
+    //search(4, 4);
+    //cout << "Positions scanned - " << TEST << endl;
 
     while(move_move <= 5949){
         cout << "Move - " << move_move << endl;
 
-        do{
-            getMove_white();
-        } while(!isLegalMove);
+        //do{
+            //getMove_white();
+        //} while(!isLegalMove);
+        move_engine(5);
 
         generateMoves_black(1);
         if(n == 0 && check_black() == true){
@@ -1563,7 +1575,6 @@ int main(){
 
         printBoard();
         tempo++;
-        cout << staticEval(0) << endl;
 
         do{
             getMove_black();
@@ -1586,7 +1597,6 @@ int main(){
         printBoard();
         tempo++;
         move_move++;
-        cout << staticEval(1) << endl;
     }
     return 0;
 }
