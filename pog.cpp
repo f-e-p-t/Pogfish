@@ -113,6 +113,7 @@ int mean(int values[], int numValues){
     }
     return sum/numValues;
 }
+
 string FEN = "ooooookooooooppppoooooooooooroooooooooooooooooooPooooPPPoooRooKo";
 
 int chessBoard[8][8] = {
@@ -460,6 +461,7 @@ bool check_black(){
     }
     return false;
 }
+
 void insertMove_white(int se){
     if(se == 1){
         playMove_CC();
@@ -1475,6 +1477,12 @@ int main(){
 
     initializeBoard();
     printBoard();
+
+    for(int i = -48; i < 56; i++){
+        for(int j = -48; j < 56; j++){
+            //     
+        }
+    }
 
     while(move_move <= 5949){
         cout << "Move - " << move_move << endl;
