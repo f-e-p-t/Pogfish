@@ -137,7 +137,6 @@ int chessBoard_CC[8][8] = {
     {0, 0, 0, 0, 0, 0, 0, 0}
 };
 
-//dsuga
 int boardStates[50][8][8] = {0};
 int depthProgress[50] = {0};
 int branchIndex[50] = {0};
@@ -1481,7 +1480,7 @@ int main(){
 
     for(int i = -48; i < 56; i++){
         for(int j = -48; j < 56; j++){
-            //     
+            //dsuga
         }
     }
 
