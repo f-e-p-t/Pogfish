@@ -114,7 +114,7 @@ int mean(int values[], int numValues){
     return sum/numValues;
 }
 
-string FEN = "rnbqkbnrppppppppooooooooooooooooooooooooobooooooPPPPPPPPRNBQKBNR";
+string FEN = "rnbqkbnrppppppppooooooooooooooooooooooooooooooooPPPPPPPPRNBQKBNR";
 
 int chessBoard[8][8] = {
     {0, 0, 0, 0, 0, 0, 0, 0},
