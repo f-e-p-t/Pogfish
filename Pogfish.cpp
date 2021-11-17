@@ -114,7 +114,7 @@ int mean(int values[], int numValues){
     return sum/numValues;
 }
 
-string FEN = "rnbqkbnrppppppppooooooooooooooooooooooooooooooooPPPPPPPPRNBQKBNR";
+string FEN = "oooookoopoooopppooooooooooooobooooooooooooooooooPooooPPPoRooooKo";
 
 int chessBoard[8][8] = {
     {0, 0, 0, 0, 0, 0, 0, 0},
@@ -1399,7 +1399,11 @@ int search(int depth, int depth_cap){
         if(depth == 1){
             move_scores[1][i] = staticEval(1);
             TEST+=o;
-            cout;
+            // if SMALLER than number in move_scores[depth + 1][branchindex[depth + 1]]
+            // prune branch (break)  
+            if(branchIndex[depth + 1] != 0){
+                if()
+            }
         }
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
     }
@@ -1488,6 +1492,9 @@ int main(){
         cout << "Move - " << move_move << endl;
 
         move_engine(5);
+        //do{
+            //getMove_white();
+        //} while(!isLegalMove);
 
         generateMoves_black(1);
         if(n == 0 && check_black() == true){
