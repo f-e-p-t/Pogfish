@@ -114,7 +114,7 @@ int mean(int values[], int numValues){
     return sum/numValues;
 }
 
-string FEN = "rnbqkbnrppppppppooooooooooooooooooooooooooooooooPPPPPPPPRNBQKBNR";
+string FEN = "rnbqkbnrppppppppooooooooooooooooooooooooobooooooPPPPPPPPRNBQKBNR";
 
 int chessBoard[8][8] = {
     {0, 0, 0, 0, 0, 0, 0, 0},
@@ -1399,8 +1399,7 @@ int search(int depth, int depth_cap){
         if(depth == 1){
             moveScores[1][i] = staticEval(1);
             TEST+=o;
-            // if SMALLER than number in moveScores[depth + 1][branchindex[depth + 1]]
-            // prune branch (break)  
+            // Pruning
             if(branchIndex[depth + 1] != 0){
                 if(moveScores[1][i] <= getMax(moveScores[depth + 1], branchIndex[depth + 1])){
                     break;
