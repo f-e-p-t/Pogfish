@@ -114,7 +114,7 @@ int mean(int values[], int numValues){
     return sum/numValues;
 }
 
-string FEN = "ooooookooooooppppoooooooooooroooooooooooooooooooPooooPPPoooRooKo";
+string FEN = "rnbqkbnrppppppppooooooooooooooooooooooooooooooooPPPPPPPPRNBQKBNR";
 
 int chessBoard[8][8] = {
     {0, 0, 0, 0, 0, 0, 0, 0},
@@ -143,7 +143,6 @@ int branchIndex[50] = {0};
 int moveList[4][218] = {0};
 int eml[4][218] = {0};
 int move_scores[50][218] = {0};
-int alpha_beta[50][2][218] = {0};
 
 // ------------------------------------------------------------------------- Rules of chess --------------------------------------------------------------------------
 
@@ -1400,6 +1399,7 @@ int search(int depth, int depth_cap){
         if(depth == 1){
             move_scores[1][i] = staticEval(1);
             TEST+=o;
+            cout;
         }
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
     }
