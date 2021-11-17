@@ -114,7 +114,7 @@ int mean(int values[], int numValues){
     return sum/numValues;
 }
 
-string FEN = "oooookoopoooopppooooooooooooobooooooooooooooooooPooooPPPoRooooKo";
+string FEN = "rnbqkbnrppppppppooooooooooooooooooooooooooooooooPPPPPPPPRNBQKBNR";
 
 int chessBoard[8][8] = {
     {0, 0, 0, 0, 0, 0, 0, 0},
@@ -142,7 +142,7 @@ int depthProgress[50] = {0};
 int branchIndex[50] = {0};
 int moveList[4][218] = {0};
 int eml[4][218] = {0};
-int move_scores[50][218] = {0};
+int moveScores[50][218] = {0};
 
 // ------------------------------------------------------------------------- Rules of chess --------------------------------------------------------------------------
 
@@ -1326,7 +1326,7 @@ int staticEval(int side){
         }
         int responses[o] = {0};
         for(int i = 0; i < o; i++){
-            if(value(chessBoard[eml[2][i]][eml[3][i]]) >= value(chessBoard[eml[0][i]][eml[1][i]])){
+            if(value(chessBoard[eml[2][i]][eml[3][i]]) > value(chessBoard[eml[0][i]][eml[1][i]])){
                 responses[i] = value(chessBoard[eml[2][i]][eml[3][i]]) - value(chessBoard[eml[0][i]][eml[1][i]]);
             }
         }
@@ -1375,9 +1375,9 @@ int search(int depth, int depth_cap){
             generateMoves_black(2);
             if(o == 0){
                 if(check_black()){
-                    move_scores[depth][branchIndex[depth]] = infinity;
+                    moveScores[depth][branchIndex[depth]] = infinity;
                 } else{
-                    move_scores[depth][branchIndex[depth]] = 0;
+                    moveScores[depth][branchIndex[depth]] = 0;
                 }
                 branchIndex[depth]++;
             }
@@ -1385,9 +1385,9 @@ int search(int depth, int depth_cap){
             generateMoves_white(2);
             if(o == 0){
                 if(check_white()){
-                    move_scores[depth][branchIndex[depth]] = -infinity;
+                    moveScores[depth][branchIndex[depth]] = -infinity;
                 } else{
-                    move_scores[depth][branchIndex[depth]] = 0;
+                    moveScores[depth][branchIndex[depth]] = 0;
                 }
                 branchIndex[depth]++;
             }
@@ -1397,12 +1397,14 @@ int search(int depth, int depth_cap){
             return 0;
         }
         if(depth == 1){
-            move_scores[1][i] = staticEval(1);
+            moveScores[1][i] = staticEval(1);
             TEST+=o;
-            // if SMALLER than number in move_scores[depth + 1][branchindex[depth + 1]]
+            // if SMALLER than number in moveScores[depth + 1][branchindex[depth + 1]]
             // prune branch (break)  
             if(branchIndex[depth + 1] != 0){
-                if()
+                if(moveScores[1][i] <= getMax(moveScores[depth + 1], branchIndex[depth + 1])){
+                    break;
+                }
             }
         }
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
@@ -1410,14 +1412,14 @@ int search(int depth, int depth_cap){
     if(depth < depth_cap){
         depthProgress[depth] = 0;
         if(depth % 2 == 0){
-            move_scores[depth + 1][branchIndex[depth + 1]] = getMax(move_scores[depth], n);
+            moveScores[depth + 1][branchIndex[depth + 1]] = getMax(moveScores[depth], n);
         } else{
-            move_scores[depth + 1][branchIndex[depth + 1]] = getMin(move_scores[depth], n);
+            moveScores[depth + 1][branchIndex[depth + 1]] = getMin(moveScores[depth], n);
         }
         branchIndex[depth + 1]++;
         branchIndex[depth] = 0;
         depth++;
-        memset(move_scores[depth - 1], 0, sizeof(move_scores[depth - 1]));
+        memset(moveScores[depth - 1], 0, sizeof(moveScores[depth - 1]));
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
         search(depth, depth_cap);
     }
@@ -1465,13 +1467,13 @@ void move_engine(int _depth){
     search(searchDepth, searchDepth);
     cout << "positions scanned - " << TEST << endl;
     generateMoves_white(2);
-    getMax(move_scores[searchDepth], o);
+    getMax(moveScores[searchDepth], o);
     move_y = eml[0][best_index];
     move_x = eml[1][best_index];
     moveTo_y = eml[2][best_index];
     moveTo_x = eml[3][best_index];
     playMove();
-    memset(move_scores, 0, sizeof(move_scores));
+    memset(moveScores, 0, sizeof(moveScores));
     memset(branchIndex, 0, sizeof(branchIndex));
     memset(depthProgress, 0, sizeof(depthProgress));
     TEST = 0;
