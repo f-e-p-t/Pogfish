@@ -114,7 +114,7 @@ int mean(int values[], int numValues){
     return sum/numValues;
 }
 
-string FEN = "rnbqkbnrppppppppooooooooooooooooooooooooooooooooPPPPPPPPRNBQKBNR";
+string FEN = "ooooookopoooopppooooooooooooroooooooooooooooooooPooooPPPoooRooKo";
 
 int chessBoard[8][8] = {
     {0, 0, 0, 0, 0, 0, 0, 0},
@@ -1396,28 +1396,29 @@ int search(int depth, int depth_cap){
             search(depth - 1, depth_cap);
             return 0;
         }
+        // Evaluation & Pruning
         if(depth == 1){
             moveScores[1][i] = staticEval(1);
             TEST+=o;
-            // Pruning
-            if(branchIndex[depth + 1] != 0){
-                if(moveScores[1][i] <= getMax(moveScores[depth + 1], branchIndex[depth + 1])){
-                    break;
-                }
+            if(branchIndex[depth + 1] != 0 && moveScores[1][i] <= getMax(moveScores[depth + 1], branchIndex[depth + 1])){
+                break;
             }
         }
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
     }
     if(depth < depth_cap){
         depthProgress[depth] = 0;
-        if(depth % 2 == 0){
-            moveScores[depth + 1][branchIndex[depth + 1]] = getMax(moveScores[depth], n);
-        } else{
-            moveScores[depth + 1][branchIndex[depth + 1]] = getMin(moveScores[depth], n);
-        }
-        branchIndex[depth + 1]++;
-        branchIndex[depth] = 0;
         depth++;
+        if(depth % 2 == 0){
+            moveScores[depth][branchIndex[depth]] = getMin(moveScores[depth - 1], n);
+            if(branchIndex[depth + 1] != 0 && moveScores[depth][branchIndex[depth]] >= getMin(moveScores[depth + 1], branchIndex[depth + 1])){
+                // prune but differently
+            }
+        } else{
+            moveScores[depth][branchIndex[depth]] = getMax(moveScores[depth - 1], n);
+        }
+        branchIndex[depth]++;
+        branchIndex[depth - 1] = 0;
         memset(moveScores[depth - 1], 0, sizeof(moveScores[depth - 1]));
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
         search(depth, depth_cap);
@@ -1461,38 +1462,37 @@ int getMove_black(){
     cout << "Illegal Move!" << endl;
     return 0;
 }
-void move_engine(int _depth){
-    int searchDepth = _depth - 1;
-    search(searchDepth, searchDepth);
-    cout << "positions scanned - " << TEST << endl;
-    generateMoves_white(2);
-    getMax(moveScores[searchDepth], o);
-    move_y = eml[0][best_index];
-    move_x = eml[1][best_index];
-    moveTo_y = eml[2][best_index];
-    moveTo_x = eml[3][best_index];
-    playMove();
-    memset(moveScores, 0, sizeof(moveScores));
-    memset(branchIndex, 0, sizeof(branchIndex));
-    memset(depthProgress, 0, sizeof(depthProgress));
-    TEST = 0;
-}
+
+class Engine{
+    public:
+        void move(int _depth){
+            int searchDepth = _depth - 1;
+            search(searchDepth, searchDepth);
+            cout << "positions scanned - " << TEST << endl;
+            generateMoves_white(2);
+            getMax(moveScores[searchDepth], o);
+            move_y = eml[0][best_index];
+            move_x = eml[1][best_index];
+            moveTo_y = eml[2][best_index];
+            moveTo_x = eml[3][best_index];
+            playMove();
+            memset(moveScores, 0, sizeof(moveScores));
+            memset(branchIndex, 0, sizeof(branchIndex));
+            memset(depthProgress, 0, sizeof(depthProgress));
+            TEST = 0;
+        }
+};
+Engine engine;
 
 int main(){
 
     initializeBoard();
     printBoard();
 
-    for(int i = -48; i < 56; i++){
-        for(int j = -48; j < 56; j++){
-            //dsuga
-        }
-    }
-
     while(move_move <= 5949){
         cout << "Move - " << move_move << endl;
 
-        move_engine(5);
+        engine.move(5);
         //do{
             //getMove_white();
         //} while(!isLegalMove);
