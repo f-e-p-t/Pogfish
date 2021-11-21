@@ -1412,10 +1412,13 @@ int search(int depth, int depth_cap){
         if(depth % 2 == 0){
             moveScores[depth][branchIndex[depth]] = getMin(moveScores[depth - 1], n);
             if(branchIndex[depth + 1] != 0 && moveScores[depth][branchIndex[depth]] >= getMin(moveScores[depth + 1], branchIndex[depth + 1])){
-                // prune but differently
+                depthProgress[depth] = 218;
             }
         } else{
             moveScores[depth][branchIndex[depth]] = getMax(moveScores[depth - 1], n);
+            if(branchIndex[depth + 1] != 0 && moveScores[depth][branchIndex[depth]] <= getMax(moveScores[depth + 1], branchIndex[depth + 1])){
+                depthProgress[depth] = 218;
+            }
         }
         branchIndex[depth]++;
         branchIndex[depth - 1] = 0;
