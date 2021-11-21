@@ -140,9 +140,9 @@ int chessBoard_CC[8][8] = {
 int boardStates[50][8][8] = {0};
 int depthProgress[50] = {0};
 int branchIndex[50] = {0};
-int moveList[4][218] = {0};
-int eml[4][218] = {0};
-int moveScores[50][218] = {0};
+int moveList[4][219] = {0};
+int eml[4][219] = {0};
+int moveScores[50][219] = {0};
 
 // ------------------------------------------------------------------------- Rules of chess --------------------------------------------------------------------------
 
@@ -1361,7 +1361,7 @@ int search(int depth, int depth_cap){
         generateMoves_black(1);
     }
     memcpy(boardStates[depth], chessBoard, sizeof(chessBoard));
-    for(int i = 0; i < n; i++){
+    for(int i = 0; i < 219; i++){
         move_y = moveList[0][depthProgress[depth]];
         move_x = moveList[1][depthProgress[depth]];
         moveTo_y = moveList[2][depthProgress[depth]];
