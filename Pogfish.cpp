@@ -106,15 +106,8 @@ int getMin(int values[], int numValues){
     }
     return best;
 }
-int mean(int values[], int numValues){
-    int sum = 0;
-    for(int i = 0; i < numValues; i++){
-        sum += values[i];
-    }
-    return sum/numValues;
-}
 
-string FEN = "rnbqkbnrppppppppooooooooooooooooooooooooooooooooPPPPPPPPRNBQKBNR";
+string FEN = "ooooookoopooopppooooooonpoorooooPooooooooPooooPooooooPBPooRoooKo";
 
 int chessBoard[8][8] = {
     {0, 0, 0, 0, 0, 0, 0, 0},
@@ -922,7 +915,7 @@ class Move_gen{
                     this->insertMove_black(se);
                 } else if(chessBoard[y][x - i] >= 11){
                     break;
-                } else if(chessBoard[y + i][x] <= 6 && chessBoard[y + i][x] != empty_square){
+                } else if(chessBoard[y][x - i] <= 6 && chessBoard[y][x - i] != empty_square){
                     y_to = y;
                     x_to = x - i;
                     this->insertMove_black(se);
@@ -938,7 +931,7 @@ class Move_gen{
                     this->insertMove_black(se);
                 } else if(chessBoard[y - i][x] >= 11){
                     break;
-                } else if(chessBoard[y + i][x] <= 6 && chessBoard[y + i][x] != empty_square){
+                } else if(chessBoard[y - i][x] <= 6 && chessBoard[y - i][x] != empty_square){
                     y_to = y - i;
                     x_to = x;
                     this->insertMove_black(se);
@@ -954,7 +947,7 @@ class Move_gen{
                     this->insertMove_black(se);
                 } else if(chessBoard[y][x + i] >= 11){
                     break;
-                } else if(chessBoard[y + i][x] <= 6 && chessBoard[y + i][x] != empty_square){
+                } else if(chessBoard[y][x + i] <= 6 && chessBoard[y][x + i] != empty_square){
                     y_to = y;
                     x_to = x + i;
                     this->insertMove_black(se);
@@ -1146,37 +1139,40 @@ void initializeBoard(){
     memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
 }
 void printBoard(){
+    cout << "-----------------------------------------" << endl;
     for(int y_pos = 0; y_pos < 8; y_pos++){
+        cout << "|";
         for(int x_pos = 0; x_pos < 8; x_pos++){
             if(chessBoard[y_pos][x_pos] == white_pawn){
-                cout << "P  ";
+                cout << "  P |";
             } else if(chessBoard[y_pos][x_pos] == white_knight){
-                cout << "N  ";
+                cout << "  N |";
             } else if(chessBoard[y_pos][x_pos] == white_bishop){
-                cout << "B  ";
+                cout << "  B |";
             } else if(chessBoard[y_pos][x_pos] == white_rook){
-                cout << "R  ";
+                cout << "  R |";
             } else if(chessBoard[y_pos][x_pos] == white_queen){
-                cout << "Q  ";
+                cout << "  Q |";
             } else if(chessBoard[y_pos][x_pos] == white_king){
-                cout << "K  ";
+                cout << "  K |";
             } else if(chessBoard[y_pos][x_pos] == black_pawn){
-                cout << "p  ";
+                cout << "  p |";
             } else if(chessBoard[y_pos][x_pos] == black_knight){
-                cout << "n  ";
+                cout << "  n |";
             } else if(chessBoard[y_pos][x_pos] == black_bishop){
-                cout << "b  ";
+                cout << "  b |";
             } else if(chessBoard[y_pos][x_pos] == black_rook){
-                cout << "r  ";
+                cout << "  r |";
             } else if(chessBoard[y_pos][x_pos] == black_queen){
-                cout << "q  ";
+                cout << "  q |";
             } else if(chessBoard[y_pos][x_pos] == black_king){
-                cout << "k  ";
+                cout << "  k |";
             } else{
-                cout << "-  ";
+                cout << "  - |";
             }
         }
         cout << endl;
+        cout << "-----------------------------------------" << endl;
     }
     cout << endl;
 }
@@ -1309,6 +1305,19 @@ void generateMoves_black(int se){
         }
     }
 }
+void order(){
+    int orderIndex = 0;
+    for(int i; i < n; i++){
+        if(value(chessBoard[moveList[2][i]][moveList[3][i]]) > 0){
+            for(int j = 0; j < 4; j++){
+                moveList[j][orderIndex] = moveList[j][orderIndex] + moveList[j][i];
+                moveList[j][i] = moveList[j][orderIndex] - moveList[j][i];
+                moveList[j][orderIndex] = moveList[j][orderIndex] - moveList[j][i];
+            }
+            orderIndex++;
+        }
+    }
+}
 
 // add checks to enemy moves eval
 int staticEval(int side){
@@ -1328,7 +1337,7 @@ int staticEval(int side){
                 responses[i] = value(chessBoard[eml[2][i]][eml[3][i]]) - value(chessBoard[eml[0][i]][eml[1][i]]);
             }
         }
-        eval = material() + getMax(responses, o);
+        eval = material() + getMax(responses, o) /*+ o*/;
         return eval;
     } else{
         int eval = 0;
@@ -1346,7 +1355,7 @@ int staticEval(int side){
                 responses[i] = value(chessBoard[eml[2][i]][eml[3][i]]) - value(chessBoard[eml[0][i]][eml[1][i]]);
             }
         }
-        eval = material() - getMax(responses, o);
+        eval = material() - getMax(responses, o) /*- o*/;
         return eval;    
     }
 }
@@ -1355,8 +1364,10 @@ int staticEval(int side){
 int search(int depth, int depth_cap){
     if(depth % 2 == 0){
         generateMoves_white(1);
+        order();
     } else{
         generateMoves_black(1);
+        order();
     }
     memcpy(boardStates[depth], chessBoard, sizeof(chessBoard));
     for(int i = 0; i < 219; i++){
@@ -1469,7 +1480,7 @@ class Engine{
         void move(int _depth){
             int searchDepth = _depth - 1;
             search(searchDepth, searchDepth);
-            cout << "positions scanned - " << TEST << endl;
+            cout << "Positions searched - " << TEST << endl;
             generateMoves_white(2);
             getMax(moveScores[searchDepth], o);
             move_y = eml[0][best_index];
