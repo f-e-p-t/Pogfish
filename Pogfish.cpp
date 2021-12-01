@@ -12,7 +12,7 @@ bool QSCastlingRights_white = true;
 bool KSCastlingRights_black = true;
 bool QSCastlingRights_black = true;
 int best_index;
-int infinity = 1000000000;
+int infinity = 1000000;
 
 int move_y;
 int move_x;
@@ -139,16 +139,24 @@ int moveScores[50][219] = {0};
 
 // ------------------------------------------------------------------------- Rules of chess --------------------------------------------------------------------------
 
-int playMove_CC(){
+int playMove_CC(int castlingRightsRemoved){
     // castling
     if(chessBoard_CC[y][x] == white_rook && y == 7 && x == 0){
-        QSCastlingRights_white = false;
+        if(castlingRightsRemoved == 1){
+            QSCastlingRights_white = false;
+        }
     } else if(chessBoard_CC[y][x] == white_rook && y == 7 && x == 7){
-        KSCastlingRights_white = false;
+        if(castlingRightsRemoved == 1){
+            KSCastlingRights_white = false;
+        }
     } else if(chessBoard_CC[y][x] == black_rook && y == 0 && x == 0){
-        QSCastlingRights_black = false;
+        if(castlingRightsRemoved == 1){
+            QSCastlingRights_black = false;
+        }
     } else if(chessBoard_CC[y][x] == white_rook && y == 0 && x == 7){
-        KSCastlingRights_black = false;
+        if(castlingRightsRemoved == 1){
+            KSCastlingRights_black = false;
+        }
     }
     if(chessBoard_CC[y][x] == white_king && y == 7 && x == 4 && y_to == 7 && x_to == 6 && KSCastlingRights_white){
         chessBoard_CC[7][7] = empty_square;
@@ -165,12 +173,16 @@ int playMove_CC(){
     } else{
     }
     if(chessBoard_CC[y][x] == white_king){
-        KSCastlingRights_white = false;
-        QSCastlingRights_white = false;
+        if(castlingRightsRemoved == 1){
+            KSCastlingRights_white = false;
+            QSCastlingRights_white = false;
+        }
     }
     if(chessBoard_CC[y][x] == black_king){
-        KSCastlingRights_black = false;
-        QSCastlingRights_black = false;
+        if(castlingRightsRemoved == 1){
+            KSCastlingRights_black = false;
+            QSCastlingRights_black = false;
+        }
     }
     // promotion
     if(chessBoard_CC[y][x] == white_pawn && y_to == 0){
@@ -454,7 +466,7 @@ bool check_black(){
 }
 void insertMove_white(int se){
     if(se == 1){
-        playMove_CC();
+        playMove_CC(0);
         if(check_white()){
             memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
         } else{
@@ -466,7 +478,7 @@ void insertMove_white(int se){
             memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
         }
     } else{
-        playMove_CC();
+        playMove_CC(0);
         if(check_white()){
             memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
         } else{
@@ -481,7 +493,7 @@ void insertMove_white(int se){
 }
 void insertMove_black(int se){
     if(se == 1){
-        playMove_CC();
+        playMove_CC(0);
         if(check_black()){
             memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
         } else{
@@ -493,7 +505,7 @@ void insertMove_black(int se){
             memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
         }
     } else{
-        playMove_CC();
+        playMove_CC(0);
         if(check_black()){
             memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
         } else{
@@ -613,7 +625,6 @@ class Move_gen{
                 if(y + 2 <= 7 && x - 1 >= 0){
                     y_to = y + 2;
                     x_to = x - 1;
-                    playMove_CC();
                     insertMove_white(se);
                 }
             }
@@ -1193,16 +1204,24 @@ int material(){
     return material_eval;
 }
 
-int playMove(){
+int playMove(int castlingRightsRemoved){
     // castling
     if(chessBoard[move_y][move_x] == white_rook && move_y == 7 && move_x == 0){
-        QSCastlingRights_white = false;
+        if(castlingRightsRemoved == 1){
+            QSCastlingRights_white = false;
+        }
     } else if(chessBoard[move_y][move_x] == white_rook && move_y == 7 && move_x == 7){
-        KSCastlingRights_white = false;
+        if(castlingRightsRemoved == 1){
+            KSCastlingRights_white = false;
+        }
     } else if(chessBoard[move_y][move_x] == black_rook && move_y == 0 && move_x == 0){
-        QSCastlingRights_black = false;
+        if(castlingRightsRemoved == 1){
+            QSCastlingRights_black = false;
+        }
     } else if(chessBoard[move_y][move_x] == white_rook && move_y == 0 && move_x == 7){
-        KSCastlingRights_black = false;
+        if(castlingRightsRemoved == 1){
+            KSCastlingRights_black = false;
+        }
     }
     if(chessBoard[move_y][move_x] == white_king && move_y == 7 && move_x == 4 && moveTo_y == 7 && moveTo_x == 6 && KSCastlingRights_white){
         chessBoard[7][7] = empty_square;
@@ -1219,12 +1238,16 @@ int playMove(){
     } else{
     }
     if(chessBoard[move_y][move_x] == white_king){
-        KSCastlingRights_white = false;
-        QSCastlingRights_white = false;
+        if(castlingRightsRemoved == 1){
+            KSCastlingRights_white = false;
+            QSCastlingRights_white = false;
+        }
     }
     if(chessBoard[move_y][move_x] == black_king){
-        KSCastlingRights_black = false;
-        QSCastlingRights_black = false;
+        if(castlingRightsRemoved == 1){
+            KSCastlingRights_black = false;
+            QSCastlingRights_black = false;
+        }
     }
     // promotion
     if(chessBoard[move_y][move_x] == white_pawn && moveTo_y == 0){
@@ -1336,7 +1359,7 @@ int staticEval(int side){
                 responses[i] = value(chessBoard[eml[2][i]][eml[3][i]]) - value(chessBoard[eml[0][i]][eml[1][i]]);
             }
         }
-        eval = material() + getMax(responses, o) /*+ o*/;
+        eval = material() + getMax(responses, o);
         return eval;
     } else{
         int eval = 0;
@@ -1354,7 +1377,7 @@ int staticEval(int side){
                 responses[i] = value(chessBoard[eml[2][i]][eml[3][i]]) - value(chessBoard[eml[0][i]][eml[1][i]]);
             }
         }
-        eval = material() - getMax(responses, o) /*- o*/;
+        eval = material() - getMax(responses, o);
         return eval;    
     }
 }
@@ -1378,7 +1401,7 @@ int search(int depth, int depth_cap){
             break;
         }
         depthProgress[depth]++;
-        playMove();
+        playMove(0);
         if(depth % 2 == 0 && depth != 1){
             generateMoves_black(2);
             if(o == 0){
@@ -1447,7 +1470,7 @@ int getMove_white(){
     cin >> moveTo_x;
     for(int i = 0; i < n; i++){
         if(move_y == moveList[0][i] && move_x == moveList[1][i] && moveTo_y == moveList[2][i] && moveTo_x == moveList[3][i]){
-            playMove();
+            playMove(1);
             isLegalMove = true;
             return 0;
         }      
@@ -1465,7 +1488,7 @@ int getMove_black(){
     cin >> moveTo_x;
     for(int i = 0; i < n; i++){
         if(move_y == moveList[0][i] && move_x == moveList[1][i] && moveTo_y == moveList[2][i] && moveTo_x == moveList[3][i]){
-            playMove();
+            playMove(1);
             isLegalMove = true;
             return 0;
         }      
@@ -1479,19 +1502,15 @@ class Engine{
         void move(int _depth){
             int searchDepth = _depth - 1;
             search(searchDepth, searchDepth);
-            cout << "Positions searched - " << TEST << endl;
+            cout << "Searched - " << TEST << " positions" << endl;
             generateMoves_white(1);
             order();
             getMax(moveScores[searchDepth], n);
-            cout << n << " moves, best index - " << best_index << endl;
             move_y = moveList[0][best_index];
             move_x = moveList[1][best_index];
             moveTo_y = moveList[2][best_index];
             moveTo_x = moveList[3][best_index];
-            playMove();
-            cout << "Move played - " << move_y << " " << move_x << " " << moveTo_y << " " << moveTo_x << endl;
-            n = 0;
-            o = 0;
+            playMove(1);
             memset(moveScores, 0, sizeof(moveScores));
             memset(branchIndex, 0, sizeof(branchIndex));
             memset(depthProgress, 0, sizeof(depthProgress));
@@ -1504,23 +1523,6 @@ int main(){
 
     initializeBoard();
     printBoard();
-
-    /*generateMoves_white(1);
-    for(int i = 0; i < 4; i++){
-        for(int j = 0; j < 60; j++){
-            cout << moveList[i][j] << " ";
-        }
-        cout << endl;
-    }
-    cout << endl;
-    order();
-    for(int i = 0; i < 4; i++){
-        for(int j = 0; j < 60; j++){
-            cout << moveList[i][j] << " ";
-        }
-        cout << endl;
-    }
-    cout << endl; */
 
     while(move_move <= 5949){
         cout << "Move - " << move_move << endl;
