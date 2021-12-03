@@ -1255,19 +1255,26 @@ void printBoard(){
 
 // ----------------------------------------------------------------------- Search & Evaluation -----------------------------------------------------------------------
 
-int material(){
-    int material_eval = 0;
-    for(int i = 0; i < 8; i++){
-        for(int j = 0; j < 8; j++){
-            if(chessBoard[i][j] <= 6 && chessBoard[i][j] != 0){
-                material_eval += value(chessBoard[i][j]);
-            } else if(chessBoard[i][j] >= 11){
-                material_eval -= value(chessBoard[i][j]);
+class Evaluation{
+    public:
+        int material(){
+            int material_eval = 0;
+            for(int i = 0; i < 8; i++){
+                for(int j = 0; j < 8; j++){
+                    if(chessBoard[i][j] <= 6 && chessBoard[i][j] != 0){
+                        material_eval += value(chessBoard[i][j]);
+                    } else if(chessBoard[i][j] >= 11){
+                        material_eval -= value(chessBoard[i][j]);
+                    }
+                }
             }
+            return material_eval;
         }
-    }
-    return material_eval;
-}
+        int development(){
+            //
+        } 
+};
+Evaluation evaluation;
 
 void order(){
     int orderIndex = 0;
@@ -1353,7 +1360,7 @@ int staticEval(int side){
                 responses[i] = value(chessBoard[eml[2][i]][eml[3][i]]) - value(chessBoard[eml[0][i]][eml[1][i]]);
             }
         }
-        eval = material() + getMax(responses, o);
+        eval = evaluation.material() + getMax(responses, o);
         return eval;
     } else{
         int eval = 0;
@@ -1371,7 +1378,7 @@ int staticEval(int side){
                 responses[i] = value(chessBoard[eml[2][i]][eml[3][i]]) - value(chessBoard[eml[0][i]][eml[1][i]]);
             }
         }
-        eval = material() - getMax(responses, o);
+        eval = evaluation.material() - getMax(responses, o);
         return eval;    
     }
 }
