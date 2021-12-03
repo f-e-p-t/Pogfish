@@ -139,6 +139,71 @@ int moveScores[50][219] = {0};
 
 // ------------------------------------------------------------------------- Rules of chess --------------------------------------------------------------------------
 
+int playMove(int castlingRightsRemoved){
+    // castling
+    if(chessBoard[move_y][move_x] == white_rook && move_y == 7 && move_x == 0){
+        if(castlingRightsRemoved == 1){
+            QSCastlingRights_white = false;
+        }
+    } else if(chessBoard[move_y][move_x] == white_rook && move_y == 7 && move_x == 7){
+        if(castlingRightsRemoved == 1){
+            KSCastlingRights_white = false;
+        }
+    } else if(chessBoard[move_y][move_x] == black_rook && move_y == 0 && move_x == 0){
+        if(castlingRightsRemoved == 1){
+            QSCastlingRights_black = false;
+        }
+    } else if(chessBoard[move_y][move_x] == white_rook && move_y == 0 && move_x == 7){
+        if(castlingRightsRemoved == 1){
+            KSCastlingRights_black = false;
+        }
+    }
+    if(chessBoard[move_y][move_x] == white_king && move_y == 7 && move_x == 4 && moveTo_y == 7 && moveTo_x == 6 && KSCastlingRights_white){
+        chessBoard[7][7] = empty_square;
+        chessBoard[7][5] = white_rook;
+    } else if(chessBoard[move_y][move_x] == white_king && move_y == 7 && move_x == 4 && moveTo_y == 7 && moveTo_x == 2 && QSCastlingRights_white){
+        chessBoard[7][0] = empty_square;
+        chessBoard[7][3] = white_rook;
+    } else if(chessBoard[move_y][move_x] == black_king && move_y == 0 && move_x == 4 && moveTo_y == 0 && moveTo_x == 6 && KSCastlingRights_black){
+        chessBoard[0][7] = empty_square;
+        chessBoard[0][5] = black_rook;
+    } else if(chessBoard[move_y][move_x] == black_king && move_y == 0 && move_x == 4 && moveTo_y == 0 && moveTo_x == 2 && QSCastlingRights_black){
+        chessBoard[0][0] = empty_square;
+        chessBoard[0][3] = black_rook;
+    } else{
+    }
+    if(chessBoard[move_y][move_x] == white_king){
+        if(castlingRightsRemoved == 1){
+            KSCastlingRights_white = false;
+            QSCastlingRights_white = false;
+        }
+    }
+    if(chessBoard[move_y][move_x] == black_king){
+        if(castlingRightsRemoved == 1){
+            KSCastlingRights_black = false;
+            QSCastlingRights_black = false;
+        }
+    }
+    // promotion
+    if(chessBoard[move_y][move_x] == white_pawn && moveTo_y == 0){
+        chessBoard[move_y][move_x] = empty_square;
+        chessBoard[moveTo_y][moveTo_x] = white_queen;
+        memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
+        return 0;
+    } else if(chessBoard[move_y][move_x] == black_pawn && moveTo_y == 7){
+        chessBoard[move_y][move_x] = empty_square;
+        chessBoard[moveTo_y][moveTo_x] = black_queen;
+        memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
+        return 0;
+    } else{
+    }
+
+    chessBoard[moveTo_y][moveTo_x] = chessBoard[move_y][move_x];
+    chessBoard[move_y][move_x] = empty_square;
+
+    memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
+    return 0;
+}
 int playMove_CC(int castlingRightsRemoved){
     // castling
     if(chessBoard_CC[y][x] == white_rook && y == 7 && x == 0){
@@ -1204,72 +1269,6 @@ int material(){
     return material_eval;
 }
 
-int playMove(int castlingRightsRemoved){
-    // castling
-    if(chessBoard[move_y][move_x] == white_rook && move_y == 7 && move_x == 0){
-        if(castlingRightsRemoved == 1){
-            QSCastlingRights_white = false;
-        }
-    } else if(chessBoard[move_y][move_x] == white_rook && move_y == 7 && move_x == 7){
-        if(castlingRightsRemoved == 1){
-            KSCastlingRights_white = false;
-        }
-    } else if(chessBoard[move_y][move_x] == black_rook && move_y == 0 && move_x == 0){
-        if(castlingRightsRemoved == 1){
-            QSCastlingRights_black = false;
-        }
-    } else if(chessBoard[move_y][move_x] == white_rook && move_y == 0 && move_x == 7){
-        if(castlingRightsRemoved == 1){
-            KSCastlingRights_black = false;
-        }
-    }
-    if(chessBoard[move_y][move_x] == white_king && move_y == 7 && move_x == 4 && moveTo_y == 7 && moveTo_x == 6 && KSCastlingRights_white){
-        chessBoard[7][7] = empty_square;
-        chessBoard[7][5] = white_rook;
-    } else if(chessBoard[move_y][move_x] == white_king && move_y == 7 && move_x == 4 && moveTo_y == 7 && moveTo_x == 2 && QSCastlingRights_white){
-        chessBoard[7][0] = empty_square;
-        chessBoard[7][3] = white_rook;
-    } else if(chessBoard[move_y][move_x] == black_king && move_y == 0 && move_x == 4 && moveTo_y == 0 && moveTo_x == 6 && KSCastlingRights_black){
-        chessBoard[0][7] = empty_square;
-        chessBoard[0][5] = black_rook;
-    } else if(chessBoard[move_y][move_x] == black_king && move_y == 0 && move_x == 4 && moveTo_y == 0 && moveTo_x == 2 && QSCastlingRights_black){
-        chessBoard[0][0] = empty_square;
-        chessBoard[0][3] = black_rook;
-    } else{
-    }
-    if(chessBoard[move_y][move_x] == white_king){
-        if(castlingRightsRemoved == 1){
-            KSCastlingRights_white = false;
-            QSCastlingRights_white = false;
-        }
-    }
-    if(chessBoard[move_y][move_x] == black_king){
-        if(castlingRightsRemoved == 1){
-            KSCastlingRights_black = false;
-            QSCastlingRights_black = false;
-        }
-    }
-    // promotion
-    if(chessBoard[move_y][move_x] == white_pawn && moveTo_y == 0){
-        chessBoard[move_y][move_x] = empty_square;
-        chessBoard[moveTo_y][moveTo_x] = white_queen;
-        memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
-        return 0;
-    } else if(chessBoard[move_y][move_x] == black_pawn && moveTo_y == 7){
-        chessBoard[move_y][move_x] = empty_square;
-        chessBoard[moveTo_y][moveTo_x] = black_queen;
-        memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
-        return 0;
-    } else{
-    }
-
-    chessBoard[moveTo_y][moveTo_x] = chessBoard[move_y][move_x];
-    chessBoard[move_y][move_x] = empty_square;
-
-    memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
-    return 0;
-}
-
 void order(){
     int orderIndex = 0;
     for(int i = 0; i < n; i++){
@@ -1282,7 +1281,7 @@ void order(){
         }
     }
 }
-void generateMoves_white(int se){
+void generateMoves(int side, int se){
     if(se == 1){
         n = 0;
         memset(moveList, 0, sizeof(moveList));
@@ -1290,52 +1289,47 @@ void generateMoves_white(int se){
         o = 0;
         memset(eml, 0, sizeof(eml));
     }
-    for(int i = 0; i < 8; i++){
-        y = i;
-        for(int j = 0; j < 8; j++){
-            x = j;
-            if(chessBoard[y][x] == white_pawn){
-                moveGen.w_pawn(se);
-            } else if(chessBoard[y][x] == white_knight){
-                moveGen.w_knight(se);
-            } else if(chessBoard[y][x] == white_bishop){
-                moveGen.w_bishop(se);
-            } else if(chessBoard[y][x] == white_rook){
-                moveGen.w_rook(se);
-            } else if(chessBoard[y][x] == white_queen){
-                moveGen.w_queen(se);
-            } else if(chessBoard[y][x] == white_king){
-                moveGen.w_king(se);
-            } else{
+    if(side == 1){
+        for(int i = 0; i < 8; i++){
+            y = i;
+            for(int j = 0; j < 8; j++){
+                x = j;
+                if(chessBoard[y][x] == white_pawn){
+                    moveGen.w_pawn(se);
+                } else if(chessBoard[y][x] == white_knight){
+                    moveGen.w_knight(se);
+                } else if(chessBoard[y][x] == white_bishop){
+                    moveGen.w_bishop(se);
+                } else if(chessBoard[y][x] == white_rook){
+                    moveGen.w_rook(se);
+                } else if(chessBoard[y][x] == white_queen){
+                    moveGen.w_queen(se);
+                } else if(chessBoard[y][x] == white_king){
+                    moveGen.w_king(se);
+                } else{
+                }
             }
         }
     }
-}
-void generateMoves_black(int se){
-    if(se == 1){
-        n = 0;
-        memset(moveList, 0, sizeof(moveList));
-    } else{
-        o = 0;
-        memset(eml, 0, sizeof(eml));
-    }
-    for(int i = 0; i < 8; i++){
-        y = i;
-        for(int j = 0; j < 8; j++){
-            x = j;
-            if(chessBoard[y][x] == black_pawn){
-                moveGen.b_pawn(se);
-            } else if(chessBoard[y][x] == black_knight){
-                moveGen.b_knight(se);
-            } else if(chessBoard[y][x] == black_bishop){
-                moveGen.b_bishop(se);
-            } else if(chessBoard[y][x] == black_rook){
-                moveGen.b_rook(se);
-            } else if(chessBoard[y][x] == black_queen){
-                moveGen.b_queen(se);
-            } else if(chessBoard[y][x] == black_king){
-                moveGen.b_king(se);
-            } else{
+    else{
+        for(int i = 0; i < 8; i++){
+            y = i;
+            for(int j = 0; j < 8; j++){
+                x = j;
+                if(chessBoard[y][x] == black_pawn){
+                    moveGen.b_pawn(se);
+                } else if(chessBoard[y][x] == black_knight){
+                    moveGen.b_knight(se);
+                } else if(chessBoard[y][x] == black_bishop){
+                    moveGen.b_bishop(se);
+                } else if(chessBoard[y][x] == black_rook){
+                    moveGen.b_rook(se);
+                } else if(chessBoard[y][x] == black_queen){
+                    moveGen.b_queen(se);
+                } else if(chessBoard[y][x] == black_king){
+                    moveGen.b_king(se);
+                } else{
+                }
             }
         }
     }
@@ -1345,7 +1339,7 @@ void generateMoves_black(int se){
 int staticEval(int side){
     if(side == 1){
         int eval = 0;
-        generateMoves_white(2);
+        generateMoves(1, 2);
         if(o == 0){
             if(check_white()){
                 return -infinity;
@@ -1363,7 +1357,7 @@ int staticEval(int side){
         return eval;
     } else{
         int eval = 0;
-        generateMoves_black(2);
+        generateMoves(0, 2);
         if(o == 0){
             if(check_black()){
                 return infinity;
@@ -1385,10 +1379,10 @@ int staticEval(int side){
 // search (removes castling rights), currently set up for the computer to play as white
 int search(int depth, int depth_cap){
     if(depth % 2 == 0){
-        generateMoves_white(1);
+        generateMoves(1, 1);
         order();
     } else{
-        generateMoves_black(1);
+        generateMoves(0, 1);
         order();
     }
     memcpy(boardStates[depth], chessBoard, sizeof(chessBoard));
@@ -1403,7 +1397,7 @@ int search(int depth, int depth_cap){
         depthProgress[depth]++;
         playMove(0);
         if(depth % 2 == 0 && depth != 1){
-            generateMoves_black(2);
+            generateMoves(0, 2);
             if(o == 0){
                 if(check_black()){
                     moveScores[depth][branchIndex[depth]] = infinity;
@@ -1413,7 +1407,7 @@ int search(int depth, int depth_cap){
                 branchIndex[depth]++;
             }
         } else if(depth % 2 == 1 && depth != 1){
-            generateMoves_white(2);
+            generateMoves(1, 2);
             if(o == 0){
                 if(check_white()){
                     moveScores[depth][branchIndex[depth]] = -infinity;
@@ -1461,7 +1455,7 @@ int search(int depth, int depth_cap){
 }
 
 int getMove_white(){
-    generateMoves_white(1);
+    generateMoves(1, 1);
     isLegalMove = false;
     cout << "White's move ---> ";
     cin >> move_y;
@@ -1479,7 +1473,7 @@ int getMove_white(){
     return 0;
 }
 int getMove_black(){
-    generateMoves_black(1);
+    generateMoves(0, 1);
     isLegalMove = false;
     cout << "Black's move ---> ";
     cin >> move_y;
@@ -1503,7 +1497,7 @@ class Engine{
             int searchDepth = _depth - 1;
             search(searchDepth, searchDepth);
             cout << "Searched - " << TEST << " positions" << endl;
-            generateMoves_white(1);
+            generateMoves(1, 1);
             order();
             getMax(moveScores[searchDepth], n);
             move_y = moveList[0][best_index];
@@ -1532,7 +1526,7 @@ int main(){
             //getMove_white();
         //} while(!isLegalMove);
 
-        generateMoves_black(1);
+        generateMoves(0, 1);
         if(n == 0 && check_black() == true){
             printBoard();
             cout << "Checkmate - white wins" << endl;
@@ -1551,7 +1545,7 @@ int main(){
             getMove_black();
         } while(!isLegalMove);
 
-        generateMoves_white(1);
+        generateMoves(1, 1);
         if(n == 0 && check_white() == true){
             printBoard();
             cout << "Checkmate - black wins" << endl;
