@@ -1360,7 +1360,7 @@ int staticEval(int side){
                 responses[i] = value(chessBoard[eml[2][i]][eml[3][i]]) - value(chessBoard[eml[0][i]][eml[1][i]]);
             }
         }
-        eval = evaluation.material() + getMax(responses, o);
+        eval += evaluation.material() + getMax(responses, o);
         return eval;
     } else{
         int eval = 0;
@@ -1378,7 +1378,7 @@ int staticEval(int side){
                 responses[i] = value(chessBoard[eml[2][i]][eml[3][i]]) - value(chessBoard[eml[0][i]][eml[1][i]]);
             }
         }
-        eval = evaluation.material() - getMax(responses, o);
+        eval -= evaluation.material() + getMax(responses, o);
         return eval;    
     }
 }
