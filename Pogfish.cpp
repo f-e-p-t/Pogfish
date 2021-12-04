@@ -1271,7 +1271,9 @@ class Evaluation{
             return material_eval;
         }
         int development(){
+            int development = 0;
             //
+            return development;
         } 
 };
 Evaluation evaluation;
