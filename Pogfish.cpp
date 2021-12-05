@@ -7,6 +7,9 @@ using namespace std;
 int tempo = 1;
 int move_move = 1;
 bool isLegalMove;
+bool opening;
+bool middlegame;
+bool endgame;
 bool KSCastlingRights_white = true;
 bool QSCastlingRights_white = true;
 bool KSCastlingRights_black = true;
@@ -107,7 +110,7 @@ int getMin(int values[], int numValues){
     return best;
 }
 
-string FEN = "rnbqkbnrppppppppooooooooooooooooooooooooooooooooPPPPPPPPRNBQKBNR";
+string FEN = "rnbqkbnrppppppppooooooooooooooooooooooooooooooooPPPoPPPPRNBQKBNR";
 
 int chessBoard[8][8] = {
     {0, 0, 0, 0, 0, 0, 0, 0},
@@ -1272,7 +1275,14 @@ class Evaluation{
         }
         int development(){
             int development = 0;
-            //
+            for(int i = 0; i < 8; i++){
+                if(chessBoard[7][i] == empty_square || chessBoard[7][i] == white_king || chessBoard[7][i] == white_rook){
+                    development += 10;
+                }
+                if(chessBoard[0][i] == empty_square || chessBoard[0][i] == black_king || chessBoard[7][i] == black_rook){
+                    development -= 10;
+                }
+            }
             return development;
         } 
 };
@@ -1363,6 +1373,9 @@ int staticEval(int side){
             }
         }
         eval += evaluation.material() + getMax(responses, o);
+        if(opening){
+            eval += evaluation.development();
+        }
         return eval;
     } else{
         int eval = 0;
@@ -1380,7 +1393,10 @@ int staticEval(int side){
                 responses[i] = value(chessBoard[eml[2][i]][eml[3][i]]) - value(chessBoard[eml[0][i]][eml[1][i]]);
             }
         }
-        eval -= evaluation.material() + getMax(responses, o);
+        eval += evaluation.material() - getMax(responses, o);
+        if(opening){
+            eval += evaluation.development();
+        }
         return eval;    
     }
 }
@@ -1526,11 +1542,14 @@ int main(){
 
     initializeBoard();
     printBoard();
+    opening = true;
+    middlegame = false;
+    endgame = false;
 
     while(move_move <= 5949){
         cout << "Move - " << move_move << endl;
 
-        engine.move(5);
+        engine.move(6);
         //do{
             //getMove_white();
         //} while(!isLegalMove);
