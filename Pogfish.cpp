@@ -110,7 +110,7 @@ int getMin(int values[], int numValues){
     return best;
 }
 
-string FEN = "rnbqkbnrppppppppooooooooooooooooooooooooooooooooPPPoPPPPRNBQKBNR";
+string FEN = "rnbqkbnrppppppppooooooooooooooooooooooooooooooooPPPPPPPPRNBQKBNR";
 
 int chessBoard[8][8] = {
     {0, 0, 0, 0, 0, 0, 0, 0},
@@ -1283,6 +1283,20 @@ class Evaluation{
                     development -= 10;
                 }
             }
+            for(int i = 0; i < 2; i++){
+                for(int j = 0; j < 4; j++){
+                    if(chessBoard[4 + i][2 + j] == white_pawn){
+                        development += 5;
+                    }
+                }
+            }
+            for(int i = 0; i < 2; i++){
+                for(int j = 0; j < 4; j++){
+                    if(chessBoard[2 + i][2 + j] == black_pawn){
+                        development -= 5;
+                    }
+                }
+            }
             return development;
         } 
 };
@@ -1547,9 +1561,13 @@ int main(){
     endgame = false;
 
     while(move_move <= 5949){
+        if(move_move == 15){
+            opening = false;
+            middlegame = true;
+        }
         cout << "Move - " << move_move << endl;
 
-        engine.move(6);
+        engine.move(5);
         //do{
             //getMove_white();
         //} while(!isLegalMove);
