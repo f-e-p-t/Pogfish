@@ -1631,7 +1631,6 @@ int main(){
             endgame = true;
         }
         cout << "Move - " << move_move << endl;
-        cout << endgame << endl;
         engine.move(5);
         //do{
             //getMove_white();
