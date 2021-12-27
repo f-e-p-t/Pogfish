@@ -4,8 +4,8 @@
 #include<algorithm>
 using namespace std;
 
-int tempo = 1;
-int move_move = 1;
+int64_t tempo = 1;
+int64_t move_move = 1;
 bool isLegalMove;
 bool opening;
 bool middlegame;
@@ -14,38 +14,37 @@ bool KSCastlingRights_white = true;
 bool QSCastlingRights_white = true;
 bool KSCastlingRights_black = true;
 bool QSCastlingRights_black = true;
-int best_index;
-int infinity = 1000000;
+int64_t best_index;
 
-int move_y;
-int move_x;
-int moveTo_y;
-int moveTo_x;
-int y;
-int x;
-int y_to;
-int x_to;
+int64_t move_y;
+int64_t move_x;
+int64_t moveTo_y;
+int64_t moveTo_x;
+int64_t y;
+int64_t x;
+int64_t y_to;
+int64_t x_to;
 
-const int empty_square = 0;
-const int white_pawn = 1;
-const int white_knight = 2;
-const int white_bishop = 3;
-const int white_rook = 4;
-const int white_queen = 5;
-const int white_king = 6;
-const int black_pawn = 11;
-const int black_knight = 12;
-const int black_bishop = 13;
-const int black_rook = 14;
-const int black_queen = 15;
-const int black_king = 16;
+const int64_t empty_square = 0;
+const int64_t white_pawn = 1;
+const int64_t white_knight = 2;
+const int64_t white_bishop = 3;
+const int64_t white_rook = 4;
+const int64_t white_queen = 5;
+const int64_t white_king = 6;
+const int64_t black_pawn = 11;
+const int64_t black_knight = 12;
+const int64_t black_bishop = 13;
+const int64_t black_rook = 14;
+const int64_t black_queen = 15;
+const int64_t black_king = 16;
 
-int n;
-int o;
-int TEST;
+int64_t n = 0;
+int64_t o = 0;
+int64_t TEST = 0;
 
-int value(int piece){
-    int pieceValue;
+int64_t value(int64_t piece){
+    int64_t pieceValue;
     switch(piece){
         case 1:
             pieceValue = 100;
@@ -87,10 +86,10 @@ int value(int piece){
     }
     return pieceValue;
 }
-int getMax(int values[], int numValues){
-    int best = values[0];
+int64_t getMax(int64_t values[], int64_t numValues){
+    int64_t best = values[0];
     best_index = 0;
-    for(int i = 0; i < numValues; i++){
+    for(int64_t i = 0; i < numValues; i++){
         if(values[i] > best){
             best = values[i];
             best_index = i;
@@ -98,10 +97,10 @@ int getMax(int values[], int numValues){
     }
     return best;
 }
-int getMin(int values[], int numValues){
-    int best = values[0];
+int64_t getMin(int64_t values[], int64_t numValues){
+    int64_t best = values[0];
     best_index = 0;
-    for(int i = 0; i < numValues; i++){
+    for(int64_t i = 0; i < numValues; i++){
         if(values[i] < best){
             best = values[i];
             best_index = i;
@@ -109,40 +108,24 @@ int getMin(int values[], int numValues){
     }
     return best;
 }
+int64_t duoMax(int64_t a, int64_t b){
+    int64_t max;
+    max = (a + b + abs(a - b))/2;
+    return max;
+}
 
 string FEN = "rnbqkbnrppppppppooooooooooooooooooooooooooooooooPPPPPPPPRNBQKBNR";
+int64_t chessBoard[8][8] = {0};
+int64_t chessBoard_CC[8][8] = {0};
 
-int chessBoard[8][8] = {
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0}
-};
-int chessBoard_CC[8][8] = {
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0}
-};
-
-int boardStates[50][8][8] = {0};
-int depthProgress[50] = {0};
-int branchIndex[50] = {0};
-int moveList[4][219] = {0};
-int eml[4][219] = {0};
-int moveScores[50][219] = {0};
+int64_t boardStates[50][8][8] = {0};
+int64_t moveList[4][219] = {0};
+int64_t eml[4][219] = {0};
+int64_t bestMove[4] = {0};
 
 // ------------------------------------------------------------------------- Rules of chess --------------------------------------------------------------------------
 
-int playMove(int castlingRightsRemoved){
+int64_t playMove(int64_t castlingRightsRemoved){
     // castling
     if(chessBoard[move_y][move_x] == white_rook && move_y == 7 && move_x == 0){
         if(castlingRightsRemoved == 1){
@@ -207,7 +190,7 @@ int playMove(int castlingRightsRemoved){
     memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
     return 0;
 }
-int playMove_CC(int castlingRightsRemoved){
+int64_t playMove_CC(int64_t castlingRightsRemoved){
     // castling
     if(chessBoard_CC[y][x] == white_rook && y == 7 && x == 0){
         if(castlingRightsRemoved == 1){
@@ -268,274 +251,276 @@ int playMove_CC(int castlingRightsRemoved){
     chessBoard_CC[y][x] = empty_square;
     return 0;
 }
-bool check_white(){
-    int kp_y = 0;
-    int kp_x = 0;
-    for(int i = 0; i <= 7; i++){
-        for(int j = 0; j <= 7; j++){
-            if(chessBoard_CC[i][j] == white_king){
-                kp_y = i;
-                kp_x = j;
-                break;
+bool check(int side){
+    if(side == 1){
+        int64_t kp_y = 0;
+        int64_t kp_x = 0;
+        for(int64_t i = 0; i <= 7; i++){
+            for(int64_t j = 0; j <= 7; j++){
+                if(chessBoard_CC[i][j] == white_king){
+                    kp_y = i;
+                    kp_x = j;
+                    break;
+                }
             }
         }
-    }
-    for(int i = 1; i < 8; i++){ // down & right
-        if(kp_y + i > 7 || kp_x + i > 7){
-            break;
-        } else if(chessBoard_CC[kp_y + i][kp_x + i] == black_bishop || chessBoard_CC[kp_y + i][kp_x + i] == black_queen){
-            return true;
-        } else if(chessBoard_CC[kp_y + i][kp_x + i] >= 1 && chessBoard_CC[kp_y + i][kp_x + i] != black_bishop && chessBoard_CC[kp_y + i][kp_x + i] != black_queen){
-            break;
-        } else{
-        }
-    }
-    for(int i = 1; i < 8; i++){ // down & left
-        if(kp_y + i > 7 || kp_x - i < 0){
-            break;
-        } else if(chessBoard_CC[kp_y + i][kp_x - i] == black_bishop || chessBoard_CC[kp_y + i][kp_x - i] == black_queen){
-            return true;
-        } else if(chessBoard_CC[kp_y + i][kp_x - i] >= 1 && chessBoard_CC[kp_y + i][kp_x - i] != black_bishop && chessBoard_CC[kp_y + i][kp_x - i] != black_queen){
-            break;
-        } else{
-        }
-    }
-    for(int i = 1; i < 8; i++){ // up & left
-        if(kp_y - i < 0 || kp_x - i < 0){
-            break;
-        } else if(chessBoard_CC[kp_y - i][kp_x - i] == black_bishop || chessBoard_CC[kp_y - i][kp_x - i] == black_queen){
-            return true;
-        } else if(chessBoard_CC[kp_y - i][kp_x - i] >= 1 && chessBoard_CC[kp_y - i][kp_x - i] != black_bishop && chessBoard_CC[kp_y - i][kp_x - i] != black_queen){
-            break;
-        } else{
-        }
-    }
-    for(int i = 1; i < 8; i++){ // up & right
-        if(kp_y - i < 0 || kp_x + i > 7){
-            break;
-        } else if(chessBoard_CC[kp_y - i][kp_x + i] == black_bishop || chessBoard_CC[kp_y - i][kp_x + i] == black_queen){
-            return true;
-        } else if(chessBoard_CC[kp_y - i][kp_x + i] >= 1 && chessBoard_CC[kp_y - i][kp_x + i] != black_bishop && chessBoard_CC[kp_y - i][kp_x + i] != black_queen){
-            break;
-        } else{
-        }
-    }
-    for(int i = 1; i < 8; i++){ // down
-        if(kp_y + i > 7){
-            break;
-        } else if(chessBoard_CC[kp_y + i][kp_x] == black_rook || chessBoard_CC[kp_y + i][kp_x] == black_queen){
-            return true;
-        } else if(chessBoard_CC[kp_y + i][kp_x] >= 1 && chessBoard_CC[kp_y + i][kp_x] != black_rook && chessBoard_CC[kp_y + i][kp_x] != black_queen){
-            break;
-        } else{
-        }
-    }
-    for(int i = 1; i < 8; i++){ // left
-        if(kp_x - i < 0){
-            break;
-        } else if(chessBoard_CC[kp_y][kp_x - i] == black_rook || chessBoard_CC[kp_y][kp_x - i] == black_queen){
-            return true;
-        } else if(chessBoard_CC[kp_y][kp_x - i] >= 1 && chessBoard_CC[kp_y][kp_x - i] != black_rook && chessBoard_CC[kp_y][kp_x - i] != black_queen){
-            break;
-        } else{
-        }
-    }
-    for(int i = 1; i < 8; i++){ // up
-        if(kp_y - i < 0){
-            break;
-        } else if(chessBoard_CC[kp_y - i][kp_x] == black_rook || chessBoard_CC[kp_y - i][kp_x] == black_queen){
-            return true;
-        } else if(chessBoard_CC[kp_y - i][kp_x] >= 1 && chessBoard_CC[kp_y - i][kp_x] != black_rook && chessBoard_CC[kp_y - i][kp_x] != black_queen){
-            break;
-        } else{
-        }
-    }
-    for(int i = 1; i < 8; i++){ // right
-        if(kp_x + i > 7){
-            break;
-        } else if(chessBoard_CC[kp_y][kp_x + i] == black_rook || chessBoard_CC[kp_y][kp_x + i] == black_queen){
-            return true;
-        } else if(chessBoard_CC[kp_y][kp_x + i] >= 1 && chessBoard_CC[kp_y][kp_x + i] != black_rook && chessBoard_CC[kp_y][kp_x + i] != black_queen){
-            break;
-        } else{
-        }
-    }
-    if(chessBoard_CC[kp_y + 1][kp_x + 2] == black_knight && kp_y + 1 <= 7 && kp_x + 2 <= 7){ // knight checks ~
-        return true;
-    } else if(chessBoard_CC[kp_y + 1][kp_x - 2] == black_knight && kp_y + 1 <= 7 && kp_x - 2 >= 0){
-        return true;
-    } else if(chessBoard_CC[kp_y - 1][kp_x + 2] == black_knight && kp_y - 1 >= 0 && kp_x + 2 <= 7){
-        return true;
-    } else if(chessBoard_CC[kp_y - 1][kp_x - 2] == black_knight && kp_y - 1 >= 0 && kp_x - 2 >= 0){
-        return true;
-    } else if(chessBoard_CC[kp_y + 2][kp_x + 1] == black_knight && kp_y + 2 <= 7 && kp_x + 1 <= 7){
-        return true;
-    } else if(chessBoard_CC[kp_y + 2][kp_x - 1] == black_knight && kp_y + 2 <= 7 && kp_x - 1 >= 0){
-        return true;
-    } else if(chessBoard_CC[kp_y - 2][kp_x + 1] == black_knight && kp_y - 2 >= 0 && kp_x + 1 <= 7){
-        return true;
-    } else if(chessBoard_CC[kp_y - 2][kp_x - 1] == black_knight && kp_y - 2 >= 0 && kp_x - 1 >= 0){
-        return true;
-    } else if(chessBoard_CC[kp_y - 1][kp_x + 1] == black_pawn && kp_y - 1 >= 0 && kp_x + 1 <= 7){ // pawn checks ~
-        return true;
-    } else if(chessBoard_CC[kp_y - 1][kp_x - 1] == black_pawn && kp_y - 1 >= 0 && kp_x - 1 >= 0){
-        return true;
-    } else if(chessBoard_CC[kp_y + 1][kp_x + 1] == black_king && kp_y + 1 <= 7 && kp_x + 1 <= 7){ // king 'checks' ~
-        return true;
-    } else if(chessBoard_CC[kp_y + 1][kp_x - 1] == black_king && kp_y + 1 <= 7 && kp_x - 1 >= 0){
-        return true;
-    } else if(chessBoard_CC[kp_y - 1][kp_x + 1] == black_king && kp_y - 1 >= 0 && kp_x + 1 <= 7){
-        return true;
-    } else if(chessBoard_CC[kp_y - 1][kp_x - 1] == black_king && kp_y - 1 >= 0 && kp_x - 1 >= 0){
-        return true;
-    } else if(chessBoard_CC[kp_y + 1][kp_x] == black_king && kp_y + 1 <= 7){
-        return true;
-    } else if(chessBoard_CC[kp_y][kp_x - 1] == black_king && kp_x - 1 >= 0){
-        return true;
-    } else if(chessBoard_CC[kp_y - 1][kp_x] == black_king && kp_y - 1 >= 0){
-        return true;
-    } else if(chessBoard_CC[kp_y][kp_x + 1] == black_king && kp_x + 1 <= 7){
-        return true;
-    } else{
-    }
-    return false;
-}
-bool check_black(){
-    int kp_y = 0;
-    int kp_x = 0;
-    for(int i = 0; i <= 7; i++){
-        for(int j = 0; j <= 7; j++){
-            if(chessBoard_CC[i][j] == black_king){
-                kp_y = i;
-                kp_x = j;
+        for(int64_t i = 1; i < 8; i++){ // down & right
+            if(kp_y + i > 7 || kp_x + i > 7){
                 break;
+            } else if(chessBoard_CC[kp_y + i][kp_x + i] == black_bishop || chessBoard_CC[kp_y + i][kp_x + i] == black_queen){
+                return true;
+            } else if(chessBoard_CC[kp_y + i][kp_x + i] >= 1 && chessBoard_CC[kp_y + i][kp_x + i] != black_bishop && chessBoard_CC[kp_y + i][kp_x + i] != black_queen){
+                break;
+            } else{
             }
         }
-    }
-    for(int i = 1; i < 8; i++){ // down & right
-        if(kp_y + i > 7 || kp_x + i > 7){
-            break;    
-        } else if(chessBoard_CC[kp_y + i][kp_x + i] == white_bishop || chessBoard_CC[kp_y + i][kp_x + i] == white_queen){
+        for(int64_t i = 1; i < 8; i++){ // down & left
+            if(kp_y + i > 7 || kp_x - i < 0){
+                break;
+            } else if(chessBoard_CC[kp_y + i][kp_x - i] == black_bishop || chessBoard_CC[kp_y + i][kp_x - i] == black_queen){
+                return true;
+            } else if(chessBoard_CC[kp_y + i][kp_x - i] >= 1 && chessBoard_CC[kp_y + i][kp_x - i] != black_bishop && chessBoard_CC[kp_y + i][kp_x - i] != black_queen){
+                break;
+            } else{
+            }
+        }
+        for(int64_t i = 1; i < 8; i++){ // up & left
+            if(kp_y - i < 0 || kp_x - i < 0){
+                break;
+            } else if(chessBoard_CC[kp_y - i][kp_x - i] == black_bishop || chessBoard_CC[kp_y - i][kp_x - i] == black_queen){
+                return true;
+            } else if(chessBoard_CC[kp_y - i][kp_x - i] >= 1 && chessBoard_CC[kp_y - i][kp_x - i] != black_bishop && chessBoard_CC[kp_y - i][kp_x - i] != black_queen){
+                break;
+            } else{
+            }
+        }
+        for(int64_t i = 1; i < 8; i++){ // up & right
+            if(kp_y - i < 0 || kp_x + i > 7){
+                break;
+            } else if(chessBoard_CC[kp_y - i][kp_x + i] == black_bishop || chessBoard_CC[kp_y - i][kp_x + i] == black_queen){
+                return true;
+            } else if(chessBoard_CC[kp_y - i][kp_x + i] >= 1 && chessBoard_CC[kp_y - i][kp_x + i] != black_bishop && chessBoard_CC[kp_y - i][kp_x + i] != black_queen){
+                break;
+            } else{
+            }
+        }
+        for(int64_t i = 1; i < 8; i++){ // down
+            if(kp_y + i > 7){
+                break;
+            } else if(chessBoard_CC[kp_y + i][kp_x] == black_rook || chessBoard_CC[kp_y + i][kp_x] == black_queen){
+                return true;
+            } else if(chessBoard_CC[kp_y + i][kp_x] >= 1 && chessBoard_CC[kp_y + i][kp_x] != black_rook && chessBoard_CC[kp_y + i][kp_x] != black_queen){
+                break;
+            } else{
+            }
+        }
+        for(int64_t i = 1; i < 8; i++){ // left
+            if(kp_x - i < 0){
+                break;
+            } else if(chessBoard_CC[kp_y][kp_x - i] == black_rook || chessBoard_CC[kp_y][kp_x - i] == black_queen){
+                return true;
+            } else if(chessBoard_CC[kp_y][kp_x - i] >= 1 && chessBoard_CC[kp_y][kp_x - i] != black_rook && chessBoard_CC[kp_y][kp_x - i] != black_queen){
+                break;
+            } else{
+            }
+        }
+        for(int64_t i = 1; i < 8; i++){ // up
+            if(kp_y - i < 0){
+                break;
+            } else if(chessBoard_CC[kp_y - i][kp_x] == black_rook || chessBoard_CC[kp_y - i][kp_x] == black_queen){
+                return true;
+            } else if(chessBoard_CC[kp_y - i][kp_x] >= 1 && chessBoard_CC[kp_y - i][kp_x] != black_rook && chessBoard_CC[kp_y - i][kp_x] != black_queen){
+                break;
+            } else{
+            }
+        }
+        for(int64_t i = 1; i < 8; i++){ // right
+            if(kp_x + i > 7){
+                break;
+            } else if(chessBoard_CC[kp_y][kp_x + i] == black_rook || chessBoard_CC[kp_y][kp_x + i] == black_queen){
+                return true;
+            } else if(chessBoard_CC[kp_y][kp_x + i] >= 1 && chessBoard_CC[kp_y][kp_x + i] != black_rook && chessBoard_CC[kp_y][kp_x + i] != black_queen){
+                break;
+            } else{
+            }
+        }
+        if(chessBoard_CC[kp_y + 1][kp_x + 2] == black_knight && kp_y + 1 <= 7 && kp_x + 2 <= 7){ // knight checks ~
             return true;
-        } else if(chessBoard_CC[kp_y + i][kp_x + i] >= 1 && chessBoard_CC[kp_y + i][kp_x + i] != white_bishop && chessBoard_CC[kp_y + i][kp_x + i] != white_queen){
-            break;
+        } else if(chessBoard_CC[kp_y + 1][kp_x - 2] == black_knight && kp_y + 1 <= 7 && kp_x - 2 >= 0){
+            return true;
+        } else if(chessBoard_CC[kp_y - 1][kp_x + 2] == black_knight && kp_y - 1 >= 0 && kp_x + 2 <= 7){
+            return true;
+        } else if(chessBoard_CC[kp_y - 1][kp_x - 2] == black_knight && kp_y - 1 >= 0 && kp_x - 2 >= 0){
+            return true;
+        } else if(chessBoard_CC[kp_y + 2][kp_x + 1] == black_knight && kp_y + 2 <= 7 && kp_x + 1 <= 7){
+            return true;
+        } else if(chessBoard_CC[kp_y + 2][kp_x - 1] == black_knight && kp_y + 2 <= 7 && kp_x - 1 >= 0){
+            return true;
+        } else if(chessBoard_CC[kp_y - 2][kp_x + 1] == black_knight && kp_y - 2 >= 0 && kp_x + 1 <= 7){
+            return true;
+        } else if(chessBoard_CC[kp_y - 2][kp_x - 1] == black_knight && kp_y - 2 >= 0 && kp_x - 1 >= 0){
+            return true;
+        } else if(chessBoard_CC[kp_y - 1][kp_x + 1] == black_pawn && kp_y - 1 >= 0 && kp_x + 1 <= 7){ // pawn checks ~
+            return true;
+        } else if(chessBoard_CC[kp_y - 1][kp_x - 1] == black_pawn && kp_y - 1 >= 0 && kp_x - 1 >= 0){
+            return true;
+        } else if(chessBoard_CC[kp_y + 1][kp_x + 1] == black_king && kp_y + 1 <= 7 && kp_x + 1 <= 7){ // king 'checks' ~
+            return true;
+        } else if(chessBoard_CC[kp_y + 1][kp_x - 1] == black_king && kp_y + 1 <= 7 && kp_x - 1 >= 0){
+            return true;
+        } else if(chessBoard_CC[kp_y - 1][kp_x + 1] == black_king && kp_y - 1 >= 0 && kp_x + 1 <= 7){
+            return true;
+        } else if(chessBoard_CC[kp_y - 1][kp_x - 1] == black_king && kp_y - 1 >= 0 && kp_x - 1 >= 0){
+            return true;
+        } else if(chessBoard_CC[kp_y + 1][kp_x] == black_king && kp_y + 1 <= 7){
+            return true;
+        } else if(chessBoard_CC[kp_y][kp_x - 1] == black_king && kp_x - 1 >= 0){
+            return true;
+        } else if(chessBoard_CC[kp_y - 1][kp_x] == black_king && kp_y - 1 >= 0){
+            return true;
+        } else if(chessBoard_CC[kp_y][kp_x + 1] == black_king && kp_x + 1 <= 7){
+            return true;
         } else{
         }
+        return false;
     }
-    for(int i = 1; i < 8; i++){ // down & left
-        if(kp_y + i > 7 || kp_x - i < 0){
-            break;
-        } else if(chessBoard_CC[kp_y + i][kp_x - i] == white_bishop || chessBoard_CC[kp_y + i][kp_x - i] == white_queen){
+    else{
+        int64_t kp_y = 0;
+        int64_t kp_x = 0;
+        for(int64_t i = 0; i <= 7; i++){
+            for(int64_t j = 0; j <= 7; j++){
+                if(chessBoard_CC[i][j] == black_king){
+                    kp_y = i;
+                    kp_x = j;
+                    break;
+                }
+            }
+        }
+        for(int64_t i = 1; i < 8; i++){ // down & right
+            if(kp_y + i > 7 || kp_x + i > 7){
+                break;    
+            } else if(chessBoard_CC[kp_y + i][kp_x + i] == white_bishop || chessBoard_CC[kp_y + i][kp_x + i] == white_queen){
+                return true;
+            } else if(chessBoard_CC[kp_y + i][kp_x + i] >= 1 && chessBoard_CC[kp_y + i][kp_x + i] != white_bishop && chessBoard_CC[kp_y + i][kp_x + i] != white_queen){
+                break;
+            } else{
+            }
+        }
+        for(int64_t i = 1; i < 8; i++){ // down & left
+            if(kp_y + i > 7 || kp_x - i < 0){
+                break;
+            } else if(chessBoard_CC[kp_y + i][kp_x - i] == white_bishop || chessBoard_CC[kp_y + i][kp_x - i] == white_queen){
+                return true;
+            } else if(chessBoard_CC[kp_y + i][kp_x - i] >= 1 && chessBoard_CC[kp_y + i][kp_x - i] != white_bishop && chessBoard_CC[kp_y + i][kp_x - i] != white_queen){
+                break;
+            } else{
+            }
+        }
+        for(int64_t i = 1; i < 8; i++){ // up & left
+            if(kp_y - i < 0 || kp_x - i < 0){
+                break;   
+            } else if(chessBoard_CC[kp_y - i][kp_x - i] == white_bishop || chessBoard_CC[kp_y - i][kp_x - i] == white_queen){
+                return true;
+            } else if(chessBoard_CC[kp_y - i][kp_x - i] >= 1 && chessBoard_CC[kp_y - i][kp_x - i] != white_bishop && chessBoard_CC[kp_y - i][kp_x - i] != white_queen){
+                break;
+            } else{
+            }
+        }
+        for(int64_t i = 1; i < 8; i++){ // up & right
+            if(kp_y - i < 0 || kp_x + i > 7){
+                break;   
+            } else if(chessBoard_CC[kp_y - i][kp_x + i] == white_bishop || chessBoard_CC[kp_y - i][kp_x + i] == white_queen){
+                return true;
+            } else if(chessBoard_CC[kp_y - i][kp_x + i] >= 1 && chessBoard_CC[kp_y - i][kp_x + i] != white_bishop && chessBoard_CC[kp_y - i][kp_x + i] != white_queen){
+                break;
+            } else{
+            }
+        }
+        for(int64_t i = 1; i < 8; i++){ // down
+            if(kp_y + i > 7){
+                break;
+            } else if(chessBoard_CC[kp_y + i][kp_x] == white_rook || chessBoard_CC[kp_y + i][kp_x] == white_queen){
+                return true;
+            } else if(chessBoard_CC[kp_y + i][kp_x] >= 1 && chessBoard_CC[kp_y + i][kp_x] != white_rook && chessBoard_CC[kp_y + i][kp_x] != white_queen){
+                break;
+            } else{
+            }
+        }
+        for(int64_t i = 1; i < 8; i++){ // left
+            if(kp_x - i < 0){
+                break;
+            } else if(chessBoard_CC[kp_y][kp_x - i] == white_rook || chessBoard_CC[kp_y][kp_x - i] == white_queen){
+                return true;
+            } else if(chessBoard_CC[kp_y][kp_x - i] >= 1 && chessBoard_CC[kp_y][kp_x - i] != white_rook && chessBoard_CC[kp_y][kp_x - i] != white_queen){
+                break;
+            } else{
+            }
+        }
+        for(int64_t i = 1; i < 8; i++){ // up
+            if(kp_y - i < 0){
+                break;
+            } else if(chessBoard_CC[kp_y - i][kp_x] == white_rook || chessBoard_CC[kp_y - i][kp_x] == white_queen){
+                return true;
+            } else if(chessBoard_CC[kp_y - i][kp_x] >= 1 && chessBoard_CC[kp_y - i][kp_x] != white_rook && chessBoard_CC[kp_y - i][kp_x] != white_queen){
+                break;
+            } else{
+            }
+        }
+        for(int64_t i = 1; i < 8; i++){ // right
+            if(kp_x + i > 7){
+                break;
+            } else if(chessBoard_CC[kp_y][kp_x + i] == white_rook || chessBoard_CC[kp_y][kp_x + i] == white_queen){
+                return true;
+            } else if(chessBoard_CC[kp_y][kp_x + i] >= 1 && chessBoard_CC[kp_y][kp_x + i] != white_rook && chessBoard_CC[kp_y][kp_x + i] != white_queen){
+                break;
+            } else{
+            }
+        }
+        if(chessBoard_CC[kp_y + 1][kp_x + 2] == white_knight && kp_y + 1 <= 7 && kp_x + 2 <= 7){ // knight checks ~
             return true;
-        } else if(chessBoard_CC[kp_y + i][kp_x - i] >= 1 && chessBoard_CC[kp_y + i][kp_x - i] != white_bishop && chessBoard_CC[kp_y + i][kp_x - i] != white_queen){
-            break;
+        } else if(chessBoard_CC[kp_y + 1][kp_x - 2] == white_knight && kp_y + 1 <= 7 && kp_x - 2 >= 0){
+            return true;
+        } else if(chessBoard_CC[kp_y - 1][kp_x + 2] == white_knight && kp_y - 1 >= 0 && kp_x + 2 <= 7){
+            return true;
+        } else if(chessBoard_CC[kp_y - 1][kp_x - 2] == white_knight && kp_y - 1 >= 0 && kp_x - 2 >= 0){
+            return true;
+        } else if(chessBoard_CC[kp_y + 2][kp_x + 1] == white_knight && kp_y + 2 <= 7 && kp_x + 1 <= 7){
+            return true;
+        } else if(chessBoard_CC[kp_y + 2][kp_x - 1] == white_knight && kp_y + 2 <= 7 && kp_x - 1 >= 0){
+            return true;
+        } else if(chessBoard_CC[kp_y - 2][kp_x + 1] == white_knight && kp_y - 2 >= 0 && kp_x + 1 <= 7){
+            return true;
+        } else if(chessBoard_CC[kp_y - 2][kp_x - 1] == white_knight && kp_y - 2 >= 0 && kp_x - 1 >= 0){
+            return true;
+        } else if(chessBoard_CC[kp_y + 1][kp_x + 1] == white_pawn && kp_y + 1 >= 0 && kp_x + 1 <= 7){ // pawn checks ~
+            return true;
+        } else if(chessBoard_CC[kp_y + 1][kp_x - 1] == white_pawn && kp_y + 1 <= 7 && kp_x - 1 >= 0){
+            return true;
+        } else if(chessBoard_CC[kp_y + 1][kp_x + 1] == white_king && kp_y + 1 <= 7 && kp_x + 1 <= 7){ // king 'checks' ~
+            return true;
+        } else if(chessBoard_CC[kp_y + 1][kp_x - 1] == white_king && kp_y + 1 <= 7 && kp_x - 1 >= 0){
+            return true;
+        } else if(chessBoard_CC[kp_y - 1][kp_x + 1] == white_king && kp_y - 1 >= 0 && kp_x + 1 <= 7){
+            return true;
+        } else if(chessBoard_CC[kp_y - 1][kp_x - 1] == white_king && kp_y - 1 >= 0 && kp_x - 1 >= 0){
+            return true;
+        } else if(chessBoard_CC[kp_y + 1][kp_x] == white_king && kp_y + 1 <= 7){
+            return true;
+        } else if(chessBoard_CC[kp_y][kp_x - 1] == white_king && kp_x - 1 >= 0){
+            return true;
+        } else if(chessBoard_CC[kp_y - 1][kp_x] == white_king && kp_y - 1 >= 0){
+            return true;
+        } else if(chessBoard_CC[kp_y][kp_x + 1] == white_king && kp_x + 1 <= 7){
+            return true;
         } else{
         }
+        return false;
     }
-    for(int i = 1; i < 8; i++){ // up & left
-        if(kp_y - i < 0 || kp_x - i < 0){
-            break;   
-        } else if(chessBoard_CC[kp_y - i][kp_x - i] == white_bishop || chessBoard_CC[kp_y - i][kp_x - i] == white_queen){
-            return true;
-        } else if(chessBoard_CC[kp_y - i][kp_x - i] >= 1 && chessBoard_CC[kp_y - i][kp_x - i] != white_bishop && chessBoard_CC[kp_y - i][kp_x - i] != white_queen){
-            break;
-        } else{
-        }
-    }
-    for(int i = 1; i < 8; i++){ // up & right
-        if(kp_y - i < 0 || kp_x + i > 7){
-            break;   
-        } else if(chessBoard_CC[kp_y - i][kp_x + i] == white_bishop || chessBoard_CC[kp_y - i][kp_x + i] == white_queen){
-            return true;
-        } else if(chessBoard_CC[kp_y - i][kp_x + i] >= 1 && chessBoard_CC[kp_y - i][kp_x + i] != white_bishop && chessBoard_CC[kp_y - i][kp_x + i] != white_queen){
-            break;
-        } else{
-        }
-    }
-    for(int i = 1; i < 8; i++){ // down
-        if(kp_y + i > 7){
-            break;
-        } else if(chessBoard_CC[kp_y + i][kp_x] == white_rook || chessBoard_CC[kp_y + i][kp_x] == white_queen){
-            return true;
-        } else if(chessBoard_CC[kp_y + i][kp_x] >= 1 && chessBoard_CC[kp_y + i][kp_x] != white_rook && chessBoard_CC[kp_y + i][kp_x] != white_queen){
-            break;
-        } else{
-        }
-    }
-    for(int i = 1; i < 8; i++){ // left
-        if(kp_x - i < 0){
-            break;
-        } else if(chessBoard_CC[kp_y][kp_x - i] == white_rook || chessBoard_CC[kp_y][kp_x - i] == white_queen){
-            return true;
-        } else if(chessBoard_CC[kp_y][kp_x - i] >= 1 && chessBoard_CC[kp_y][kp_x - i] != white_rook && chessBoard_CC[kp_y][kp_x - i] != white_queen){
-            break;
-        } else{
-        }
-    }
-    for(int i = 1; i < 8; i++){ // up
-        if(kp_y - i < 0){
-            break;
-        } else if(chessBoard_CC[kp_y - i][kp_x] == white_rook || chessBoard_CC[kp_y - i][kp_x] == white_queen){
-            return true;
-        } else if(chessBoard_CC[kp_y - i][kp_x] >= 1 && chessBoard_CC[kp_y - i][kp_x] != white_rook && chessBoard_CC[kp_y - i][kp_x] != white_queen){
-            break;
-        } else{
-        }
-    }
-    for(int i = 1; i < 8; i++){ // right
-        if(kp_x + i > 7){
-            break;
-        } else if(chessBoard_CC[kp_y][kp_x + i] == white_rook || chessBoard_CC[kp_y][kp_x + i] == white_queen){
-            return true;
-        } else if(chessBoard_CC[kp_y][kp_x + i] >= 1 && chessBoard_CC[kp_y][kp_x + i] != white_rook && chessBoard_CC[kp_y][kp_x + i] != white_queen){
-            break;
-        } else{
-        }
-    }
-    if(chessBoard_CC[kp_y + 1][kp_x + 2] == white_knight && kp_y + 1 <= 7 && kp_x + 2 <= 7){ // knight checks ~
-        return true;
-    } else if(chessBoard_CC[kp_y + 1][kp_x - 2] == white_knight && kp_y + 1 <= 7 && kp_x - 2 >= 0){
-        return true;
-    } else if(chessBoard_CC[kp_y - 1][kp_x + 2] == white_knight && kp_y - 1 >= 0 && kp_x + 2 <= 7){
-        return true;
-    } else if(chessBoard_CC[kp_y - 1][kp_x - 2] == white_knight && kp_y - 1 >= 0 && kp_x - 2 >= 0){
-        return true;
-    } else if(chessBoard_CC[kp_y + 2][kp_x + 1] == white_knight && kp_y + 2 <= 7 && kp_x + 1 <= 7){
-        return true;
-    } else if(chessBoard_CC[kp_y + 2][kp_x - 1] == white_knight && kp_y + 2 <= 7 && kp_x - 1 >= 0){
-        return true;
-    } else if(chessBoard_CC[kp_y - 2][kp_x + 1] == white_knight && kp_y - 2 >= 0 && kp_x + 1 <= 7){
-        return true;
-    } else if(chessBoard_CC[kp_y - 2][kp_x - 1] == white_knight && kp_y - 2 >= 0 && kp_x - 1 >= 0){
-        return true;
-    } else if(chessBoard_CC[kp_y + 1][kp_x + 1] == white_pawn && kp_y + 1 >= 0 && kp_x + 1 <= 7){ // pawn checks ~
-        return true;
-    } else if(chessBoard_CC[kp_y + 1][kp_x - 1] == white_pawn && kp_y + 1 <= 7 && kp_x - 1 >= 0){
-        return true;
-    } else if(chessBoard_CC[kp_y + 1][kp_x + 1] == white_king && kp_y + 1 <= 7 && kp_x + 1 <= 7){ // king 'checks' ~
-        return true;
-    } else if(chessBoard_CC[kp_y + 1][kp_x - 1] == white_king && kp_y + 1 <= 7 && kp_x - 1 >= 0){
-        return true;
-    } else if(chessBoard_CC[kp_y - 1][kp_x + 1] == white_king && kp_y - 1 >= 0 && kp_x + 1 <= 7){
-        return true;
-    } else if(chessBoard_CC[kp_y - 1][kp_x - 1] == white_king && kp_y - 1 >= 0 && kp_x - 1 >= 0){
-        return true;
-    } else if(chessBoard_CC[kp_y + 1][kp_x] == white_king && kp_y + 1 <= 7){
-        return true;
-    } else if(chessBoard_CC[kp_y][kp_x - 1] == white_king && kp_x - 1 >= 0){
-        return true;
-    } else if(chessBoard_CC[kp_y - 1][kp_x] == white_king && kp_y - 1 >= 0){
-        return true;
-    } else if(chessBoard_CC[kp_y][kp_x + 1] == white_king && kp_x + 1 <= 7){
-        return true;
-    } else{
-    }
-    return false;
 }
-void insertMove_white(int se){
+void insertMove_white(int64_t se){
     if(se == 1){
         playMove_CC(0);
-        if(check_white()){
+        if(check(1)){
             memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
         } else{
             moveList[0][n] = y;
@@ -547,7 +532,7 @@ void insertMove_white(int se){
         }
     } else{
         playMove_CC(0);
-        if(check_white()){
+        if(check(1)){
             memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
         } else{
             eml[0][o] = y;
@@ -559,10 +544,10 @@ void insertMove_white(int se){
         }
     }
 }
-void insertMove_black(int se){
+void insertMove_black(int64_t se){
     if(se == 1){
         playMove_CC(0);
-        if(check_black()){
+        if(check(0)){
             memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
         } else{
             moveList[0][n] = y;
@@ -574,7 +559,7 @@ void insertMove_black(int se){
         }
     } else{
         playMove_CC(0);
-        if(check_black()){
+        if(check(0)){
             memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
         } else{
             eml[0][o] = y;
@@ -586,10 +571,10 @@ void insertMove_black(int se){
         }
     }
 }  
-int pieceCount(){
-    int pieceCount = 0;
-    for(int i = 0; i < 8; i++){
-        for(int j = 0; j < 8; j++){
+int64_t pieceCount(){
+    int64_t pieceCount = 0;
+    for(int64_t i = 0; i < 8; i++){
+        for(int64_t j = 0; j < 8; j++){
             if(chessBoard[i][j] != empty_square){
                 pieceCount++;
             }
@@ -601,7 +586,7 @@ int pieceCount(){
 // (castling through check & en passant)
 class Move_gen{
     public:     
-        void w_pawn(int se){
+        void w_pawn(int64_t se){
             if(chessBoard[y - 1][x] == 0){
                 y_to = y - 1;
                 x_to = x;
@@ -629,7 +614,7 @@ class Move_gen{
                 }
             } 
         }
-        void b_pawn(int se){
+        void b_pawn(int64_t se){
             if(chessBoard[y + 1][x] == 0){
                 y_to = y + 1;
                 x_to = x;
@@ -657,7 +642,7 @@ class Move_gen{
                 }
             } 
         }
-        void w_knight(int se){
+        void w_knight(int64_t se){
             if(chessBoard[y + 1][x + 2] >= 11 || chessBoard[y + 1][x + 2] == 0){
                 if(y + 1 <= 7 && x + 2 <= 7){
                     y_to = y + 1;
@@ -715,7 +700,7 @@ class Move_gen{
                 }
             }
         }
-        void b_knight(int se){
+        void b_knight(int64_t se){
             if(chessBoard[y + 1][x + 2] <= 6 || chessBoard[y + 1][x + 2] == 0){
                 if(y + 1 <= 7 && x + 2 <= 7){
                     y_to = y + 1;
@@ -773,8 +758,8 @@ class Move_gen{
                 }
             }
         }
-        void w_bishop(int se){
-            for(int i = 1; i < 8; i++){ // down & right
+        void w_bishop(int64_t se){
+            for(int64_t i = 1; i < 8; i++){ // down & right
                 if(y + i > 7 || x + i > 7){
                     break;
                 }
@@ -791,7 +776,7 @@ class Move_gen{
                     break;
                 }
             }
-            for(int i = 1; i < 8; i++){ // down & left
+            for(int64_t i = 1; i < 8; i++){ // down & left
                 if(y + i > 7 || x - i < 0){
                     break;
                 }
@@ -808,7 +793,7 @@ class Move_gen{
                     break;
                 }
             }
-            for(int i = 1; i < 8; i++){ // up & left
+            for(int64_t i = 1; i < 8; i++){ // up & left
                 if(y - i < 0 || x - i < 0){
                     break;
                 }
@@ -825,7 +810,7 @@ class Move_gen{
                     break;
                 }
             }
-            for(int i = 1; i < 8; i++){ // up & right
+            for(int64_t i = 1; i < 8; i++){ // up & right
                 if(y - i < 0 || x + i > 7){
                     break;
                 }
@@ -843,8 +828,8 @@ class Move_gen{
                 }
             }
         }
-        void b_bishop(int se){
-            for(int i = 1; i < 8; i++){ // down & right
+        void b_bishop(int64_t se){
+            for(int64_t i = 1; i < 8; i++){ // down & right
                 if(y + i > 7 || x + i > 7){
                     break;
                 }
@@ -861,7 +846,7 @@ class Move_gen{
                     break;
                 }
             }
-            for(int i = 1; i < 8; i++){ // down & left
+            for(int64_t i = 1; i < 8; i++){ // down & left
                 if(y + i > 7 || x - i < 0){
                     break;
                 }
@@ -878,7 +863,7 @@ class Move_gen{
                     break;
                 }
             }
-            for(int i = 1; i < 8; i++){ // up & left
+            for(int64_t i = 1; i < 8; i++){ // up & left
                 if(y - i < 0 || x - i < 0){
                     break;
                 }
@@ -895,7 +880,7 @@ class Move_gen{
                     break;
                 }
             }
-            for(int i = 1; i < 8; i++){ // up & right
+            for(int64_t i = 1; i < 8; i++){ // up & right
                 if(y - i < 0 || x + i > 7){
                     break;
                 }
@@ -913,8 +898,8 @@ class Move_gen{
                 }
             }
         }
-        void w_rook(int se){
-            for(int i = 1; i < 8; i++){ // down
+        void w_rook(int64_t se){
+            for(int64_t i = 1; i < 8; i++){ // down
                 if(y + i > 7){
                     break;
                 } else if(chessBoard[y + i][x] == empty_square){
@@ -930,7 +915,7 @@ class Move_gen{
                     break;
                 }
             }
-            for(int i = 1; i < 8; i++){ // left
+            for(int64_t i = 1; i < 8; i++){ // left
                 if(x - i < 0){
                     break;
                 } else if(chessBoard[y][x - i] == empty_square){
@@ -946,7 +931,7 @@ class Move_gen{
                     break;
                 }
             }
-            for(int i = 1; i < 8; i++){ // up
+            for(int64_t i = 1; i < 8; i++){ // up
                 if(y - i < 0){
                     break;
                 } else if(chessBoard[y - i][x] == empty_square){
@@ -962,7 +947,7 @@ class Move_gen{
                     break;
                 }
             }
-            for(int i = 1; i < 8; i++){ // right
+            for(int64_t i = 1; i < 8; i++){ // right
                 if(x + i > 7){
                     break;
                 } else if(chessBoard[y][x + i] == empty_square){
@@ -979,8 +964,8 @@ class Move_gen{
                 }
             }
         }
-        void b_rook(int se){
-            for(int i = 1; i < 8; i++){ // down
+        void b_rook(int64_t se){
+            for(int64_t i = 1; i < 8; i++){ // down
                 if(y + i > 7){
                     break;
                 } else if(chessBoard[y + i][x] == empty_square){
@@ -996,7 +981,7 @@ class Move_gen{
                     break;
                 }
             }
-            for(int i = 1; i < 8; i++){ // left
+            for(int64_t i = 1; i < 8; i++){ // left
                 if(x - i < 0){
                     break;
                 } else if(chessBoard[y][x - i] == empty_square){
@@ -1012,7 +997,7 @@ class Move_gen{
                     break;
                 }
             }
-            for(int i = 1; i < 8; i++){ // up
+            for(int64_t i = 1; i < 8; i++){ // up
                 if(y - i < 0){
                     break;
                 } else if(chessBoard[y - i][x] == empty_square){
@@ -1028,7 +1013,7 @@ class Move_gen{
                     break;
                 }
             }
-            for(int i = 1; i < 8; i++){ // right
+            for(int64_t i = 1; i < 8; i++){ // right
                 if(x + i > 7){
                     break;
                 } else if(chessBoard[y][x + i] == empty_square){
@@ -1045,15 +1030,15 @@ class Move_gen{
                 }
             }
         }
-        void w_queen(int se){
+        void w_queen(int64_t se){
             w_bishop(se);
             w_rook(se);
         }
-        void b_queen(int se){
+        void b_queen(int64_t se){
             b_bishop(se);
             b_rook(se);
         }
-        void w_king(int se){
+        void w_king(int64_t se){
             if(chessBoard[y + 1][x] == empty_square || chessBoard[y + 1][x] >= 11){
                 if(y + 1 <= 7){
                     y_to = y + 1;
@@ -1121,7 +1106,7 @@ class Move_gen{
                 insertMove_white(se);
             }
         }
-        void b_king(int se){
+        void b_king(int64_t se){
             if(chessBoard[y + 1][x] <= 6){
                 if(y + 1 <= 7){
                     y_to = y + 1;
@@ -1193,9 +1178,9 @@ class Move_gen{
 Move_gen moveGen;
 
 void initializeBoard(){
-    int FENpos = 0;
-    for(int i = 0; i < 8; i++){
-        for(int j = 0; j < 8; j++){
+    int64_t FENpos = 0;
+    for(int64_t i = 0; i < 8; i++){
+        for(int64_t j = 0; j < 8; j++){
             if(FEN[FENpos] == 'p'){
                 chessBoard[i][j] = black_pawn;
             } else if(FEN[FENpos] == 'n'){
@@ -1230,9 +1215,9 @@ void initializeBoard(){
 }
 void printBoard(){
     cout << "-----------------------------------------" << endl;
-    for(int y_pos = 0; y_pos < 8; y_pos++){
+    for(int64_t y_pos = 0; y_pos < 8; y_pos++){
         cout << "|";
-        for(int x_pos = 0; x_pos < 8; x_pos++){
+        for(int64_t x_pos = 0; x_pos < 8; x_pos++){
             if(chessBoard[y_pos][x_pos] == white_pawn){
                 cout << "  P |";
             } else if(chessBoard[y_pos][x_pos] == white_knight){
@@ -1271,10 +1256,10 @@ void printBoard(){
 
 class Evaluation{
     public:
-        int material(){
-            int material_eval = 0;
-            for(int i = 0; i < 8; i++){
-                for(int j = 0; j < 8; j++){
+        int64_t material(){
+            int64_t material_eval = 0;
+            for(int64_t i = 0; i < 8; i++){
+                for(int64_t j = 0; j < 8; j++){
                     if(chessBoard[i][j] <= 6 && chessBoard[i][j] != 0){
                         material_eval += value(chessBoard[i][j]);
                     } else if(chessBoard[i][j] >= 11){
@@ -1284,9 +1269,9 @@ class Evaluation{
             }
             return material_eval;
         }
-        int development(){
-            int development = 0;
-            for(int i = 0; i < 8; i++){
+        int64_t development(){
+            int64_t development = 0;
+            for(int64_t i = 0; i < 8; i++){
                 if(chessBoard[7][i] == empty_square || chessBoard[7][i] == white_king || chessBoard[7][i] == white_rook){
                     development += 10;
                 }
@@ -1294,15 +1279,15 @@ class Evaluation{
                     development -= 10;
                 }
             }
-            for(int i = 0; i < 2; i++){
-                for(int j = 0; j < 4; j++){
+            for(int64_t i = 0; i < 2; i++){
+                for(int64_t j = 0; j < 4; j++){
                     if(chessBoard[4 + i][2 + j] == white_pawn){
                         development += 5;
                     }
                 }
             }
-            for(int i = 0; i < 2; i++){
-                for(int j = 0; j < 4; j++){
+            for(int64_t i = 0; i < 2; i++){
+                for(int64_t j = 0; j < 4; j++){
                     if(chessBoard[2 + i][2 + j] == black_pawn){
                         development -= 5;
                     }
@@ -1310,12 +1295,12 @@ class Evaluation{
             }
             return development;
         } 
-        int endgameKingRestriction(){
-            int kingRestriction;
-            int kp_y;
-            int kp_x;
-            for(int i = 0; i <= 7; i++){
-                for(int j = 0; j <= 7; j++){
+        int64_t endgameKingRestriction(){
+            int64_t kingRestriction = 0;
+            int64_t kp_y;
+            int64_t kp_x;
+            for(int64_t i = 0; i <= 7; i++){
+                for(int64_t j = 0; j <= 7; j++){
                     if(chessBoard_CC[i][j] == white_king){
                         kp_y = i;
                         kp_x = j;
@@ -1333,8 +1318,8 @@ class Evaluation{
             } else{
                 kingRestriction -= 5 * (3 - kp_x);
             }
-            for(int i = 0; i <= 7; i++){
-                for(int j = 0; j <= 7; j++){
+            for(int64_t i = 0; i <= 7; i++){
+                for(int64_t j = 0; j <= 7; j++){
                     if(chessBoard_CC[i][j] == black_king){
                         kp_y = i;
                         kp_x = j;
@@ -1358,8 +1343,8 @@ class Evaluation{
 Evaluation evaluation;
 
 void order(){
-    int orderIndex = 0;
-    for(int i = 0; i < n; i++){
+    int64_t orderIndex = 0;
+    for(int64_t i = 0; i < n; i++){
         if(value(chessBoard[moveList[2][i]][moveList[3][i]]) > 100){
             swap(moveList[0][i], moveList[0][orderIndex]);
             swap(moveList[1][i], moveList[1][orderIndex]);
@@ -1369,7 +1354,7 @@ void order(){
         }
     }
 }
-void generateMoves(int side, int se){
+void generateMoves(int64_t side, int64_t se){
     if(se == 1){
         n = 0;
         memset(moveList, 0, sizeof(moveList));
@@ -1378,9 +1363,9 @@ void generateMoves(int side, int se){
         memset(eml, 0, sizeof(eml));
     }
     if(side == 1){
-        for(int i = 0; i < 8; i++){
+        for(int64_t i = 0; i < 8; i++){
             y = i;
-            for(int j = 0; j < 8; j++){
+            for(int64_t j = 0; j < 8; j++){
                 x = j;
                 if(chessBoard[y][x] == white_pawn){
                     moveGen.w_pawn(se);
@@ -1400,9 +1385,9 @@ void generateMoves(int side, int se){
         }
     }
     else{
-        for(int i = 0; i < 8; i++){
+        for(int64_t i = 0; i < 8; i++){
             y = i;
-            for(int j = 0; j < 8; j++){
+            for(int64_t j = 0; j < 8; j++){
                 x = j;
                 if(chessBoard[y][x] == black_pawn){
                     moveGen.b_pawn(se);
@@ -1422,21 +1407,27 @@ void generateMoves(int side, int se){
         }
     }
 }
+void assign(int64_t index){
+    move_y = moveList[0][index];
+    move_x = moveList[1][index];
+    moveTo_y = moveList[2][index];
+    moveTo_x = moveList[3][index];  
+}
 
 // add checks to enemy moves eval
-int staticEval(int side, int dtm){
+int64_t staticEval(int64_t side, int64_t dtm){
     if(side == 1){
-        int eval = 0;
+        int64_t eval = 0;
         generateMoves(1, 2);
         if(o == 0){
-            if(check_white()){
-                return (-infinity - dtm);
+            if(check(1)){
+                return (-1000000 - dtm);
             } else{
                 return 0;
             }
         }
-        int responses[o] = {0};
-        for(int i = 0; i < o; i++){
+        int64_t responses[219] = {0};
+        for(int64_t i = 0; i < o; i++){
             if(value(chessBoard[eml[2][i]][eml[3][i]]) > value(chessBoard[eml[0][i]][eml[1][i]])){
                 responses[i] = value(chessBoard[eml[2][i]][eml[3][i]]) - value(chessBoard[eml[0][i]][eml[1][i]]);
             }
@@ -1450,17 +1441,17 @@ int staticEval(int side, int dtm){
         }
         return eval;
     } else{
-        int eval = 0;
+        int64_t eval = 0;
         generateMoves(0, 2);
         if(o == 0){
-            if(check_black()){
-                return (infinity + dtm);
+            if(check(0)){
+                return (1000000 + dtm);
             } else{
                 return 0;
             }
         }
-        int responses[o] = {0};
-        for(int i = 0; i < o; i++){
+        int64_t responses[219] = {0};
+        for(int64_t i = 0; i < o; i++){
             if(value(chessBoard[eml[2][i]][eml[3][i]]) > value(chessBoard[eml[0][i]][eml[1][i]])){
                 responses[i] = value(chessBoard[eml[2][i]][eml[3][i]]) - value(chessBoard[eml[0][i]][eml[1][i]]);
             }
@@ -1476,85 +1467,78 @@ int staticEval(int side, int dtm){
     }
 }
 
-// search (removes castling rights), currently set up for the computer to play as white
-int search(int depth, int depth_cap){
-    if(depth % 2 == 0){
-        generateMoves(1, 1);
-        order();
-    } else{
-        generateMoves(0, 1);
-        order();
+
+
+
+
+
+
+
+// search
+int search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
+    if(depth == 0){
+        TEST++;
+        return staticEval(1, 0);
+    }
+    generateMoves((depth + 1) % 2, 1);
+    order();
+    if(n == 0){
+        if(check((depth + 1) % 2)){
+            memcpy(chessBoard, boardStates[depth + 1], sizeof(chessBoard));
+            generateMoves(depth % 2, 1);
+            order();
+            return -(1000000 + depth);
+        }
+        return 0;
     }
     memcpy(boardStates[depth], chessBoard, sizeof(chessBoard));
-    for(int i = 0; i < 219; i++){
-        move_y = moveList[0][depthProgress[depth]];
-        move_x = moveList[1][depthProgress[depth]];
-        moveTo_y = moveList[2][depthProgress[depth]];
-        moveTo_x = moveList[3][depthProgress[depth]];
+    // For move in moveList
+    for(int64_t i = 0; i < 219; i++){
+        assign(i);
         if(move_y == 0 && move_x == 0 && moveTo_y == 0 && moveTo_x == 0){
+            if(depth != cap){
+                memcpy(chessBoard, boardStates[depth + 1], sizeof(chessBoard));
+                generateMoves(depth % 2, 1);
+                order();
+            }
             break;
         }
-        depthProgress[depth]++;
         playMove(0);
-        if(depth % 2 == 0 && depth != 1){
-            generateMoves(0, 2);
-            if(o == 0){
-                if(check_black()){
-                    moveScores[depth][branchIndex[depth]] = infinity + depth;
-                } else{
-                    moveScores[depth][branchIndex[depth]] = 0;
-                }
-                branchIndex[depth]++;
-            }
-        } else if(depth % 2 == 1 && depth != 1){
-            generateMoves(1, 2);
-            if(o == 0){
-                if(check_white()){
-                    moveScores[depth][branchIndex[depth]] = (-infinity - depth);
-                } else{
-                    moveScores[depth][branchIndex[depth]] = 0;
-                }
-                branchIndex[depth]++;
-            }
-        }
-        if(depth > 1 && o != 0){
-            search(depth - 1, depth_cap);
-            return 0;
-        }
-        // Evaluation & Pruning
-        if(depth == 1){
-            moveScores[1][i] = staticEval(1, 1);
-            TEST+=o;
-            if(branchIndex[depth + 1] != 0 && moveScores[1][i] <= getMax(moveScores[depth + 1], branchIndex[depth + 1])){
-                break;
-            }
-        }
+        int64_t eval = -search(depth - 1, cap, -beta, -alpha);
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
-    }
-    if(depth < depth_cap){
-        depthProgress[depth] = 0;
-        depth++;
-        if(depth % 2 == 0){
-            moveScores[depth][branchIndex[depth]] = getMin(moveScores[depth - 1], n);
-            if(branchIndex[depth + 1] != 0 && moveScores[depth][branchIndex[depth]] >= getMin(moveScores[depth + 1], branchIndex[depth + 1])){
-                depthProgress[depth] = 218;
-            }
-        } else{
-            moveScores[depth][branchIndex[depth]] = getMax(moveScores[depth - 1], n);
-            if(branchIndex[depth + 1] != 0 && moveScores[depth][branchIndex[depth]] <= getMax(moveScores[depth + 1], branchIndex[depth + 1])){
-                depthProgress[depth] = 218;
+        if(depth == cap){
+            if(eval > alpha){
+                assign(i);
+                bestMove[0] = move_y;
+                bestMove[1] = move_x;
+                bestMove[2] = moveTo_y;
+                bestMove[3] = moveTo_x;
+                //cout << " " << move_y << " " << move_x << " " << moveTo_y << " " << moveTo_x << endl;
             }
         }
-        branchIndex[depth]++;
-        branchIndex[depth - 1] = 0;
-        memset(moveScores[depth - 1], 0, sizeof(moveScores[depth - 1]));
-        memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
-        search(depth, depth_cap);
+        // Pruning
+        if(eval >= beta){
+            if(depth != cap){
+                memcpy(chessBoard, boardStates[depth + 1], sizeof(chessBoard));
+                generateMoves(depth % 2, 1);
+                order();
+            }
+            return beta;
+        }
+        alpha = duoMax(eval, alpha);
     }
-    return 0;
+    return alpha;
 }
 
-int getMove_white(){
+
+
+
+
+
+
+
+
+int64_t getMove_white(){
     generateMoves(1, 1);
     isLegalMove = false;
     cout << "White's move ---> ";
@@ -1562,7 +1546,7 @@ int getMove_white(){
     cin >> move_x;
     cin >> moveTo_y;
     cin >> moveTo_x;
-    for(int i = 0; i < n; i++){
+    for(int64_t i = 0; i < n; i++){
         if(move_y == moveList[0][i] && move_x == moveList[1][i] && moveTo_y == moveList[2][i] && moveTo_x == moveList[3][i]){
             playMove(1);
             isLegalMove = true;
@@ -1572,7 +1556,7 @@ int getMove_white(){
     cout << "Illegal Move!" << endl;
     return 0;
 }
-int getMove_black(){
+int64_t getMove_black(){
     generateMoves(0, 1);
     isLegalMove = false;
     cout << "Black's move ---> ";
@@ -1580,7 +1564,7 @@ int getMove_black(){
     cin >> move_x;
     cin >> moveTo_y;
     cin >> moveTo_x;
-    for(int i = 0; i < n; i++){
+    for(int64_t i = 0; i < n; i++){
         if(move_y == moveList[0][i] && move_x == moveList[1][i] && moveTo_y == moveList[2][i] && moveTo_x == moveList[3][i]){
             playMove(1);
             isLegalMove = true;
@@ -1593,21 +1577,18 @@ int getMove_black(){
 
 class Engine{
     public:
-        void move(int _depth){
-            int searchDepth = _depth - 1;
-            search(searchDepth, searchDepth);
-            cout << "Searched - " << TEST << " positions" << endl;
-            generateMoves(1, 1);
-            order();
-            getMax(moveScores[searchDepth], n);
-            move_y = moveList[0][best_index];
-            move_x = moveList[1][best_index];
-            moveTo_y = moveList[2][best_index];
-            moveTo_x = moveList[3][best_index];
+        void move(int64_t _depth){
+            int64_t alpha = -1000000000;
+            int64_t beta = 1000000000;
+            int64_t sdepth = _depth;
+            cout << "Evaluated at " << search(sdepth, sdepth, alpha, beta) << " with ";
+            cout << TEST << " positions searched" << endl;
+            //order();
+            move_y = bestMove[0];
+            move_x = bestMove[1];
+            moveTo_y = bestMove[2];
+            moveTo_x = bestMove[3];
             playMove(1);
-            memset(moveScores, 0, sizeof(moveScores));
-            memset(branchIndex, 0, sizeof(branchIndex));
-            memset(depthProgress, 0, sizeof(depthProgress));
             TEST = 0;
         }
 };
@@ -1622,7 +1603,7 @@ int main(){
     endgame = false;
 
     while(move_move <= 5949){
-        if(move_move == 15){
+        if(move_move == 13){
             opening = false;
             middlegame = true;
         }
@@ -1631,17 +1612,17 @@ int main(){
             endgame = true;
         }
         cout << "Move - " << move_move << endl;
-        engine.move(5);
+        engine.move(6);
         //do{
             //getMove_white();
         //} while(!isLegalMove);
 
         generateMoves(0, 1);
-        if(n == 0 && check_black() == true){
+        if(n == 0 && check(0) == true){
             printBoard();
             cout << "Checkmate - white wins" << endl;
             break;
-        } else if(n == 0 && check_black() == false){
+        } else if(n == 0 && check(0) == false){
             printBoard();
             cout << "Stalemate - draw" << endl;
             break;
@@ -1656,11 +1637,11 @@ int main(){
         } while(!isLegalMove);
 
         generateMoves(1, 1);
-        if(n == 0 && check_white() == true){
+        if(n == 0 && check(1) == true){
             printBoard();
             cout << "Checkmate - black wins" << endl;
             break;
-        } else if(n == 0 && check_white() == false){
+        } else if(n == 0 && check(1) == false){
             printBoard();
             cout << "Stalemate - draw" << endl;
             break;
