@@ -25,19 +25,19 @@ int64_t x;
 int64_t y_to;
 int64_t x_to;
 
-const int64_t empty_square = 0;
-const int64_t white_pawn = 1;
-const int64_t white_knight = 2;
-const int64_t white_bishop = 3;
-const int64_t white_rook = 4;
-const int64_t white_queen = 5;
-const int64_t white_king = 6;
-const int64_t black_pawn = 11;
-const int64_t black_knight = 12;
-const int64_t black_bishop = 13;
-const int64_t black_rook = 14;
-const int64_t black_queen = 15;
-const int64_t black_king = 16;
+const char empty_square = 0;
+const char white_pawn = 1;
+const char white_knight = 2;
+const char white_bishop = 3;
+const char white_rook = 4;
+const char white_queen = 5;
+const char white_king = 6;
+const char black_pawn = 11;
+const char black_knight = 12;
+const char black_bishop = 13;
+const char black_rook = 14;
+const char black_queen = 15;
+const char black_king = 16;
 
 int64_t n = 0;
 int64_t o = 0;
@@ -114,9 +114,9 @@ int64_t duoMax(int64_t a, int64_t b){
     return max;
 }
 
-string FEN = "rnbqkbnrppppppppooooooooooooooooooooooooooooooooPPPPPPPPRNBQKBNR";
-int64_t chessBoard[8][8] = {0};
-int64_t chessBoard_CC[8][8] = {0};
+string FEN = "8/2p3N1/6p1/5PB1/pp2Rn2/7k/P1p2K1P/3r4";
+char chessBoard[8][8] = {0};
+char chessBoard_CC[8][8] = {0};
 
 int64_t boardStates[50][8][8] = {0};
 int64_t moveList[4][219] = {0};
@@ -1178,38 +1178,64 @@ class Move_gen{
 Move_gen moveGen;
 
 void initializeBoard(){
-    int64_t FENpos = 0;
-    for(int64_t i = 0; i < 8; i++){
-        for(int64_t j = 0; j < 8; j++){
-            if(FEN[FENpos] == 'p'){
-                chessBoard[i][j] = black_pawn;
-            } else if(FEN[FENpos] == 'n'){
-                chessBoard[i][j] = black_knight;
-            } else if(FEN[FENpos] == 'b'){
-                chessBoard[i][j] = black_bishop;
-            } else if(FEN[FENpos] == 'r'){
-                chessBoard[i][j] = black_rook;
-            } else if(FEN[FENpos] == 'q'){
-                chessBoard[i][j] = black_queen;
-            } else if(FEN[FENpos] == 'k'){
-                chessBoard[i][j] = black_king;
-            } else if(FEN[FENpos] == 'P'){
-                chessBoard[i][j] = white_pawn;
-            } else if(FEN[FENpos] == 'N'){
-                chessBoard[i][j] = white_knight;
-            } else if(FEN[FENpos] == 'B'){
-                chessBoard[i][j] = white_bishop;
-            } else if(FEN[FENpos] == 'R'){
-                chessBoard[i][j] = white_rook;
-            } else if(FEN[FENpos] == 'Q'){
-                chessBoard[i][j] = white_queen;
-            } else if(FEN[FENpos] == 'K'){
-                chessBoard[i][j] = white_king;
-            } else{
-                chessBoard[i][j] = empty_square;
-            }
-            FENpos += 1;
+    int64_t pos = 0;
+    int64_t fenpos = 0;
+    while(pos < 64){
+        if(FEN[fenpos] == '1'){
+            pos++;
+        } else if(FEN[fenpos] == '2'){
+            pos+=2;
+        } else if(FEN[fenpos] == '3'){
+            pos+=3;
+        } else if(FEN[fenpos] == '4'){
+            pos+=4;
+        } else if(FEN[fenpos] == '5'){
+            pos+=5;
+        } else if(FEN[fenpos] == '6'){
+            pos+=6;
+        } else if(FEN[fenpos] == '7'){
+            pos+=7;
+        } else if(FEN[fenpos] == '8'){
+            pos+=8;
+        } else if(FEN[fenpos] == 'p'){
+            chessBoard[pos/8][pos % 8] = black_pawn;
+            pos++;
+        } else if(FEN[fenpos] == 'n'){
+            chessBoard[pos/8][pos % 8] = black_knight;
+            pos++;
+        } else if(FEN[fenpos] == 'b'){
+            chessBoard[pos/8][pos % 8] = black_bishop;
+            pos++;
+        } else if(FEN[fenpos] == 'r'){
+            chessBoard[pos/8][pos % 8] = black_rook;
+            pos++;
+        } else if(FEN[fenpos] == 'q'){
+            chessBoard[pos/8][pos % 8] = black_queen;
+            pos++;
+        } else if(FEN[fenpos] == 'k'){
+            chessBoard[pos/8][pos % 8] = black_king;
+            pos++;
+        } else if(FEN[fenpos] == 'P'){
+            chessBoard[pos/8][pos % 8] = white_pawn;
+            pos++;
+        } else if(FEN[fenpos] == 'N'){
+            chessBoard[pos/8][pos % 8] = white_knight;
+            pos++;
+        } else if(FEN[fenpos] == 'B'){
+            chessBoard[pos/8][pos % 8] = white_bishop;
+            pos++;
+        } else if(FEN[fenpos] == 'R'){
+            chessBoard[pos/8][pos % 8] = white_rook;
+            pos++;
+        } else if(FEN[fenpos] == 'Q'){
+            chessBoard[pos/8][pos % 8] = white_queen;
+            pos++;
+        } else if(FEN[fenpos] == 'K'){
+            chessBoard[pos/8][pos % 8] = white_king;
+            pos++;
+        } else{
         }
+        fenpos++;
     }
     memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
 }
