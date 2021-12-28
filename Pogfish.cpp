@@ -114,7 +114,7 @@ int64_t duoMax(int64_t a, int64_t b){
     return max;
 }
 
-string FEN = "7k/1p4R1/3bp2p/3p3N/p2P4/4NQPP/PP5K/2r1q3";
+string FEN = "2r5/2p2k1p/pqp1RB2/2r5/PbQ2N2/1P3PP1/2P3P1/4R2K";
 char chessBoard[8][8] = {0};
 char chessBoard_CC[8][8] = {0};
 
@@ -1600,7 +1600,6 @@ int64_t getMove_black(){
     cout << "Illegal Move!" << endl;
     return 0;
 }
-
 class Engine{
     public:
         void move(int64_t _depth){
