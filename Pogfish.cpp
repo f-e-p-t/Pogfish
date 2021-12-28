@@ -114,7 +114,7 @@ int64_t duoMax(int64_t a, int64_t b){
     return max;
 }
 
-string FEN = "8/2p3N1/6p1/5PB1/pp2Rn2/7k/P1p2K1P/3r4";
+string FEN = "7k/1p4R1/3bp2p/3p3N/p2P4/4NQPP/PP5K/2r1q3";
 char chessBoard[8][8] = {0};
 char chessBoard_CC[8][8] = {0};
 
