@@ -2,9 +2,9 @@
 #include<cmath>
 #include<string.h>
 #include<algorithm>
+#include<unordered_map>
 using namespace std;
 
-int64_t tempo = 1;
 int64_t move_move = 1;
 bool isLegalMove;
 bool opening;
@@ -114,9 +114,13 @@ int64_t duoMax(int64_t a, int64_t b){
     return max;
 }
 
-string FEN = "1k3b1r/5ppp/1p3n2/nq1p3P/2pP4/2P1P3/P5P1/R1BQKB1R";
+string FEN = "2k3nr/pp1r3p/q4pb1/2pp4/3PP3/3P3Q/P4PPP/R1R3K1 w - - 0 1";
 char chessBoard[8][8] = {0};
 char chessBoard_CC[8][8] = {0};
+struct TranspositionData{
+    int64_t evaluation;
+    int64_t depthEvaluated;
+}
 
 int64_t boardStates[50][8][8] = {0};
 int64_t moveList[4][219] = {0};
@@ -187,7 +191,6 @@ int64_t playMove_CC(int64_t castlingRightsRemoved){
     return 0;
 }
 int64_t playMove(int64_t castlingRightsRemoved){
-    playMove_CC(castlingRightsRemoved);
     // castling
     if(chessBoard[move_y][move_x] == white_rook && move_y == 7 && move_x == 0){
         if(castlingRightsRemoved == 1){
@@ -1461,7 +1464,7 @@ int64_t staticEval(int64_t side, int64_t dtm){
         }
         eval += evaluation.material() + getMax(responses, o);
         if(opening){
-            evaluation += evaluation.development();
+            eval += evaluation.development();
         }
         if(endgame){
             eval += evaluation.endgameKingRestriction();
@@ -1523,7 +1526,7 @@ int search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
         playMove(0);
         int64_t eval = -search(depth - 1, cap, -beta, -alpha);
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
-        memcpy(chessBoard_CC, boardStates[depth], sizeof(chessBoard));
+        memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
         generateMoves((depth + 1) % 2, 1);
         order();
         if(depth == cap){
@@ -1541,7 +1544,7 @@ int search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
     }
     return alpha;
 }
- 
+
 
 
 
@@ -1607,12 +1610,12 @@ int main(void){
 
     initializeBoard();
     printBoard();
-    opening = true;
-    middlegame = false;
-    endgame = false;
+    opening = 0;
+    middlegame = 1;
+    endgame = 0;
 
     while(move_move <= 5949){
-        if(move_move == 13){
+        if(move_move == 15){
             opening = false;
             middlegame = true;
         }
@@ -1639,7 +1642,6 @@ int main(void){
         }
 
         printBoard();
-        tempo++;
 
         do{
             getMove_black();
@@ -1659,7 +1661,6 @@ int main(void){
         }
 
         printBoard();
-        tempo++;
         move_move++;
     }
 }
