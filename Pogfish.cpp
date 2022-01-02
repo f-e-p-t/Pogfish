@@ -1,8 +1,8 @@
 #include<iostream>
 #include<cmath>
 #include<string.h>
-#include<algorithm>
 #include<unordered_map>
+#include<random>
 using namespace std;
 
 int64_t move_move = 1;
@@ -25,26 +25,26 @@ int64_t x;
 int64_t y_to;
 int64_t x_to;
 
-const char empty_square = 0;
-const char white_pawn = 1;
-const char white_knight = 2;
-const char white_bishop = 3;
-const char white_rook = 4;
-const char white_queen = 5;
-const char white_king = 6;
-const char black_pawn = 11;
-const char black_knight = 12;
-const char black_bishop = 13;
-const char black_rook = 14;
-const char black_queen = 15;
-const char black_king = 16;
+const int64_t empty_square = 0;
+const int64_t white_pawn = 1;
+const int64_t white_knight = 2;
+const int64_t white_bishop = 3;
+const int64_t white_rook = 4;
+const int64_t white_queen = 5;
+const int64_t white_king = 6;
+const int64_t black_pawn = 11;
+const int64_t black_knight = 12;
+const int64_t black_bishop = 13;
+const int64_t black_rook = 14;
+const int64_t black_queen = 15;
+const int64_t black_king = 16;
 
 int64_t n = 0;
 int64_t o = 0;
 int64_t TEST = 0;
 
 int64_t value(int64_t piece){
-    int64_t pieceValue;
+    int64_t pieceValue = 0;
     switch(piece){
         case 1:
             pieceValue = 100;
@@ -86,6 +86,49 @@ int64_t value(int64_t piece){
     }
     return pieceValue;
 }
+int64_t pieceIndex(int64_t piece){
+    int64_t pieceIndex = 0;
+    switch(piece){
+        case 1:
+            pieceIndex = 0;
+            break;
+        case 2:
+            pieceIndex = 1;
+            break;
+        case 3:
+            pieceIndex = 2;
+            break;
+        case 4:
+            pieceIndex = 3;
+            break;
+        case 5:
+            pieceIndex = 4;
+            break;
+        case 6:
+            pieceIndex = 5;
+            break;
+        case 11:
+            pieceIndex = 6;
+            break;
+        case 12:
+            pieceIndex = 7;
+            break;
+        case 13:
+            pieceIndex = 8;
+            break;
+        case 14:
+            pieceIndex = 9;
+            break;
+        case 15:
+            pieceIndex = 10;
+            break;
+        case 16:
+            pieceIndex = 11;
+        default:
+            pieceIndex = 0;
+    }
+    return pieceIndex;
+}
 int64_t getMax(int64_t values[], int64_t numValues){
     int64_t best = values[0];
     best_index = 0;
@@ -114,12 +157,30 @@ int64_t duoMax(int64_t a, int64_t b){
     return max;
 }
 
-string FEN = "2k3nr/pp1r3p/q4pb1/2pp4/3PP3/3P3Q/P4PPP/R1R3K1 w - - 0 1";
-char chessBoard[8][8] = {0};
-char chessBoard_CC[8][8] = {0};
+string FEN = "8/2p3N1/6p1/5PB1/pp2Rn2/7k/P1p2K1P/3r4";
+int64_t chessBoard[8][8] = {0};
+int64_t chessBoard_CC[8][8] = {0};
+
+int64_t zobrist_keys[12][8][8] = {0};
+int64_t side_key = 0;
 struct TranspositionData{
     int64_t evaluation;
     int64_t depthEvaluated;
+};
+std::unordered_map<int64_t, TranspositionData> TTable;
+int64_t Hash(int64_t position[][8], int side){
+    int64_t hash = 0;
+    for(int i = 0; i < 8; i++){
+        for(int j = 0; j < 8; j++){
+            if(chessBoard[i][j] != empty_square){
+                hash ^= zobrist_keys[i][j][pieceIndex(chessBoard[i][j])];
+            }
+        }
+    }
+    if(side == 1){
+        hash ^= side_key;
+    }
+    return hash;
 }
 
 int64_t boardStates[50][8][8] = {0};
@@ -255,7 +316,7 @@ int64_t playMove(int64_t castlingRightsRemoved){
     memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
     return 0;
 }
-bool check(int side){
+bool check(int64_t side){
     if(side == 1){
         int64_t kp_y = 0;
         int64_t kp_x = 0;
@@ -1527,6 +1588,8 @@ int search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
         int64_t eval = -search(depth - 1, cap, -beta, -alpha);
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
         memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
+        TTable[Hash(chessBoard, (depth + 1) % 2)].evaluation = eval;
+        //cout << eval << " ";
         generateMoves((depth + 1) % 2, 1);
         order();
         if(depth == cap){
@@ -1607,6 +1670,22 @@ class Engine{
 Engine engine;
 
 int main(void){
+
+    std::random_device rd;
+    std::mt19937_64 gen(rd());
+    std::uniform_int_distribution<long long int> distrib(0, 9223372036854775807);
+    for (int i = 0; i < 12; i++){
+        for(int j = 0; j < 8; j++){
+            for(int k = 0; k < 8; k++){
+                zobrist_keys[i][j][k] = distrib(gen);
+            }
+        }
+    }
+    side_key = distrib(gen);
+
+    cout << Hash(chessBoard, 0) << endl;
+    cout << Hash(chessBoard, 0) << endl;
+    cout << Hash(chessBoard, 0) << endl;
 
     initializeBoard();
     printBoard();
