@@ -1563,6 +1563,7 @@ int64_t staticEval(int64_t side, int64_t dtm){
 
 
 
+
 // search
 int search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
     if(depth == 0){
@@ -1578,18 +1579,25 @@ int search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
         return 0;
     }
     memcpy(boardStates[depth], chessBoard, sizeof(chessBoard));
+    int64_t eval;
+    int64_t boardHash;
     // For move in moveList
-    for(int64_t i = 0; i < 219; i++){
+    for(int64_t i = 0; i < 219; i++){;
         assign(i);
         if(move_y == 0 && move_x == 0 && moveTo_y == 0 && moveTo_x == 0){
             break;
         }
         playMove(0);
-        int64_t eval = -search(depth - 1, cap, -beta, -alpha);
+        boardHash = Hash(chessBoard, (depth + 1) % 2);
+        if(TTable[boardHash].depthEvaluated > 0 && TTable[boardHash].depthEvaluated >= depth){
+            eval = TTable[boardHash].evaluation;
+        } else{
+            eval = -search(depth - 1, cap, -beta, -alpha);
+        }
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
         memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
         TTable[Hash(chessBoard, (depth + 1) % 2)].evaluation = eval;
-        //cout << eval << " ";
+        TTable[Hash(chessBoard, (depth + 1) % 2)].depthEvaluated = depth;
         generateMoves((depth + 1) % 2, 1);
         order();
         if(depth == cap){
@@ -1657,7 +1665,7 @@ class Engine{
             int64_t beta = 1000000000;
             int64_t sdepth = _depth;
             cout << "Evaluated at " << search(sdepth, sdepth, alpha, beta) << " with ";
-            cout << TEST << " positions searched" << endl;
+            cout << TEST << " positions searched. Played - " << bestMove[0] << " " << bestMove[1] << " " << bestMove[2] << " " << bestMove[3] << " " << endl;
             move_y = bestMove[0];
             move_x = bestMove[1];
             moveTo_y = bestMove[2];
@@ -1682,10 +1690,6 @@ int main(void){
         }
     }
     side_key = distrib(gen);
-
-    cout << Hash(chessBoard, 0) << endl;
-    cout << Hash(chessBoard, 0) << endl;
-    cout << Hash(chessBoard, 0) << endl;
 
     initializeBoard();
     printBoard();
@@ -1725,7 +1729,7 @@ int main(void){
         do{
             getMove_black();
         } while(!isLegalMove);
-        //engine.move_black(2);
+        //engine.move_white(5);
 
         generateMoves(1, 1);
         if(n == 0 && check(1) == true){
