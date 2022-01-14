@@ -46,86 +46,38 @@ int64_t TEST = 0;
 int64_t value(int64_t piece){
     int64_t pieceValue = 0;
     switch(piece){
-        case 1:
-            pieceValue = 100;
-            break;
-        case 2:
-            pieceValue = 300;
-            break;
-        case 3:
-            pieceValue = 300;
-            break;
-        case 4:
-            pieceValue = 500;
-            break;
-        case 5:
-            pieceValue = 900;
-            break;
-        case 6:
-            pieceValue = 0;
-            break;
-        case 11:
-            pieceValue = 100;
-            break;
-        case 12:
-            pieceValue = 300;
-            break;
-        case 13:
-            pieceValue = 300;
-            break;
-        case 14:
-            pieceValue = 500;
-            break;
-        case 15:
-            pieceValue = 900;
-            break;
-        case 16:
-            pieceValue = 0;
-        default:
-            pieceValue = 0;
+        case 1: pieceValue = 100; break;
+        case 2: pieceValue = 300; break;
+        case 3: pieceValue = 300; break;
+        case 4: pieceValue = 500; break;
+        case 5: pieceValue = 900; break;
+        case 6: pieceValue = 0; break;
+        case 11: pieceValue = 100; break;
+        case 12: pieceValue = 300; break;
+        case 13: pieceValue = 300; break;
+        case 14: pieceValue = 500; break;
+        case 15: pieceValue = 900; break;
+        case 16: pieceValue = 0; break;
+        default: pieceValue = 0;
     }
     return pieceValue;
 }
 int64_t pieceIndex(int64_t piece){
     int64_t pieceIndex = 0;
     switch(piece){
-        case 1:
-            pieceIndex = 0;
-            break;
-        case 2:
-            pieceIndex = 1;
-            break;
-        case 3:
-            pieceIndex = 2;
-            break;
-        case 4:
-            pieceIndex = 3;
-            break;
-        case 5:
-            pieceIndex = 4;
-            break;
-        case 6:
-            pieceIndex = 5;
-            break;
-        case 11:
-            pieceIndex = 6;
-            break;
-        case 12:
-            pieceIndex = 7;
-            break;
-        case 13:
-            pieceIndex = 8;
-            break;
-        case 14:
-            pieceIndex = 9;
-            break;
-        case 15:
-            pieceIndex = 10;
-            break;
-        case 16:
-            pieceIndex = 11;
-        default:
-            pieceIndex = 0;
+        case 1: pieceIndex = 0; break;
+        case 2: pieceIndex = 1; break;
+        case 3: pieceIndex = 2; break;
+        case 4: pieceIndex = 3; break;
+        case 5: pieceIndex = 4; break;
+        case 6: pieceIndex = 5; break;
+        case 11: pieceIndex = 6; break;
+        case 12: pieceIndex = 7; break;
+        case 13: pieceIndex = 8; break;
+        case 14: pieceIndex = 9; break;
+        case 15: pieceIndex = 10; break;
+        case 16: pieceIndex = 11; break;
+        default: pieceIndex = 0;
     }
     return pieceIndex;
 }
@@ -133,10 +85,7 @@ int64_t getMax(int64_t values[], int64_t numValues){
     int64_t best = values[0];
     best_index = 0;
     for(int64_t i = 0; i < numValues; i++){
-        if(values[i] > best){
-            best = values[i];
-            best_index = i;
-        }
+        if(values[i] > best){ best = values[i]; best_index = i;}
     }
     return best;
 }
@@ -144,10 +93,7 @@ int64_t getMin(int64_t values[], int64_t numValues){
     int64_t best = values[0];
     best_index = 0;
     for(int64_t i = 0; i < numValues; i++){
-        if(values[i] < best){
-            best = values[i];
-            best_index = i;
-        }
+        if(values[i] < best){ best = values[i]; best_index = i;}
     }
     return best;
 }
@@ -157,7 +103,7 @@ int64_t duoMax(int64_t a, int64_t b){
     return max;
 }
 
-string FEN = "r1b5/pp3r1p/2k3p1/5p2/P7/1P3N2/2P2PPP/R4RK1";
+string FEN = "8/2p3N1/6p1/5PB1/pp2Rn2/7k/P1p2K1P/3r4";
 int64_t chessBoard[8][8] = {0};
 int64_t chessBoard_CC[8][8] = {0};
 
@@ -189,60 +135,25 @@ int64_t bestMove[4] = {0};
 int64_t playMove_CC(int64_t castlingRightsRemoved){
     // castling
     if(chessBoard_CC[y][x] == white_rook && y == 7 && x == 0){
-        if(castlingRightsRemoved == 1){
-            QSCastlingRights_white = false;
-        }
+        if(castlingRightsRemoved == 1){ QSCastlingRights_white = false;}
     } else if(chessBoard_CC[y][x] == white_rook && y == 7 && x == 7){
-        if(castlingRightsRemoved == 1){
-            KSCastlingRights_white = false;
-        }
+        if(castlingRightsRemoved == 1){ KSCastlingRights_white = false;}
     } else if(chessBoard_CC[y][x] == black_rook && y == 0 && x == 0){
-        if(castlingRightsRemoved == 1){
-            QSCastlingRights_black = false;
-        }
+        if(castlingRightsRemoved == 1){ QSCastlingRights_black = false;}
     } else if(chessBoard_CC[y][x] == white_rook && y == 0 && x == 7){
-        if(castlingRightsRemoved == 1){
-            KSCastlingRights_black = false;
-        }
+        if(castlingRightsRemoved == 1){ KSCastlingRights_black = false;}
     }
-    if(chessBoard_CC[y][x] == white_king && y == 7 && x == 4 && y_to == 7 && x_to == 6 && KSCastlingRights_white){
-        chessBoard_CC[7][7] = empty_square;
-        chessBoard_CC[7][5] = white_rook;
-    } else if(chessBoard_CC[y][x] == white_king && y == 7 && x == 4 && y_to == 7 && x_to == 2 && QSCastlingRights_white){
-        chessBoard_CC[7][0] = empty_square;
-        chessBoard_CC[7][3] = white_rook;
-    } else if(chessBoard_CC[y][x] == black_king && y == 0 && x == 4 && y_to == 0 && x_to == 6 && KSCastlingRights_black){
-        chessBoard_CC[0][7] = empty_square;
-        chessBoard_CC[0][5] = black_rook;
-    } else if(chessBoard_CC[y][x] == black_king && y == 0 && x == 4 && y_to == 0 && x_to == 2 && QSCastlingRights_black){
-        chessBoard_CC[0][0] = empty_square;
-        chessBoard_CC[0][3] = black_rook;
-    } else{
+    if(chessBoard_CC[y][x] == white_king && y == 7 && x == 4 && y_to == 7 && x_to == 6 && KSCastlingRights_white){ chessBoard_CC[7][7] = empty_square; chessBoard_CC[7][5] = white_rook;
+    } else if(chessBoard_CC[y][x] == white_king && y == 7 && x == 4 && y_to == 7 && x_to == 2 && QSCastlingRights_white){ chessBoard_CC[7][0] = empty_square; chessBoard_CC[7][3] = white_rook;
+    } else if(chessBoard_CC[y][x] == black_king && y == 0 && x == 4 && y_to == 0 && x_to == 6 && KSCastlingRights_black){ chessBoard_CC[0][7] = empty_square; chessBoard_CC[0][5] = black_rook;
+    } else if(chessBoard_CC[y][x] == black_king && y == 0 && x == 4 && y_to == 0 && x_to == 2 && QSCastlingRights_black){ chessBoard_CC[0][0] = empty_square; chessBoard_CC[0][3] = black_rook;
     }
-    if(chessBoard_CC[y][x] == white_king){
-        if(castlingRightsRemoved == 1){
-            KSCastlingRights_white = false;
-            QSCastlingRights_white = false;
-        }
-    }
-    if(chessBoard_CC[y][x] == black_king){
-        if(castlingRightsRemoved == 1){
-            KSCastlingRights_black = false;
-            QSCastlingRights_black = false;
-        }
-    }
+    if(chessBoard_CC[y][x] == white_king){ if(castlingRightsRemoved == 1){ KSCastlingRights_white = false; QSCastlingRights_white = false;}}
+    if(chessBoard_CC[y][x] == black_king){ if(castlingRightsRemoved == 1){ KSCastlingRights_black = false; QSCastlingRights_black = false;}}
     // promotion
-    if(chessBoard_CC[y][x] == white_pawn && y_to == 0){
-        chessBoard_CC[y][x] = empty_square;
-        chessBoard_CC[y_to][x_to] = white_queen;
-        return 0;
-    } else if(chessBoard_CC[y][x] == black_pawn && y_to == 7){
-        chessBoard_CC[y][x] = empty_square;
-        chessBoard_CC[y_to][x_to] = black_queen;
-        return 0;
-    } else{
+    if(chessBoard_CC[y][x] == white_pawn && y_to == 0){ chessBoard_CC[y][x] = empty_square; chessBoard_CC[y_to][x_to] = white_queen; return 0;
+    } else if(chessBoard_CC[y][x] == black_pawn && y_to == 7){ chessBoard_CC[y][x] = empty_square; chessBoard_CC[y_to][x_to] = black_queen; return 0;
     }
-
     chessBoard_CC[y_to][x_to] = chessBoard_CC[y][x];
     chessBoard_CC[y][x] = empty_square;
     return 0;
@@ -250,330 +161,174 @@ int64_t playMove_CC(int64_t castlingRightsRemoved){
 int64_t playMove(int64_t castlingRightsRemoved){
     // castling
     if(chessBoard[move_y][move_x] == white_rook && move_y == 7 && move_x == 0){
-        if(castlingRightsRemoved == 1){
-            QSCastlingRights_white = false;
-        }
+        if(castlingRightsRemoved == 1){ QSCastlingRights_white = false;}
     } else if(chessBoard[move_y][move_x] == white_rook && move_y == 7 && move_x == 7){
-        if(castlingRightsRemoved == 1){
-            KSCastlingRights_white = false;
-        }
+        if(castlingRightsRemoved == 1){ KSCastlingRights_white = false;}
     } else if(chessBoard[move_y][move_x] == black_rook && move_y == 0 && move_x == 0){
-        if(castlingRightsRemoved == 1){
-            QSCastlingRights_black = false;
-        }
+        if(castlingRightsRemoved == 1){ QSCastlingRights_black = false;}
     } else if(chessBoard[move_y][move_x] == white_rook && move_y == 0 && move_x == 7){
-        if(castlingRightsRemoved == 1){
-            KSCastlingRights_black = false;
-        }
+        if(castlingRightsRemoved == 1){ KSCastlingRights_black = false;}
     }
-    if(chessBoard[move_y][move_x] == white_king && move_y == 7 && move_x == 4 && moveTo_y == 7 && moveTo_x == 6 && KSCastlingRights_white){
-        chessBoard[7][7] = empty_square;
-        chessBoard[7][5] = white_rook;
-    } else if(chessBoard[move_y][move_x] == white_king && move_y == 7 && move_x == 4 && moveTo_y == 7 && moveTo_x == 2 && QSCastlingRights_white){
-        chessBoard[7][0] = empty_square;
-        chessBoard[7][3] = white_rook;
-    } else if(chessBoard[move_y][move_x] == black_king && move_y == 0 && move_x == 4 && moveTo_y == 0 && moveTo_x == 6 && KSCastlingRights_black){
-        chessBoard[0][7] = empty_square;
-        chessBoard[0][5] = black_rook;
-    } else if(chessBoard[move_y][move_x] == black_king && move_y == 0 && move_x == 4 && moveTo_y == 0 && moveTo_x == 2 && QSCastlingRights_black){
-        chessBoard[0][0] = empty_square;
-        chessBoard[0][3] = black_rook;
-    } else{
+    if(chessBoard[move_y][move_x] == white_king && move_y == 7 && move_x == 4 && moveTo_y == 7 && moveTo_x == 6 && KSCastlingRights_white){ chessBoard[7][7] = empty_square; chessBoard[7][5] = white_rook;
+    } else if(chessBoard[move_y][move_x] == white_king && move_y == 7 && move_x == 4 && moveTo_y == 7 && moveTo_x == 2 && QSCastlingRights_white){ chessBoard[7][0] = empty_square; chessBoard[7][3] = white_rook;
+    } else if(chessBoard[move_y][move_x] == black_king && move_y == 0 && move_x == 4 && moveTo_y == 0 && moveTo_x == 6 && KSCastlingRights_black){ chessBoard[0][7] = empty_square; chessBoard[0][5] = black_rook;
+    } else if(chessBoard[move_y][move_x] == black_king && move_y == 0 && move_x == 4 && moveTo_y == 0 && moveTo_x == 2 && QSCastlingRights_black){ chessBoard[0][0] = empty_square; chessBoard[0][3] = black_rook;
     }
-    if(chessBoard[move_y][move_x] == white_king){
-        if(castlingRightsRemoved == 1){
-            KSCastlingRights_white = false;
-            QSCastlingRights_white = false;
-        }
-    }
-    if(chessBoard[move_y][move_x] == black_king){
-        if(castlingRightsRemoved == 1){
-            KSCastlingRights_black = false;
-            QSCastlingRights_black = false;
-        }
-    }
+    if(chessBoard[move_y][move_x] == white_king){ if(castlingRightsRemoved == 1){ KSCastlingRights_white = false; QSCastlingRights_white = false;}}
+    if(chessBoard[move_y][move_x] == black_king){ if(castlingRightsRemoved == 1){ KSCastlingRights_black = false; QSCastlingRights_black = false;}}
     // promotion
-    if(chessBoard[move_y][move_x] == white_pawn && moveTo_y == 0){
-        chessBoard[move_y][move_x] = empty_square;
-        chessBoard[moveTo_y][moveTo_x] = white_queen;
-        memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
-        return 0;
-    } else if(chessBoard[move_y][move_x] == black_pawn && moveTo_y == 7){
-        chessBoard[move_y][move_x] = empty_square;
-        chessBoard[moveTo_y][moveTo_x] = black_queen;
-        memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
-        return 0;
-    } else{
+    if(chessBoard[move_y][move_x] == white_pawn && moveTo_y == 0){ chessBoard[move_y][move_x] = empty_square; chessBoard[moveTo_y][moveTo_x] = white_queen; memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard)); return 0;
+    } else if(chessBoard[move_y][move_x] == black_pawn && moveTo_y == 7){ chessBoard[move_y][move_x] = empty_square; chessBoard[moveTo_y][moveTo_x] = black_queen; memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard)); return 0;
     }
-
     chessBoard[moveTo_y][moveTo_x] = chessBoard[move_y][move_x];
     chessBoard[move_y][move_x] = empty_square;
-
     memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
     return 0;
 }
 bool check(int64_t side){
-    if(side == 1){
-        int64_t kp_y = 0;
-        int64_t kp_x = 0;
-        for(int64_t i = 0; i <= 7; i++){
-            for(int64_t j = 0; j <= 7; j++){
-                if(chessBoard_CC[i][j] == white_king){
-                    kp_y = i;
-                    kp_x = j;
-                    break;
-                }
-            }
+    if(side == 1){ int64_t kp_y = 0; int64_t kp_x = 0;
+        for(int64_t i = 0; i <= 7; i++){ for(int64_t j = 0; j <= 7; j++){
+            if(chessBoard_CC[i][j] == white_king){ kp_y = i; kp_x = j; break;}}
         }
         for(int64_t i = 1; i < 8; i++){ // down & right
-            if(kp_y + i > 7 || kp_x + i > 7){
-                break;
-            } else if(chessBoard_CC[kp_y + i][kp_x + i] == black_bishop || chessBoard_CC[kp_y + i][kp_x + i] == black_queen){
-                return true;
-            } else if(chessBoard_CC[kp_y + i][kp_x + i] >= 1 && chessBoard_CC[kp_y + i][kp_x + i] != black_bishop && chessBoard_CC[kp_y + i][kp_x + i] != black_queen){
-                break;
-            } else{
+            if(kp_y + i > 7 || kp_x + i > 7){ break;
+            } else if(chessBoard_CC[kp_y + i][kp_x + i] == black_bishop || chessBoard_CC[kp_y + i][kp_x + i] == black_queen){ return true;
+            } else if(chessBoard_CC[kp_y + i][kp_x + i] >= 1 && chessBoard_CC[kp_y + i][kp_x + i] != black_bishop && chessBoard_CC[kp_y + i][kp_x + i] != black_queen){ break;
             }
         }
         for(int64_t i = 1; i < 8; i++){ // down & left
-            if(kp_y + i > 7 || kp_x - i < 0){
-                break;
-            } else if(chessBoard_CC[kp_y + i][kp_x - i] == black_bishop || chessBoard_CC[kp_y + i][kp_x - i] == black_queen){
-                return true;
-            } else if(chessBoard_CC[kp_y + i][kp_x - i] >= 1 && chessBoard_CC[kp_y + i][kp_x - i] != black_bishop && chessBoard_CC[kp_y + i][kp_x - i] != black_queen){
-                break;
-            } else{
+            if(kp_y + i > 7 || kp_x - i < 0){ break;
+            } else if(chessBoard_CC[kp_y + i][kp_x - i] == black_bishop || chessBoard_CC[kp_y + i][kp_x - i] == black_queen){ return true;
+            } else if(chessBoard_CC[kp_y + i][kp_x - i] >= 1 && chessBoard_CC[kp_y + i][kp_x - i] != black_bishop && chessBoard_CC[kp_y + i][kp_x - i] != black_queen){ break;
             }
         }
         for(int64_t i = 1; i < 8; i++){ // up & left
-            if(kp_y - i < 0 || kp_x - i < 0){
-                break;
-            } else if(chessBoard_CC[kp_y - i][kp_x - i] == black_bishop || chessBoard_CC[kp_y - i][kp_x - i] == black_queen){
-                return true;
-            } else if(chessBoard_CC[kp_y - i][kp_x - i] >= 1 && chessBoard_CC[kp_y - i][kp_x - i] != black_bishop && chessBoard_CC[kp_y - i][kp_x - i] != black_queen){
-                break;
-            } else{
+            if(kp_y - i < 0 || kp_x - i < 0){ break;
+            } else if(chessBoard_CC[kp_y - i][kp_x - i] == black_bishop || chessBoard_CC[kp_y - i][kp_x - i] == black_queen){ return true;
+            } else if(chessBoard_CC[kp_y - i][kp_x - i] >= 1 && chessBoard_CC[kp_y - i][kp_x - i] != black_bishop && chessBoard_CC[kp_y - i][kp_x - i] != black_queen){ break;
             }
         }
         for(int64_t i = 1; i < 8; i++){ // up & right
-            if(kp_y - i < 0 || kp_x + i > 7){
-                break;
-            } else if(chessBoard_CC[kp_y - i][kp_x + i] == black_bishop || chessBoard_CC[kp_y - i][kp_x + i] == black_queen){
-                return true;
-            } else if(chessBoard_CC[kp_y - i][kp_x + i] >= 1 && chessBoard_CC[kp_y - i][kp_x + i] != black_bishop && chessBoard_CC[kp_y - i][kp_x + i] != black_queen){
-                break;
-            } else{
+            if(kp_y - i < 0 || kp_x + i > 7){ break;
+            } else if(chessBoard_CC[kp_y - i][kp_x + i] == black_bishop || chessBoard_CC[kp_y - i][kp_x + i] == black_queen){ return true;
+            } else if(chessBoard_CC[kp_y - i][kp_x + i] >= 1 && chessBoard_CC[kp_y - i][kp_x + i] != black_bishop && chessBoard_CC[kp_y - i][kp_x + i] != black_queen){ break;
             }
         }
         for(int64_t i = 1; i < 8; i++){ // down
-            if(kp_y + i > 7){
-                break;
-            } else if(chessBoard_CC[kp_y + i][kp_x] == black_rook || chessBoard_CC[kp_y + i][kp_x] == black_queen){
-                return true;
-            } else if(chessBoard_CC[kp_y + i][kp_x] >= 1 && chessBoard_CC[kp_y + i][kp_x] != black_rook && chessBoard_CC[kp_y + i][kp_x] != black_queen){
-                break;
-            } else{
+            if(kp_y + i > 7){ break;
+            } else if(chessBoard_CC[kp_y + i][kp_x] == black_rook || chessBoard_CC[kp_y + i][kp_x] == black_queen){ return true;
+            } else if(chessBoard_CC[kp_y + i][kp_x] >= 1 && chessBoard_CC[kp_y + i][kp_x] != black_rook && chessBoard_CC[kp_y + i][kp_x] != black_queen){ break;
             }
         }
         for(int64_t i = 1; i < 8; i++){ // left
-            if(kp_x - i < 0){
-                break;
-            } else if(chessBoard_CC[kp_y][kp_x - i] == black_rook || chessBoard_CC[kp_y][kp_x - i] == black_queen){
-                return true;
-            } else if(chessBoard_CC[kp_y][kp_x - i] >= 1 && chessBoard_CC[kp_y][kp_x - i] != black_rook && chessBoard_CC[kp_y][kp_x - i] != black_queen){
-                break;
-            } else{
+            if(kp_x - i < 0){ break;
+            } else if(chessBoard_CC[kp_y][kp_x - i] == black_rook || chessBoard_CC[kp_y][kp_x - i] == black_queen){ return true;
+            } else if(chessBoard_CC[kp_y][kp_x - i] >= 1 && chessBoard_CC[kp_y][kp_x - i] != black_rook && chessBoard_CC[kp_y][kp_x - i] != black_queen){ break;
             }
         }
         for(int64_t i = 1; i < 8; i++){ // up
-            if(kp_y - i < 0){
-                break;
-            } else if(chessBoard_CC[kp_y - i][kp_x] == black_rook || chessBoard_CC[kp_y - i][kp_x] == black_queen){
-                return true;
-            } else if(chessBoard_CC[kp_y - i][kp_x] >= 1 && chessBoard_CC[kp_y - i][kp_x] != black_rook && chessBoard_CC[kp_y - i][kp_x] != black_queen){
-                break;
-            } else{
+            if(kp_y - i < 0){ break;
+            } else if(chessBoard_CC[kp_y - i][kp_x] == black_rook || chessBoard_CC[kp_y - i][kp_x] == black_queen){ return true;
+            } else if(chessBoard_CC[kp_y - i][kp_x] >= 1 && chessBoard_CC[kp_y - i][kp_x] != black_rook && chessBoard_CC[kp_y - i][kp_x] != black_queen){ break;
             }
         }
         for(int64_t i = 1; i < 8; i++){ // right
-            if(kp_x + i > 7){
-                break;
-            } else if(chessBoard_CC[kp_y][kp_x + i] == black_rook || chessBoard_CC[kp_y][kp_x + i] == black_queen){
-                return true;
-            } else if(chessBoard_CC[kp_y][kp_x + i] >= 1 && chessBoard_CC[kp_y][kp_x + i] != black_rook && chessBoard_CC[kp_y][kp_x + i] != black_queen){
-                break;
-            } else{
+            if(kp_x + i > 7){ break;
+            } else if(chessBoard_CC[kp_y][kp_x + i] == black_rook || chessBoard_CC[kp_y][kp_x + i] == black_queen){ return true;
+            } else if(chessBoard_CC[kp_y][kp_x + i] >= 1 && chessBoard_CC[kp_y][kp_x + i] != black_rook && chessBoard_CC[kp_y][kp_x + i] != black_queen){ break;
             }
         }
-        if(chessBoard_CC[kp_y + 1][kp_x + 2] == black_knight && kp_y + 1 <= 7 && kp_x + 2 <= 7){ // knight checks ~
-            return true;
-        } else if(chessBoard_CC[kp_y + 1][kp_x - 2] == black_knight && kp_y + 1 <= 7 && kp_x - 2 >= 0){
-            return true;
-        } else if(chessBoard_CC[kp_y - 1][kp_x + 2] == black_knight && kp_y - 1 >= 0 && kp_x + 2 <= 7){
-            return true;
-        } else if(chessBoard_CC[kp_y - 1][kp_x - 2] == black_knight && kp_y - 1 >= 0 && kp_x - 2 >= 0){
-            return true;
-        } else if(chessBoard_CC[kp_y + 2][kp_x + 1] == black_knight && kp_y + 2 <= 7 && kp_x + 1 <= 7){
-            return true;
-        } else if(chessBoard_CC[kp_y + 2][kp_x - 1] == black_knight && kp_y + 2 <= 7 && kp_x - 1 >= 0){
-            return true;
-        } else if(chessBoard_CC[kp_y - 2][kp_x + 1] == black_knight && kp_y - 2 >= 0 && kp_x + 1 <= 7){
-            return true;
-        } else if(chessBoard_CC[kp_y - 2][kp_x - 1] == black_knight && kp_y - 2 >= 0 && kp_x - 1 >= 0){
-            return true;
-        } else if(chessBoard_CC[kp_y - 1][kp_x + 1] == black_pawn && kp_y - 1 >= 0 && kp_x + 1 <= 7){ // pawn checks ~
-            return true;
-        } else if(chessBoard_CC[kp_y - 1][kp_x - 1] == black_pawn && kp_y - 1 >= 0 && kp_x - 1 >= 0){
-            return true;
-        } else if(chessBoard_CC[kp_y + 1][kp_x + 1] == black_king && kp_y + 1 <= 7 && kp_x + 1 <= 7){ // king 'checks' ~
-            return true;
-        } else if(chessBoard_CC[kp_y + 1][kp_x - 1] == black_king && kp_y + 1 <= 7 && kp_x - 1 >= 0){
-            return true;
-        } else if(chessBoard_CC[kp_y - 1][kp_x + 1] == black_king && kp_y - 1 >= 0 && kp_x + 1 <= 7){
-            return true;
-        } else if(chessBoard_CC[kp_y - 1][kp_x - 1] == black_king && kp_y - 1 >= 0 && kp_x - 1 >= 0){
-            return true;
-        } else if(chessBoard_CC[kp_y + 1][kp_x] == black_king && kp_y + 1 <= 7){
-            return true;
-        } else if(chessBoard_CC[kp_y][kp_x - 1] == black_king && kp_x - 1 >= 0){
-            return true;
-        } else if(chessBoard_CC[kp_y - 1][kp_x] == black_king && kp_y - 1 >= 0){
-            return true;
-        } else if(chessBoard_CC[kp_y][kp_x + 1] == black_king && kp_x + 1 <= 7){
-            return true;
-        } else{
+        if(chessBoard_CC[kp_y + 1][kp_x + 2] == black_knight && kp_y + 1 <= 7 && kp_x + 2 <= 7){ return true;
+        } else if(chessBoard_CC[kp_y + 1][kp_x - 2] == black_knight && kp_y + 1 <= 7 && kp_x - 2 >= 0){ return true;
+        } else if(chessBoard_CC[kp_y - 1][kp_x + 2] == black_knight && kp_y - 1 >= 0 && kp_x + 2 <= 7){ return true;
+        } else if(chessBoard_CC[kp_y - 1][kp_x - 2] == black_knight && kp_y - 1 >= 0 && kp_x - 2 >= 0){ return true;
+        } else if(chessBoard_CC[kp_y + 2][kp_x + 1] == black_knight && kp_y + 2 <= 7 && kp_x + 1 <= 7){ return true;
+        } else if(chessBoard_CC[kp_y + 2][kp_x - 1] == black_knight && kp_y + 2 <= 7 && kp_x - 1 >= 0){ return true;
+        } else if(chessBoard_CC[kp_y - 2][kp_x + 1] == black_knight && kp_y - 2 >= 0 && kp_x + 1 <= 7){ return true;
+        } else if(chessBoard_CC[kp_y - 2][kp_x - 1] == black_knight && kp_y - 2 >= 0 && kp_x - 1 >= 0){ return true;
+        } else if(chessBoard_CC[kp_y - 1][kp_x + 1] == black_pawn && kp_y - 1 >= 0 && kp_x + 1 <= 7){ return true;
+        } else if(chessBoard_CC[kp_y - 1][kp_x - 1] == black_pawn && kp_y - 1 >= 0 && kp_x - 1 >= 0){ return true;
+        } else if(chessBoard_CC[kp_y + 1][kp_x + 1] == black_king && kp_y + 1 <= 7 && kp_x + 1 <= 7){ return true;
+        } else if(chessBoard_CC[kp_y + 1][kp_x - 1] == black_king && kp_y + 1 <= 7 && kp_x - 1 >= 0){ return true;
+        } else if(chessBoard_CC[kp_y - 1][kp_x + 1] == black_king && kp_y - 1 >= 0 && kp_x + 1 <= 7){ return true;
+        } else if(chessBoard_CC[kp_y - 1][kp_x - 1] == black_king && kp_y - 1 >= 0 && kp_x - 1 >= 0){ return true;
+        } else if(chessBoard_CC[kp_y + 1][kp_x] == black_king && kp_y + 1 <= 7){ return true;
+        } else if(chessBoard_CC[kp_y][kp_x - 1] == black_king && kp_x - 1 >= 0){ return true;
+        } else if(chessBoard_CC[kp_y - 1][kp_x] == black_king && kp_y - 1 >= 0){ return true;
+        } else if(chessBoard_CC[kp_y][kp_x + 1] == black_king && kp_x + 1 <= 7){ return true;
         }
         return false;
     }
-    else{
-        int64_t kp_y = 0;
-        int64_t kp_x = 0;
-        for(int64_t i = 0; i <= 7; i++){
-            for(int64_t j = 0; j <= 7; j++){
-                if(chessBoard_CC[i][j] == black_king){
-                    kp_y = i;
-                    kp_x = j;
-                    break;
-                }
-            }
+    else{ int64_t kp_y = 0; int64_t kp_x = 0;
+        for(int64_t i = 0; i <= 7; i++){ for(int64_t j = 0; j <= 7; j++){
+            if(chessBoard_CC[i][j] == black_king){ kp_y = i; kp_x = j; break;}}
         }
         for(int64_t i = 1; i < 8; i++){ // down & right
-            if(kp_y + i > 7 || kp_x + i > 7){
-                break;    
-            } else if(chessBoard_CC[kp_y + i][kp_x + i] == white_bishop || chessBoard_CC[kp_y + i][kp_x + i] == white_queen){
-                return true;
-            } else if(chessBoard_CC[kp_y + i][kp_x + i] >= 1 && chessBoard_CC[kp_y + i][kp_x + i] != white_bishop && chessBoard_CC[kp_y + i][kp_x + i] != white_queen){
-                break;
-            } else{
+            if(kp_y + i > 7 || kp_x + i > 7){ break;    
+            } else if(chessBoard_CC[kp_y + i][kp_x + i] == white_bishop || chessBoard_CC[kp_y + i][kp_x + i] == white_queen){ return true;
+            } else if(chessBoard_CC[kp_y + i][kp_x + i] >= 1 && chessBoard_CC[kp_y + i][kp_x + i] != white_bishop && chessBoard_CC[kp_y + i][kp_x + i] != white_queen){ break;
             }
         }
         for(int64_t i = 1; i < 8; i++){ // down & left
-            if(kp_y + i > 7 || kp_x - i < 0){
-                break;
-            } else if(chessBoard_CC[kp_y + i][kp_x - i] == white_bishop || chessBoard_CC[kp_y + i][kp_x - i] == white_queen){
-                return true;
-            } else if(chessBoard_CC[kp_y + i][kp_x - i] >= 1 && chessBoard_CC[kp_y + i][kp_x - i] != white_bishop && chessBoard_CC[kp_y + i][kp_x - i] != white_queen){
-                break;
-            } else{
+            if(kp_y + i > 7 || kp_x - i < 0){ break;
+            } else if(chessBoard_CC[kp_y + i][kp_x - i] == white_bishop || chessBoard_CC[kp_y + i][kp_x - i] == white_queen){ return true;
+            } else if(chessBoard_CC[kp_y + i][kp_x - i] >= 1 && chessBoard_CC[kp_y + i][kp_x - i] != white_bishop && chessBoard_CC[kp_y + i][kp_x - i] != white_queen){ break;
             }
         }
         for(int64_t i = 1; i < 8; i++){ // up & left
-            if(kp_y - i < 0 || kp_x - i < 0){
-                break;   
-            } else if(chessBoard_CC[kp_y - i][kp_x - i] == white_bishop || chessBoard_CC[kp_y - i][kp_x - i] == white_queen){
-                return true;
-            } else if(chessBoard_CC[kp_y - i][kp_x - i] >= 1 && chessBoard_CC[kp_y - i][kp_x - i] != white_bishop && chessBoard_CC[kp_y - i][kp_x - i] != white_queen){
-                break;
-            } else{
+            if(kp_y - i < 0 || kp_x - i < 0){ break;   
+            } else if(chessBoard_CC[kp_y - i][kp_x - i] == white_bishop || chessBoard_CC[kp_y - i][kp_x - i] == white_queen){ return true;
+            } else if(chessBoard_CC[kp_y - i][kp_x - i] >= 1 && chessBoard_CC[kp_y - i][kp_x - i] != white_bishop && chessBoard_CC[kp_y - i][kp_x - i] != white_queen){ break;
             }
         }
         for(int64_t i = 1; i < 8; i++){ // up & right
-            if(kp_y - i < 0 || kp_x + i > 7){
-                break;   
-            } else if(chessBoard_CC[kp_y - i][kp_x + i] == white_bishop || chessBoard_CC[kp_y - i][kp_x + i] == white_queen){
-                return true;
-            } else if(chessBoard_CC[kp_y - i][kp_x + i] >= 1 && chessBoard_CC[kp_y - i][kp_x + i] != white_bishop && chessBoard_CC[kp_y - i][kp_x + i] != white_queen){
-                break;
-            } else{
+            if(kp_y - i < 0 || kp_x + i > 7){ break;   
+            } else if(chessBoard_CC[kp_y - i][kp_x + i] == white_bishop || chessBoard_CC[kp_y - i][kp_x + i] == white_queen){ return true;
+            } else if(chessBoard_CC[kp_y - i][kp_x + i] >= 1 && chessBoard_CC[kp_y - i][kp_x + i] != white_bishop && chessBoard_CC[kp_y - i][kp_x + i] != white_queen){ break;
             }
         }
         for(int64_t i = 1; i < 8; i++){ // down
-            if(kp_y + i > 7){
-                break;
-            } else if(chessBoard_CC[kp_y + i][kp_x] == white_rook || chessBoard_CC[kp_y + i][kp_x] == white_queen){
-                return true;
-            } else if(chessBoard_CC[kp_y + i][kp_x] >= 1 && chessBoard_CC[kp_y + i][kp_x] != white_rook && chessBoard_CC[kp_y + i][kp_x] != white_queen){
-                break;
-            } else{
+            if(kp_y + i > 7){ break;
+            } else if(chessBoard_CC[kp_y + i][kp_x] == white_rook || chessBoard_CC[kp_y + i][kp_x] == white_queen){ return true;
+            } else if(chessBoard_CC[kp_y + i][kp_x] >= 1 && chessBoard_CC[kp_y + i][kp_x] != white_rook && chessBoard_CC[kp_y + i][kp_x] != white_queen){ break;
             }
         }
         for(int64_t i = 1; i < 8; i++){ // left
-            if(kp_x - i < 0){
-                break;
-            } else if(chessBoard_CC[kp_y][kp_x - i] == white_rook || chessBoard_CC[kp_y][kp_x - i] == white_queen){
-                return true;
-            } else if(chessBoard_CC[kp_y][kp_x - i] >= 1 && chessBoard_CC[kp_y][kp_x - i] != white_rook && chessBoard_CC[kp_y][kp_x - i] != white_queen){
-                break;
-            } else{
+            if(kp_x - i < 0){ break;
+            } else if(chessBoard_CC[kp_y][kp_x - i] == white_rook || chessBoard_CC[kp_y][kp_x - i] == white_queen){ return true;
+            } else if(chessBoard_CC[kp_y][kp_x - i] >= 1 && chessBoard_CC[kp_y][kp_x - i] != white_rook && chessBoard_CC[kp_y][kp_x - i] != white_queen){ break;
             }
         }
         for(int64_t i = 1; i < 8; i++){ // up
-            if(kp_y - i < 0){
-                break;
-            } else if(chessBoard_CC[kp_y - i][kp_x] == white_rook || chessBoard_CC[kp_y - i][kp_x] == white_queen){
-                return true;
-            } else if(chessBoard_CC[kp_y - i][kp_x] >= 1 && chessBoard_CC[kp_y - i][kp_x] != white_rook && chessBoard_CC[kp_y - i][kp_x] != white_queen){
-                break;
-            } else{
+            if(kp_y - i < 0){ break;
+            } else if(chessBoard_CC[kp_y - i][kp_x] == white_rook || chessBoard_CC[kp_y - i][kp_x] == white_queen){ return true;
+            } else if(chessBoard_CC[kp_y - i][kp_x] >= 1 && chessBoard_CC[kp_y - i][kp_x] != white_rook && chessBoard_CC[kp_y - i][kp_x] != white_queen){ break;
             }
         }
         for(int64_t i = 1; i < 8; i++){ // right
-            if(kp_x + i > 7){
-                break;
-            } else if(chessBoard_CC[kp_y][kp_x + i] == white_rook || chessBoard_CC[kp_y][kp_x + i] == white_queen){
-                return true;
-            } else if(chessBoard_CC[kp_y][kp_x + i] >= 1 && chessBoard_CC[kp_y][kp_x + i] != white_rook && chessBoard_CC[kp_y][kp_x + i] != white_queen){
-                break;
-            } else{
+            if(kp_x + i > 7){ break;
+            } else if(chessBoard_CC[kp_y][kp_x + i] == white_rook || chessBoard_CC[kp_y][kp_x + i] == white_queen){ return true;
+            } else if(chessBoard_CC[kp_y][kp_x + i] >= 1 && chessBoard_CC[kp_y][kp_x + i] != white_rook && chessBoard_CC[kp_y][kp_x + i] != white_queen){ break;
             }
         }
-        if(chessBoard_CC[kp_y + 1][kp_x + 2] == white_knight && kp_y + 1 <= 7 && kp_x + 2 <= 7){ // knight checks ~
-            return true;
-        } else if(chessBoard_CC[kp_y + 1][kp_x - 2] == white_knight && kp_y + 1 <= 7 && kp_x - 2 >= 0){
-            return true;
-        } else if(chessBoard_CC[kp_y - 1][kp_x + 2] == white_knight && kp_y - 1 >= 0 && kp_x + 2 <= 7){
-            return true;
-        } else if(chessBoard_CC[kp_y - 1][kp_x - 2] == white_knight && kp_y - 1 >= 0 && kp_x - 2 >= 0){
-            return true;
-        } else if(chessBoard_CC[kp_y + 2][kp_x + 1] == white_knight && kp_y + 2 <= 7 && kp_x + 1 <= 7){
-            return true;
-        } else if(chessBoard_CC[kp_y + 2][kp_x - 1] == white_knight && kp_y + 2 <= 7 && kp_x - 1 >= 0){
-            return true;
-        } else if(chessBoard_CC[kp_y - 2][kp_x + 1] == white_knight && kp_y - 2 >= 0 && kp_x + 1 <= 7){
-            return true;
-        } else if(chessBoard_CC[kp_y - 2][kp_x - 1] == white_knight && kp_y - 2 >= 0 && kp_x - 1 >= 0){
-            return true;
-        } else if(chessBoard_CC[kp_y + 1][kp_x + 1] == white_pawn && kp_y + 1 >= 0 && kp_x + 1 <= 7){ // pawn checks ~
-            return true;
-        } else if(chessBoard_CC[kp_y + 1][kp_x - 1] == white_pawn && kp_y + 1 <= 7 && kp_x - 1 >= 0){
-            return true;
-        } else if(chessBoard_CC[kp_y + 1][kp_x + 1] == white_king && kp_y + 1 <= 7 && kp_x + 1 <= 7){ // king 'checks' ~
-            return true;
-        } else if(chessBoard_CC[kp_y + 1][kp_x - 1] == white_king && kp_y + 1 <= 7 && kp_x - 1 >= 0){
-            return true;
-        } else if(chessBoard_CC[kp_y - 1][kp_x + 1] == white_king && kp_y - 1 >= 0 && kp_x + 1 <= 7){
-            return true;
-        } else if(chessBoard_CC[kp_y - 1][kp_x - 1] == white_king && kp_y - 1 >= 0 && kp_x - 1 >= 0){
-            return true;
-        } else if(chessBoard_CC[kp_y + 1][kp_x] == white_king && kp_y + 1 <= 7){
-            return true;
-        } else if(chessBoard_CC[kp_y][kp_x - 1] == white_king && kp_x - 1 >= 0){
-            return true;
-        } else if(chessBoard_CC[kp_y - 1][kp_x] == white_king && kp_y - 1 >= 0){
-            return true;
-        } else if(chessBoard_CC[kp_y][kp_x + 1] == white_king && kp_x + 1 <= 7){
-            return true;
-        } else{
+        if(chessBoard_CC[kp_y + 1][kp_x + 2] == white_knight && kp_y + 1 <= 7 && kp_x + 2 <= 7){ return true;
+        } else if(chessBoard_CC[kp_y + 1][kp_x - 2] == white_knight && kp_y + 1 <= 7 && kp_x - 2 >= 0){ return true;
+        } else if(chessBoard_CC[kp_y - 1][kp_x + 2] == white_knight && kp_y - 1 >= 0 && kp_x + 2 <= 7){ return true;
+        } else if(chessBoard_CC[kp_y - 1][kp_x - 2] == white_knight && kp_y - 1 >= 0 && kp_x - 2 >= 0){ return true;
+        } else if(chessBoard_CC[kp_y + 2][kp_x + 1] == white_knight && kp_y + 2 <= 7 && kp_x + 1 <= 7){ return true;
+        } else if(chessBoard_CC[kp_y + 2][kp_x - 1] == white_knight && kp_y + 2 <= 7 && kp_x - 1 >= 0){ return true;
+        } else if(chessBoard_CC[kp_y - 2][kp_x + 1] == white_knight && kp_y - 2 >= 0 && kp_x + 1 <= 7){ return true;
+        } else if(chessBoard_CC[kp_y - 2][kp_x - 1] == white_knight && kp_y - 2 >= 0 && kp_x - 1 >= 0){ return true;
+        } else if(chessBoard_CC[kp_y + 1][kp_x + 1] == white_pawn && kp_y + 1 >= 0 && kp_x + 1 <= 7){ return true;
+        } else if(chessBoard_CC[kp_y + 1][kp_x - 1] == white_pawn && kp_y + 1 <= 7 && kp_x - 1 >= 0){ return true;
+        } else if(chessBoard_CC[kp_y + 1][kp_x + 1] == white_king && kp_y + 1 <= 7 && kp_x + 1 <= 7){ return true;
+        } else if(chessBoard_CC[kp_y + 1][kp_x - 1] == white_king && kp_y + 1 <= 7 && kp_x - 1 >= 0){ return true;
+        } else if(chessBoard_CC[kp_y - 1][kp_x + 1] == white_king && kp_y - 1 >= 0 && kp_x + 1 <= 7){ return true;
+        } else if(chessBoard_CC[kp_y - 1][kp_x - 1] == white_king && kp_y - 1 >= 0 && kp_x - 1 >= 0){ return true;
+        } else if(chessBoard_CC[kp_y + 1][kp_x] == white_king && kp_y + 1 <= 7){ return true;
+        } else if(chessBoard_CC[kp_y][kp_x - 1] == white_king && kp_x - 1 >= 0){ return true;
+        } else if(chessBoard_CC[kp_y - 1][kp_x] == white_king && kp_y - 1 >= 0){ return true;
+        } else if(chessBoard_CC[kp_y][kp_x + 1] == white_king && kp_x + 1 <= 7){ return true;
         }
         return false;
     }
@@ -581,65 +336,29 @@ bool check(int64_t side){
 void insertMove_white(int64_t se){
     if(se == 1){
         playMove_CC(0);
-        if(check(1)){
-            memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
-        } else{
-            moveList[0][n] = y;
-            moveList[1][n] = x;
-            moveList[2][n] = y_to;
-            moveList[3][n] = x_to;
-            n++;
-            memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
-        }
+        if(check(1)){ memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
+        } else{ moveList[0][n] = y; moveList[1][n] = x; moveList[2][n] = y_to; moveList[3][n] = x_to; n++; memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));}
     } else{
         playMove_CC(0);
-        if(check(1)){
-            memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
-        } else{
-            eml[0][o] = y;
-            eml[1][o] = x;
-            eml[2][o] = y_to;
-            eml[3][o] = x_to;
-            o++;
-            memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
-        }
+        if(check(1)){ memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
+        } else{ eml[0][o] = y; eml[1][o] = x; eml[2][o] = y_to; eml[3][o] = x_to; o++; memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));}
     }
 }
 void insertMove_black(int64_t se){
     if(se == 1){
         playMove_CC(0);
-        if(check(0)){
-            memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
-        } else{
-            moveList[0][n] = y;
-            moveList[1][n] = x;
-            moveList[2][n] = y_to;
-            moveList[3][n] = x_to;
-            n++;
-            memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
-        }
+        if(check(0)){ memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
+        } else{ moveList[0][n] = y; moveList[1][n] = x; moveList[2][n] = y_to; moveList[3][n] = x_to; n++; memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));}
     } else{
         playMove_CC(0);
-        if(check(0)){
-            memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
-        } else{
-            eml[0][o] = y;
-            eml[1][o] = x;
-            eml[2][o] = y_to;
-            eml[3][o] = x_to;
-            o++;
-            memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
-        }
+        if(check(0)){ memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
+        } else{ eml[0][o] = y; eml[1][o] = x; eml[2][o] = y_to; eml[3][o] = x_to; o++; memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));}
     }
 }  
 int64_t pieceCount(){
     int64_t pieceCount = 0;
-    for(int64_t i = 0; i < 8; i++){
-        for(int64_t j = 0; j < 8; j++){
-            if(chessBoard[i][j] != empty_square){
-                pieceCount++;
-            }
-        }
+    for(int64_t i = 0; i < 8; i++){ for(int64_t j = 0; j < 8; j++){
+        if(chessBoard[i][j] != empty_square){ pieceCount++;}}
     }
     return pieceCount;
 }
@@ -855,59 +574,26 @@ void initializeBoard(){
     int64_t pos = 0;
     int64_t fenpos = 0;
     while(pos < 64){
-        if(FEN[fenpos] == '1'){
-            pos++;
-        } else if(FEN[fenpos] == '2'){
-            pos+=2;
-        } else if(FEN[fenpos] == '3'){
-            pos+=3;
-        } else if(FEN[fenpos] == '4'){
-            pos+=4;
-        } else if(FEN[fenpos] == '5'){
-            pos+=5;
-        } else if(FEN[fenpos] == '6'){
-            pos+=6;
-        } else if(FEN[fenpos] == '7'){
-            pos+=7;
-        } else if(FEN[fenpos] == '8'){
-            pos+=8;
-        } else if(FEN[fenpos] == 'p'){
-            chessBoard[pos/8][pos % 8] = black_pawn;
-            pos++;
-        } else if(FEN[fenpos] == 'n'){
-            chessBoard[pos/8][pos % 8] = black_knight;
-            pos++;
-        } else if(FEN[fenpos] == 'b'){
-            chessBoard[pos/8][pos % 8] = black_bishop;
-            pos++;
-        } else if(FEN[fenpos] == 'r'){
-            chessBoard[pos/8][pos % 8] = black_rook;
-            pos++;
-        } else if(FEN[fenpos] == 'q'){
-            chessBoard[pos/8][pos % 8] = black_queen;
-            pos++;
-        } else if(FEN[fenpos] == 'k'){
-            chessBoard[pos/8][pos % 8] = black_king;
-            pos++;
-        } else if(FEN[fenpos] == 'P'){
-            chessBoard[pos/8][pos % 8] = white_pawn;
-            pos++;
-        } else if(FEN[fenpos] == 'N'){
-            chessBoard[pos/8][pos % 8] = white_knight;
-            pos++;
-        } else if(FEN[fenpos] == 'B'){
-            chessBoard[pos/8][pos % 8] = white_bishop;
-            pos++;
-        } else if(FEN[fenpos] == 'R'){
-            chessBoard[pos/8][pos % 8] = white_rook;
-            pos++;
-        } else if(FEN[fenpos] == 'Q'){
-            chessBoard[pos/8][pos % 8] = white_queen;
-            pos++;
-        } else if(FEN[fenpos] == 'K'){
-            chessBoard[pos/8][pos % 8] = white_king;
-            pos++;
-        } else{
+        if(FEN[fenpos] == '1'){ pos++;
+        } else if(FEN[fenpos] == '2'){ pos+=2;
+        } else if(FEN[fenpos] == '3'){ pos+=3;
+        } else if(FEN[fenpos] == '4'){ pos+=4;
+        } else if(FEN[fenpos] == '5'){ pos+=5;
+        } else if(FEN[fenpos] == '6'){ pos+=6;
+        } else if(FEN[fenpos] == '7'){ pos+=7;
+        } else if(FEN[fenpos] == '8'){ pos+=8;
+        } else if(FEN[fenpos] == 'p'){ chessBoard[pos/8][pos % 8] = black_pawn; pos++;
+        } else if(FEN[fenpos] == 'n'){ chessBoard[pos/8][pos % 8] = black_knight; pos++;
+        } else if(FEN[fenpos] == 'b'){ chessBoard[pos/8][pos % 8] = black_bishop; pos++;
+        } else if(FEN[fenpos] == 'r'){ chessBoard[pos/8][pos % 8] = black_rook; pos++;
+        } else if(FEN[fenpos] == 'q'){ chessBoard[pos/8][pos % 8] = black_queen; pos++;
+        } else if(FEN[fenpos] == 'k'){ chessBoard[pos/8][pos % 8] = black_king; pos++;
+        } else if(FEN[fenpos] == 'P'){ chessBoard[pos/8][pos % 8] = white_pawn; pos++;
+        } else if(FEN[fenpos] == 'N'){ chessBoard[pos/8][pos % 8] = white_knight; pos++;
+        } else if(FEN[fenpos] == 'B'){ chessBoard[pos/8][pos % 8] = white_bishop; pos++;
+        } else if(FEN[fenpos] == 'R'){ chessBoard[pos/8][pos % 8] = white_rook; pos++;
+        } else if(FEN[fenpos] == 'Q'){ chessBoard[pos/8][pos % 8] = white_queen; pos++;
+        } else if(FEN[fenpos] == 'K'){ chessBoard[pos/8][pos % 8] = white_king; pos++;
         }
         fenpos++;
     }
@@ -918,38 +604,23 @@ void printBoard(){
     for(int64_t y_pos = 0; y_pos < 8; y_pos++){
         cout << "|";
         for(int64_t x_pos = 0; x_pos < 8; x_pos++){
-            if(chessBoard[y_pos][x_pos] == white_pawn){
-                cout << "  P |";
-            } else if(chessBoard[y_pos][x_pos] == white_knight){
-                cout << "  N |";
-            } else if(chessBoard[y_pos][x_pos] == white_bishop){
-                cout << "  B |";
-            } else if(chessBoard[y_pos][x_pos] == white_rook){
-                cout << "  R |";
-            } else if(chessBoard[y_pos][x_pos] == white_queen){
-                cout << "  Q |";
-            } else if(chessBoard[y_pos][x_pos] == white_king){
-                cout << "  K |";
-            } else if(chessBoard[y_pos][x_pos] == black_pawn){
-                cout << "  p |";
-            } else if(chessBoard[y_pos][x_pos] == black_knight){
-                cout << "  n |";
-            } else if(chessBoard[y_pos][x_pos] == black_bishop){
-                cout << "  b |";
-            } else if(chessBoard[y_pos][x_pos] == black_rook){
-                cout << "  r |";
-            } else if(chessBoard[y_pos][x_pos] == black_queen){
-                cout << "  q |";
-            } else if(chessBoard[y_pos][x_pos] == black_king){
-                cout << "  k |";
-            } else{
-                cout << "  - |";
+            if(chessBoard[y_pos][x_pos] == white_pawn){ cout << "  P |";
+            } else if(chessBoard[y_pos][x_pos] == white_knight){ cout << "  N |";
+            } else if(chessBoard[y_pos][x_pos] == white_bishop){ cout << "  B |";
+            } else if(chessBoard[y_pos][x_pos] == white_rook){ cout << "  R |";
+            } else if(chessBoard[y_pos][x_pos] == white_queen){ cout << "  Q |";
+            } else if(chessBoard[y_pos][x_pos] == white_king){ cout << "  K |";
+            } else if(chessBoard[y_pos][x_pos] == black_pawn){ cout << "  p |";
+            } else if(chessBoard[y_pos][x_pos] == black_knight){ cout << "  n |";
+            } else if(chessBoard[y_pos][x_pos] == black_bishop){ cout << "  b |";
+            } else if(chessBoard[y_pos][x_pos] == black_rook){ cout << "  r |";
+            } else if(chessBoard[y_pos][x_pos] == black_queen){ cout << "  q |";
+            } else if(chessBoard[y_pos][x_pos] == black_king){ cout << "  k |";
+            } else{ cout << "  - |";
             }
         }
-        cout << endl;
-        cout << "-----------------------------------------" << endl;
-    }
-    cout << endl;
+        cout << endl; cout << "-----------------------------------------" << endl;
+    } cout << endl;
 }
 
 // ----------------------------------------------------------------------- Search & Evaluation -----------------------------------------------------------------------
@@ -1052,55 +723,28 @@ void order(){
     }}
 }
 void generateMoves(int64_t side, int64_t se){
-    if(se == 1){
-        n = 0;
-        memset(moveList, 0, sizeof(moveList));
-    } else{
-        o = 0;
-        memset(eml, 0, sizeof(eml));
-    }
+    if(se == 1){ n = 0; memset(moveList, 0, sizeof(moveList));
+    } else{ o = 0; memset(eml, 0, sizeof(eml));}
     if(side == 1){
-        for(int64_t i = 0; i < 8; i++){
-            y = i;
-            for(int64_t j = 0; j < 8; j++){
-                x = j;
-                if(chessBoard[y][x] == white_pawn){
-                    moveGen.w_pawn(se);
-                } else if(chessBoard[y][x] == white_knight){
-                    moveGen.w_knight(se);
-                } else if(chessBoard[y][x] == white_bishop){
-                    moveGen.w_bishop(se);
-                } else if(chessBoard[y][x] == white_rook){
-                    moveGen.w_rook(se);
-                } else if(chessBoard[y][x] == white_queen){
-                    moveGen.w_queen(se);
-                } else if(chessBoard[y][x] == white_king){
-                    moveGen.w_king(se);
-                } else{
-                }
-            }
+        for(int64_t i = 0; i < 8; i++){ y = i; for(int64_t j = 0; j < 8; j++){ x = j;
+            if(chessBoard[y][x] == white_pawn){ moveGen.w_pawn(se);
+            } else if(chessBoard[y][x] == white_knight){ moveGen.w_knight(se);
+            } else if(chessBoard[y][x] == white_bishop){ moveGen.w_bishop(se);
+            } else if(chessBoard[y][x] == white_rook){ moveGen.w_rook(se);
+            } else if(chessBoard[y][x] == white_queen){ moveGen.w_queen(se);
+            } else if(chessBoard[y][x] == white_king){ moveGen.w_king(se);
+            }}
         }
     }
     else{
-        for(int64_t i = 0; i < 8; i++){
-            y = i;
-            for(int64_t j = 0; j < 8; j++){
-                x = j;
-                if(chessBoard[y][x] == black_pawn){
-                    moveGen.b_pawn(se);
-                } else if(chessBoard[y][x] == black_knight){
-                    moveGen.b_knight(se);
-                } else if(chessBoard[y][x] == black_bishop){
-                    moveGen.b_bishop(se);
-                } else if(chessBoard[y][x] == black_rook){
-                    moveGen.b_rook(se);
-                } else if(chessBoard[y][x] == black_queen){
-                    moveGen.b_queen(se);
-                } else if(chessBoard[y][x] == black_king){
-                    moveGen.b_king(se);
-                } else{
-                }
-            }
+        for(int64_t i = 0; i < 8; i++){ y = i; for(int64_t j = 0; j < 8; j++){ x = j;
+            if(chessBoard[y][x] == black_pawn){ moveGen.b_pawn(se);
+            } else if(chessBoard[y][x] == black_knight){ moveGen.b_knight(se);
+            } else if(chessBoard[y][x] == black_bishop){ moveGen.b_bishop(se);
+            } else if(chessBoard[y][x] == black_rook){ moveGen.b_rook(se);
+            } else if(chessBoard[y][x] == black_queen){ moveGen.b_queen(se);
+            } else if(chessBoard[y][x] == black_king){ moveGen.b_king(se);
+            }}
         }
     }
 }
@@ -1160,12 +804,6 @@ int64_t staticEval(int64_t side, int64_t dtm){
 }
 
 
-
-
-
-
-
-// search
 int search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
     if(depth == 0){
         int64_t eval = staticEval(1, 0);
@@ -1211,25 +849,12 @@ int search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
 }
 
 
-
-
-
-
-
 int64_t getMove_white(){
     generateMoves(1, 1);
     isLegalMove = false;
-    cout << "White's move ---> ";
-    cin >> move_y;
-    cin >> move_x;
-    cin >> moveTo_y;
-    cin >> moveTo_x;
+    cout << "White's move ---> "; cin >> move_y; cin >> move_x; cin >> moveTo_y; cin >> moveTo_x;
     for(int64_t i = 0; i < n; i++){
-        if(move_y == moveList[0][i] && move_x == moveList[1][i] && moveTo_y == moveList[2][i] && moveTo_x == moveList[3][i]){
-            playMove(1);
-            isLegalMove = true;
-            return 0;
-        }      
+        if(move_y == moveList[0][i] && move_x == moveList[1][i] && moveTo_y == moveList[2][i] && moveTo_x == moveList[3][i]){ playMove(1); isLegalMove = true; return 0;}      
     }
     cout << "Illegal Move!" << endl;
     return 0;
@@ -1237,17 +862,9 @@ int64_t getMove_white(){
 int64_t getMove_black(){
     generateMoves(0, 1);
     isLegalMove = false;
-    cout << "Black's move ---> ";
-    cin >> move_y;
-    cin >> move_x;
-    cin >> moveTo_y;
-    cin >> moveTo_x;
+    cout << "Black's move ---> "; cin >> move_y; cin >> move_x; cin >> moveTo_y; cin >> moveTo_x;
     for(int64_t i = 0; i < n; i++){
-        if(move_y == moveList[0][i] && move_x == moveList[1][i] && moveTo_y == moveList[2][i] && moveTo_x == moveList[3][i]){
-            playMove(1);
-            isLegalMove = true;
-            return 0;
-        }      
+        if(move_y == moveList[0][i] && move_x == moveList[1][i] && moveTo_y == moveList[2][i] && moveTo_x == moveList[3][i]){ playMove(1); isLegalMove = true; return 0;}      
     }
     cout << "Illegal Move!" << endl;
     return 0;
@@ -1294,14 +911,8 @@ int main(void){
     endgame = 0;
 
     while(move_move <= 5949){
-        if(move_move == 15){
-            opening = false;
-            middlegame = true;
-        }
-        if(pieceCount() < 15){
-            middlegame = false;
-            endgame = true;
-        }
+        if(move_move == 15){ opening = false; middlegame = true;}
+        if(pieceCount() < 15){ middlegame = false; endgame = true;}
         cout << "Move - " << move_move << endl;
         engine.move_white(6);
         //do{
@@ -1309,15 +920,8 @@ int main(void){
         //} while(!isLegalMove);
 
         generateMoves(0, 1);
-        if(n == 0 && check(0) == true){
-            printBoard();
-            cout << "Checkmate - white wins" << endl;
-            break;
-        } else if(n == 0 && check(0) == false){
-            printBoard();
-            cout << "Stalemate - draw" << endl;
-            break;
-        } else{
+        if(n == 0 && check(0) == true){ printBoard(); cout << "Checkmate - white wins" << endl; break;
+        } else if(n == 0 && check(0) == false){ printBoard(); cout << "Stalemate - draw" << endl; break;
         }
 
         printBoard();
@@ -1329,15 +933,8 @@ int main(void){
         TTable.clear();
 
         generateMoves(1, 1);
-        if(n == 0 && check(1) == true){
-            printBoard();
-            cout << "Checkmate - black wins" << endl;
-            break;
-        } else if(n == 0 && check(1) == false){
-            printBoard();
-            cout << "Stalemate - draw" << endl;
-            break;
-        } else{
+        if(n == 0 && check(1) == true){ printBoard(); cout << "Checkmate - black wins" << endl; break;
+        } else if(n == 0 && check(1) == false){ printBoard(); cout << "Stalemate - draw" << endl; break;
         }
 
         printBoard();
