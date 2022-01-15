@@ -9,7 +9,7 @@
 #include"arithmetic.cpp"
 using namespace std;
 
-string FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+string FEN = "4r3/6p1/7p/1K2k3/PQ6/8/2P5/8 w - - 0 1";
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
 struct TranspositionData{
@@ -110,49 +110,17 @@ class Evaluation{
             }}
             return development;
         }
-        int64_t endgameKingRestriction(){
-            int64_t kingRestriction = 0;
-            int64_t kp_y;
-            int64_t kp_x;
-            for(int64_t i = 0; i <= 7; i++){
-                for(int64_t j = 0; j <= 7; j++){
-                    if(chessBoard_CC[i][j] == white_king){
-                        kp_y = i;
-                        kp_x = j;
-                        break;
-                    }
-                }
+        int64_t endgamePiecePlacement(){
+            int64_t placement = 0;
+            for(int64_t i = 0; i <= 7; i++){ for(int64_t j = 0; j <= 7; j++){
+                if(chessBoard_CC[i][j] == white_king){ placement += endgameKingHeatmap_white[i][j]; break;
+                }}
             }
-            if(kp_y > 3){
-                kingRestriction -= 5 * (-4 + kp_y);
-            } else{
-                kingRestriction -= 5 * (3 - kp_y);
+            for(int64_t i = 0; i <= 7; i++){ for(int64_t j = 0; j <= 7; j++){
+                if(chessBoard_CC[i][j] == black_king){ placement += endgameKingHeatmap_black[i][j]; break;
+                }}
             }
-            if(kp_x > 3){
-                kingRestriction -= 5 * (-4 + kp_x);
-            } else{
-                kingRestriction -= 5 * (3 - kp_x);
-            }
-            for(int64_t i = 0; i <= 7; i++){
-                for(int64_t j = 0; j <= 7; j++){
-                    if(chessBoard_CC[i][j] == black_king){
-                        kp_y = i;
-                        kp_x = j;
-                        break;
-                    }
-                }
-            }
-            if(kp_y > 3){
-                kingRestriction += 5 * (-4 + kp_y);
-            } else{
-                kingRestriction += 5 * (3 - kp_y);
-            }
-            if(kp_x > 3){
-                kingRestriction += 5 * (-4 + kp_x);
-            } else{
-                kingRestriction += 5 * (3 - kp_x);
-            }
-            return kingRestriction;
+            return placement;
         }
 };
 Evaluation evaluation;
@@ -163,6 +131,7 @@ int64_t staticEval(int64_t side, int64_t dtm){
     if(side == 1){
         int64_t eval = 0;
         generateMoves(1, 2);
+        TEST+=o;
         if(o == 0){
             if(check(1)){
                 return (-1000000 - dtm);
@@ -181,12 +150,13 @@ int64_t staticEval(int64_t side, int64_t dtm){
             eval += evaluation.development();
         }
         if(endgame){
-            eval += evaluation.endgameKingRestriction();
+            eval += evaluation.endgamePiecePlacement();
         }
         return eval;
     } else{
         int64_t eval = 0;
         generateMoves(0, 2);
+        TEST+=o;
         if(o == 0){
             if(check(0)){
                 return (1000000 + dtm);
@@ -205,7 +175,7 @@ int64_t staticEval(int64_t side, int64_t dtm){
             eval += evaluation.development();
         }
         if(endgame){
-            eval += evaluation.endgameKingRestriction();
+            eval += evaluation.endgamePiecePlacement();
         }
         return eval;    
     }
@@ -215,7 +185,7 @@ int64_t staticEval(int64_t side, int64_t dtm){
 int search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
     if(depth == 0){
         int64_t eval = staticEval(1, 0);
-        TEST++;
+        //TEST++;
         return eval;
     }
     generateMoves((depth + 1) % 2, 1);
@@ -235,7 +205,7 @@ int search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
         if(move_y == 0 && move_x == 0 && moveTo_y == 0 && moveTo_x == 0){ break;}
         playMove(0);
         int64_t boardHash = Hash(chessBoard, (depth + 1) % 2);
-        if(i > 4 && !alphaIncreased && depth > 2){ // Late Move Reduction
+        if(i > 5 && !alphaIncreased && depth > 2){ // Late Move Reduction
             eval = -search(depth - 3, cap, -beta, -alpha);
         } else if(TTable[boardHash].depthEvaluated > 0 && TTable[boardHash].depthEvaluated >= depth){
             eval = TTable[boardHash].evaluation;
