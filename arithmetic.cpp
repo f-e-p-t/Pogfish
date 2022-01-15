@@ -1,0 +1,54 @@
+#include<iostream>
+using namespace std;
+
+int64_t pieceIndex(int64_t piece){
+    int64_t pieceIndex = 0;
+    switch(piece){
+        case 1: pieceIndex = 0; break;
+        case 2: pieceIndex = 1; break;
+        case 3: pieceIndex = 2; break;
+        case 4: pieceIndex = 3; break;
+        case 5: pieceIndex = 4; break;
+        case 6: pieceIndex = 5; break;
+        case 11: pieceIndex = 6; break;
+        case 12: pieceIndex = 7; break;
+        case 13: pieceIndex = 8; break;
+        case 14: pieceIndex = 9; break;
+        case 15: pieceIndex = 10; break;
+        case 16: pieceIndex = 11; break;
+        default: pieceIndex = 0;
+    }
+    return pieceIndex;
+}
+
+int64_t getMax(int64_t values[], int64_t numValues){
+    int64_t best = values[0];
+    best_index = 0;
+    for(int64_t i = 0; i < numValues; i++){
+        if(values[i] > best){ best = values[i]; best_index = i;}
+    }
+    return best;
+}
+
+int64_t getMin(int64_t values[], int64_t numValues){
+    int64_t best = values[0];
+    best_index = 0;
+    for(int64_t i = 0; i < numValues; i++){
+        if(values[i] < best){ best = values[i]; best_index = i;}
+    }
+    return best;
+}
+
+int64_t duoMax(int64_t a, int64_t b){
+    int64_t max;
+    max = (a + b + abs(a - b))/2;
+    return max;
+}
+
+int64_t pieceCount(){
+    int64_t pieceCount = 0;
+    for(int64_t i = 0; i < 8; i++){ for(int64_t j = 0; j < 8; j++){
+        if(chessBoard[i][j] != empty_square){ pieceCount++;}}
+    }
+    return pieceCount;
+}
