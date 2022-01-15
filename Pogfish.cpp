@@ -9,47 +9,6 @@
 #include"arithmetic.cpp"
 using namespace std;
 
-//int64_t pieceIndex(int64_t piece){
-//    int64_t pieceIndex = 0;
-//    switch(piece){
-//        case 1: pieceIndex = 0; break;
-//        case 2: pieceIndex = 1; break;
-//        case 3: pieceIndex = 2; break;
-//        case 4: pieceIndex = 3; break;
-//        case 5: pieceIndex = 4; break;
-//        case 6: pieceIndex = 5; break;
-//        case 11: pieceIndex = 6; break;
-//        case 12: pieceIndex = 7; break;
-//        case 13: pieceIndex = 8; break;
-//        case 14: pieceIndex = 9; break;
-//        case 15: pieceIndex = 10; break;
-//        case 16: pieceIndex = 11; break;
-//        default: pieceIndex = 0;
-//    }
-//    return pieceIndex;
-//}
-//int64_t getMax(int64_t values[], int64_t numValues){
-//    int64_t best = values[0];
-//    best_index = 0;
-//    for(int64_t i = 0; i < numValues; i++){
-//        if(values[i] > best){ best = values[i]; best_index = i;}
-//    }
-//    return best;
-//}
-//int64_t getMin(int64_t values[], int64_t numValues){
-//    int64_t best = values[0];
-//    best_index = 0;
-//    for(int64_t i = 0; i < numValues; i++){
-//        if(values[i] < best){ best = values[i]; best_index = i;}
-//    }
-//    return best;
-//}
-//int64_t duoMax(int64_t a, int64_t b){
-//    int64_t max;
-//    max = (a + b + abs(a - b))/2;
-//    return max;
-//}
-
 string FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
@@ -70,14 +29,6 @@ int64_t Hash(int64_t position[8][8], int side){
 }
 
 int64_t boardStates[50][8][8] = {0};
-
-//int64_t pieceCount(){
-//    int64_t pieceCount = 0;
-//    for(int64_t i = 0; i < 8; i++){ for(int64_t j = 0; j < 8; j++){
-//        if(chessBoard[i][j] != empty_square){ pieceCount++;}}
-//    }
-//    return pieceCount;
-//}
 
 void initializeBoard(){
     int64_t pos = 0;
@@ -206,35 +157,8 @@ class Evaluation{
 };
 Evaluation evaluation;
 
-void generateMoves(int64_t side, int64_t se){
-    if(se == 1){ n = 0; memset(moveList, 0, sizeof(moveList));
-    } else{ o = 0; memset(eml, 0, sizeof(eml));}
-    if(side == 1){
-        for(int64_t i = 0; i < 8; i++){ y = i; for(int64_t j = 0; j < 8; j++){ x = j;
-            if(chessBoard[y][x] == white_pawn){ moveGen.w_pawn(se);
-            } else if(chessBoard[y][x] == white_knight){ moveGen.w_knight(se);
-            } else if(chessBoard[y][x] == white_bishop){ moveGen.w_bishop(se);
-            } else if(chessBoard[y][x] == white_rook){ moveGen.w_rook(se);
-            } else if(chessBoard[y][x] == white_queen){ moveGen.w_queen(se);
-            } else if(chessBoard[y][x] == white_king){ moveGen.w_king(se);
-            }}
-        }
-    }
-    else{
-        for(int64_t i = 0; i < 8; i++){ y = i; for(int64_t j = 0; j < 8; j++){ x = j;
-            if(chessBoard[y][x] == black_pawn){ moveGen.b_pawn(se);
-            } else if(chessBoard[y][x] == black_knight){ moveGen.b_knight(se);
-            } else if(chessBoard[y][x] == black_bishop){ moveGen.b_bishop(se);
-            } else if(chessBoard[y][x] == black_rook){ moveGen.b_rook(se);
-            } else if(chessBoard[y][x] == black_queen){ moveGen.b_queen(se);
-            } else if(chessBoard[y][x] == black_king){ moveGen.b_king(se);
-            }}
-        }
-    }
-}
 void assign(int64_t index){ move_y = moveList[0][index]; move_x = moveList[1][index]; moveTo_y = moveList[2][index]; moveTo_x = moveList[3][index]; }
 
-// add checks to enemy moves eval
 int64_t staticEval(int64_t side, int64_t dtm){
     if(side == 1){
         int64_t eval = 0;

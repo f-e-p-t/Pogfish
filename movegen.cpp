@@ -475,3 +475,30 @@ class Move_gen{
         }
 };
 Move_gen moveGen;
+
+void generateMoves(int64_t side, int64_t se){
+    if(se == 1){ n = 0; memset(moveList, 0, sizeof(moveList));
+    } else{ o = 0; memset(eml, 0, sizeof(eml));}
+    if(side == 1){
+        for(int64_t i = 0; i < 8; i++){ y = i; for(int64_t j = 0; j < 8; j++){ x = j;
+            if(chessBoard[y][x] == white_pawn){ moveGen.w_pawn(se);
+            } else if(chessBoard[y][x] == white_knight){ moveGen.w_knight(se);
+            } else if(chessBoard[y][x] == white_bishop){ moveGen.w_bishop(se);
+            } else if(chessBoard[y][x] == white_rook){ moveGen.w_rook(se);
+            } else if(chessBoard[y][x] == white_queen){ moveGen.w_queen(se);
+            } else if(chessBoard[y][x] == white_king){ moveGen.w_king(se);
+            }}
+        }
+    }
+    else{
+        for(int64_t i = 0; i < 8; i++){ y = i; for(int64_t j = 0; j < 8; j++){ x = j;
+            if(chessBoard[y][x] == black_pawn){ moveGen.b_pawn(se);
+            } else if(chessBoard[y][x] == black_knight){ moveGen.b_knight(se);
+            } else if(chessBoard[y][x] == black_bishop){ moveGen.b_bishop(se);
+            } else if(chessBoard[y][x] == black_rook){ moveGen.b_rook(se);
+            } else if(chessBoard[y][x] == black_queen){ moveGen.b_queen(se);
+            } else if(chessBoard[y][x] == black_king){ moveGen.b_king(se);
+            }}
+        }
+    }
+}

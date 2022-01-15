@@ -8,6 +8,7 @@ int64_t openingPawnHeatmap_white[8][8] = {
     {0,  0,  0,  0,  0,  0,  0,  0},
     {0,  0,  0,  0,  0,  0,  0,  0}
 };
+
 int64_t openingPawnHeatmap_black[8][8] = {
     {0,  0,  0,  0,  0,  0,  0,  0},
     {0,  0,  0,  0,  0,  0,  0,  0},
@@ -18,6 +19,7 @@ int64_t openingPawnHeatmap_black[8][8] = {
     {0,  0,  0,  0,  0,  0,  0,  0},
     {0,  0,  0,  0,  0,  0,  0,  0}
 };
+
 int64_t openingKnightHeatmap_white[8][8] = {
     {0,  0,  0,  0,  0,  0,  0,  0},
     {0,  0,  0,  0,  0,  0,  0,  0},
@@ -27,7 +29,8 @@ int64_t openingKnightHeatmap_white[8][8] = {
     {0,  0,  10, 0,  0,  10, 0,  0},
     {0,  0,  0,  0,  0,  0,  0,  0},
     {0, -5,  0,  0,  0,  0, -5,  0}
-}; 
+};
+
 int64_t openingKnightHeatmap_black[8][8] = {
     {0,  5,  0,  0,  0,  0,  5,  0},
     {0,  0,  0,  0,  0,  0,  0,  0},
