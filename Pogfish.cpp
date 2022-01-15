@@ -3,6 +3,7 @@
 #include<string.h>
 #include<unordered_map>
 #include<random>
+#include"Globals.cpp"
 using namespace std;
 
 int64_t move_move = 1;
@@ -844,7 +845,7 @@ int search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
     }
     memcpy(boardStates[depth], chessBoard, sizeof(chessBoard));
     int64_t eval;
-    bool alphaIncreased; 
+    bool alphaIncreased = false; 
     // For move in moveList
     for(int i = 0; i < 219; i++){
         assign(i);
@@ -865,13 +866,13 @@ int search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
         generateMoves((depth + 1) % 2, 1);
         order();
         if(depth == cap){
+            alphaIncreased = true;
             if(eval > alpha){
-                alphaIncreased = true;
                 bestMove[0] = moveList[0][i], bestMove[1] = moveList[1][i], bestMove[2] = moveList[2][i], bestMove[3] = moveList[3][i];
             }
         }
         if(eval >= beta){ return beta;}
-        alpha = duoMax(eval, alpha);
+        if(eval > alpha){ alpha = duoMax(eval, alpha);}
     }
     return alpha;
 }
