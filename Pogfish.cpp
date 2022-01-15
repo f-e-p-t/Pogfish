@@ -103,9 +103,49 @@ int64_t duoMax(int64_t a, int64_t b){
     return max;
 }
 
-string FEN = "8/2p3N1/6p1/5PB1/pp2Rn2/7k/P1p2K1P/3r4";
+string FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 int64_t chessBoard[8][8] = {0};
 int64_t chessBoard_CC[8][8] = {0};
+int64_t openingPawnHeatmap_white[8][8] = {
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 10, 10, 0, 0, 0},
+    {0, 0, 5, 5, 5, 5, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0}
+};
+int64_t openingPawnHeatmap_black[8][8] = {
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, -5, -5, -5, -5, 0, 0},
+    {0, 0, 0, -10, -10, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0}
+};
+int64_t openingKnightHeatmap_white[8][8] = {
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 5, 5, 0, 0, 0},
+    {0, 0, 0, 5, 5, 0, 0, 0},
+    {0, 0, 10, 0, 0, 10, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, -5, 0, 0, 0, 0, -5, 0}
+};
+int64_t openingKnightHeatmap_black[8][8] = {
+    {0, 5, 0, 0, 0, 0, 5, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, -10, 0, 0, -10, 0, 0},
+    {0, 0, 0, -5, -5, 0, 0, 0},
+    {0, 0, 0, -5, -5, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0}
+};
 
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
@@ -641,31 +681,15 @@ class Evaluation{
             return material_eval;
         }
         int64_t development(){
-            int64_t development = 0;
-            for(int64_t i = 0; i < 8; i++){
-                if(chessBoard[7][i] == empty_square || chessBoard[7][i] == white_king || chessBoard[7][i] == white_rook){
-                    development += 10;
-                }
-                if(chessBoard[0][i] == empty_square || chessBoard[0][i] == black_king || chessBoard[7][i] == black_rook){
-                    development -= 10;
-                }
-            }
-            for(int64_t i = 0; i < 2; i++){
-                for(int64_t j = 0; j < 4; j++){
-                    if(chessBoard[4 + i][2 + j] == white_pawn){
-                        development += 5;
-                    }
-                }
-            }
-            for(int64_t i = 0; i < 2; i++){
-                for(int64_t j = 0; j < 4; j++){
-                    if(chessBoard[2 + i][2 + j] == black_pawn){
-                        development -= 5;
-                    }
-                }
-            }
+            int64_t development;
+            for(int i = 0; i < 8; i++){ for(int j = 0; j < 8; j++){
+                if(chessBoard[i][j] == white_pawn){ development += openingPawnHeatmap_white[i][j];
+                } else if(chessBoard[i][j] == black_pawn){ development += openingPawnHeatmap_white[i][j];
+                } else if(chessBoard[i][j] == white_knight){ development += openingKnightHeatmap_white[i][j];
+                } else if(chessBoard[i][j] == black_knight){ development += openingKnightHeatmap_black[i][j];}
+            }}
             return development;
-        } 
+        }
         int64_t endgameKingRestriction(){
             int64_t kingRestriction = 0;
             int64_t kp_y;
@@ -820,13 +844,16 @@ int search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
     }
     memcpy(boardStates[depth], chessBoard, sizeof(chessBoard));
     int64_t eval;
+    bool alphaIncreased; 
     // For move in moveList
     for(int i = 0; i < 219; i++){
         assign(i);
         if(move_y == 0 && move_x == 0 && moveTo_y == 0 && moveTo_x == 0){ break;}
         playMove(0);
         int64_t boardHash = Hash(chessBoard, (depth + 1) % 2);
-        if(TTable[boardHash].depthEvaluated > 0 && TTable[boardHash].depthEvaluated >= depth){
+        if(i > 4 && !alphaIncreased && depth > 2){
+            eval = -search(depth - 3, cap, -beta, -alpha);
+        }else if(TTable[boardHash].depthEvaluated > 0 && TTable[boardHash].depthEvaluated >= depth){
             eval = TTable[boardHash].evaluation;
         } else{
             eval = -search(depth - 1, cap, -beta, -alpha);
@@ -839,6 +866,7 @@ int search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
         order();
         if(depth == cap){
             if(eval > alpha){
+                alphaIncreased = true;
                 bestMove[0] = moveList[0][i], bestMove[1] = moveList[1][i], bestMove[2] = moveList[2][i], bestMove[3] = moveList[3][i];
             }
         }
@@ -914,7 +942,7 @@ int main(void){
         if(move_move == 15){ opening = false; middlegame = true;}
         if(pieceCount() < 15){ middlegame = false; endgame = true;}
         cout << "Move - " << move_move << endl;
-        engine.move_white(6);
+        engine.move_white(8);
         //do{
         //    getMove_white();
         //} while(!isLegalMove);
@@ -929,7 +957,7 @@ int main(void){
         do{
             getMove_black();
         } while(!isLegalMove);
-        //engine.move_white(5);
+        //engine.move_white(7);
         TTable.clear();
 
         generateMoves(1, 1);
