@@ -1,5 +1,4 @@
 #include<iostream>
-#include<cmath>
 #include<string.h>
 #include<unordered_map>
 #include<random>
@@ -126,12 +125,9 @@ Evaluation evaluation;
 
 void order(int64_t boardHash){
     int64_t move_weights[n] = {0};
-    for(int i = 0; i < n; i++){ if(value(chessBoard[moveList[i][2]][moveList[i][3]]) >= 100){
-        moveList[i][4] = value(chessBoard[moveList[i][2]][moveList[i][3]]) - value(chessBoard[moveList[i][0]][moveList[i][1]])/10;}
-    }
 
-    if(TTable[boardHash].best_move[0] != 0 && TTable[boardHash].best_move[1] != 0 && TTable[boardHash].best_move[2] != 0 && TTable[boardHash].best_move[3] != 0){
-        for(int i = 0; i < 4; i++){ cout << TTable[boardHash].best_move[i] << " ";}
+    for(int i = 0; i < n; i++){ if(value(chessBoard[moveList[i][2]][moveList[i][3]]) >= 100 && moveList[i][4] == 0){
+        moveList[i][4] = value(chessBoard[moveList[i][2]][moveList[i][3]]) - value(chessBoard[moveList[i][0]][moveList[i][1]])/10;}
     }
 
     for(int i = 0; i < n; i++){ move_weights[i] = moveList[i][4];}
@@ -214,12 +210,12 @@ int search(int64_t depth, int64_t alpha, int64_t beta){
     }
     memcpy(boardStates[depth], chessBoard, sizeof(chessBoard));
     int64_t eval;
-    int64_t bestMove[4] = {0};
+    int64_t bestMove[4] = {0};;
     if(TTable[boardHash].depthEvaluated >= depth){ return TTable[boardHash].evaluation;}
     // For move in moveList
     for(int i = 0; i < 219; i++){
         assign(i);
-        if(move_y == 0 && move_x == 0 && moveTo_y == 0 && moveTo_x == 0){ /*for(int k = 0; k < 4; k++){ cout << bestMove[k] << " ";}*/ break;}
+        if(move_y == 0 && move_x == 0 && moveTo_y == 0 && moveTo_x == 0){ break;}
         playMove(0);
         eval = -search(depth - 1, -beta, -alpha);
         memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
