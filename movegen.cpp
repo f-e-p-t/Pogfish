@@ -42,9 +42,8 @@ int64_t TEST = 0;
 int64_t chessBoard[8][8] = {0};
 int64_t chessBoard_CC[8][8] = {0};
 
-int64_t moveList[4][219] = {0};
-int64_t eml[4][219] = {0};
-int64_t bestMove[4] = {0};
+int64_t moveList[219][5] = {0};
+int64_t eml[219][5] = {0};
 
 int64_t playMove_CC(int64_t castlingRightsRemoved){
     // castling
@@ -251,22 +250,22 @@ void insertMove_white(int64_t se){
     if(se == 1){
         playMove_CC(0);
         if(check(1)){ memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
-        } else{ moveList[0][n] = y; moveList[1][n] = x; moveList[2][n] = y_to; moveList[3][n] = x_to; n++; memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));}
+        } else{ moveList[n][0] = y; moveList[n][1] = x; moveList[n][2] = y_to; moveList[n][3] = x_to; n++; memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));}
     } else{
         playMove_CC(0);
         if(check(1)){ memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
-        } else{ eml[0][o] = y; eml[1][o] = x; eml[2][o] = y_to; eml[3][o] = x_to; o++; memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));}
+        } else{ eml[o][0] = y; eml[o][1] = x; eml[o][2] = y_to; eml[o][3] = x_to; o++; memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));}
     }
 }
 void insertMove_black(int64_t se){
     if(se == 1){
         playMove_CC(0);
         if(check(0)){ memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
-        } else{ moveList[0][n] = y; moveList[1][n] = x; moveList[2][n] = y_to; moveList[3][n] = x_to; n++; memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));}
+        } else{ moveList[n][0] = y; moveList[n][1] = x; moveList[n][2] = y_to; moveList[n][3] = x_to; n++; memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));}
     } else{
         playMove_CC(0);
         if(check(0)){ memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
-        } else{ eml[0][o] = y; eml[1][o] = x; eml[2][o] = y_to; eml[3][o] = x_to; o++; memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));}
+        } else{ eml[o][0] = y; eml[o][1] = x; eml[o][2] = y_to; eml[o][3] = x_to; o++; memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));}
     }
 }  
 
