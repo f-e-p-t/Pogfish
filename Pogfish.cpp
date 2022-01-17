@@ -210,7 +210,7 @@ int search(int64_t depth, int64_t alpha, int64_t beta){
     }
     memcpy(boardStates[depth], chessBoard, sizeof(chessBoard));
     int64_t eval;
-    int64_t bestMove[4] = {0};;
+    int64_t bestMove[4] = {0};
     if(TTable[boardHash].depthEvaluated >= depth){ return TTable[boardHash].evaluation;}
     // For move in moveList
     for(int i = 0; i < 219; i++){
