@@ -8,7 +8,7 @@
 #include"arithmetic.cpp"
 using namespace std;
 
-string FEN = "8/2p3N1/6p1/5PB1/pp2Rn2/7k/P1p2K1P/3r4";
+string FEN = "r1b5/pp3r1p/2k3p1/5p2/P7/1P3N2/2P2PPP/R4RK1";
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
 struct TranspositionData{
@@ -20,15 +20,13 @@ std::unordered_map<int64_t, TranspositionData> TTable;
 int64_t Hash(int64_t position[8][8], int side){
     int64_t hash = 0;
     for(int i = 0; i < 8; i++){ for(int j = 0; j < 8; j++){
-        if(chessBoard[i][j] != empty_square){
-            hash ^= zobrist_keys[i][j][pieceIndex(chessBoard[i][j])];
+        if(board.chessBoard[i][j] != empty_square){
+            hash ^= zobrist_keys[i][j][pieceIndex(board.chessBoard[i][j])];
         }}
     }
     if(side == 1){ hash ^= side_key;}
     return hash;
 }
-
-int64_t boardStates[50][8][8] = {0};
 
 void initializeBoard(){
     int64_t pos = 0;
@@ -42,40 +40,40 @@ void initializeBoard(){
         } else if(FEN[fenpos] == '6'){ pos+=6;
         } else if(FEN[fenpos] == '7'){ pos+=7;
         } else if(FEN[fenpos] == '8'){ pos+=8;
-        } else if(FEN[fenpos] == 'p'){ chessBoard[pos/8][pos % 8] = black_pawn; pos++;
-        } else if(FEN[fenpos] == 'n'){ chessBoard[pos/8][pos % 8] = black_knight; pos++;
-        } else if(FEN[fenpos] == 'b'){ chessBoard[pos/8][pos % 8] = black_bishop; pos++;
-        } else if(FEN[fenpos] == 'r'){ chessBoard[pos/8][pos % 8] = black_rook; pos++;
-        } else if(FEN[fenpos] == 'q'){ chessBoard[pos/8][pos % 8] = black_queen; pos++;
-        } else if(FEN[fenpos] == 'k'){ chessBoard[pos/8][pos % 8] = black_king; pos++;
-        } else if(FEN[fenpos] == 'P'){ chessBoard[pos/8][pos % 8] = white_pawn; pos++;
-        } else if(FEN[fenpos] == 'N'){ chessBoard[pos/8][pos % 8] = white_knight; pos++;
-        } else if(FEN[fenpos] == 'B'){ chessBoard[pos/8][pos % 8] = white_bishop; pos++;
-        } else if(FEN[fenpos] == 'R'){ chessBoard[pos/8][pos % 8] = white_rook; pos++;
-        } else if(FEN[fenpos] == 'Q'){ chessBoard[pos/8][pos % 8] = white_queen; pos++;
-        } else if(FEN[fenpos] == 'K'){ chessBoard[pos/8][pos % 8] = white_king; pos++;
+        } else if(FEN[fenpos] == 'p'){ board.chessBoard[pos/8][pos % 8] = black_pawn; pos++;
+        } else if(FEN[fenpos] == 'n'){ board.chessBoard[pos/8][pos % 8] = black_knight; pos++;
+        } else if(FEN[fenpos] == 'b'){ board.chessBoard[pos/8][pos % 8] = black_bishop; pos++;
+        } else if(FEN[fenpos] == 'r'){ board.chessBoard[pos/8][pos % 8] = black_rook; pos++;
+        } else if(FEN[fenpos] == 'q'){ board.chessBoard[pos/8][pos % 8] = black_queen; pos++;
+        } else if(FEN[fenpos] == 'k'){ board.chessBoard[pos/8][pos % 8] = black_king; pos++;
+        } else if(FEN[fenpos] == 'P'){ board.chessBoard[pos/8][pos % 8] = white_pawn; pos++;
+        } else if(FEN[fenpos] == 'N'){ board.chessBoard[pos/8][pos % 8] = white_knight; pos++;
+        } else if(FEN[fenpos] == 'B'){ board.chessBoard[pos/8][pos % 8] = white_bishop; pos++;
+        } else if(FEN[fenpos] == 'R'){ board.chessBoard[pos/8][pos % 8] = white_rook; pos++;
+        } else if(FEN[fenpos] == 'Q'){ board.chessBoard[pos/8][pos % 8] = white_queen; pos++;
+        } else if(FEN[fenpos] == 'K'){ board.chessBoard[pos/8][pos % 8] = white_king; pos++;
         }
         fenpos++;
     }
-    memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
+    memcpy(board.CC, board.chessBoard, sizeof(board.chessBoard));
 }
 void printBoard(){
     cout << "-----------------------------------------" << endl;
     for(int64_t y_pos = 0; y_pos < 8; y_pos++){
         cout << "|";
         for(int64_t x_pos = 0; x_pos < 8; x_pos++){
-            if(chessBoard[y_pos][x_pos] == white_pawn){ cout << "  P |";
-            } else if(chessBoard[y_pos][x_pos] == white_knight){ cout << "  N |";
-            } else if(chessBoard[y_pos][x_pos] == white_bishop){ cout << "  B |";
-            } else if(chessBoard[y_pos][x_pos] == white_rook){ cout << "  R |";
-            } else if(chessBoard[y_pos][x_pos] == white_queen){ cout << "  Q |";
-            } else if(chessBoard[y_pos][x_pos] == white_king){ cout << "  K |";
-            } else if(chessBoard[y_pos][x_pos] == black_pawn){ cout << "  p |";
-            } else if(chessBoard[y_pos][x_pos] == black_knight){ cout << "  n |";
-            } else if(chessBoard[y_pos][x_pos] == black_bishop){ cout << "  b |";
-            } else if(chessBoard[y_pos][x_pos] == black_rook){ cout << "  r |";
-            } else if(chessBoard[y_pos][x_pos] == black_queen){ cout << "  q |";
-            } else if(chessBoard[y_pos][x_pos] == black_king){ cout << "  k |";
+            if(board.chessBoard[y_pos][x_pos] == white_pawn){ cout << "  P |";
+            } else if(board.chessBoard[y_pos][x_pos] == white_knight){ cout << "  N |";
+            } else if(board.chessBoard[y_pos][x_pos] == white_bishop){ cout << "  B |";
+            } else if(board.chessBoard[y_pos][x_pos] == white_rook){ cout << "  R |";
+            } else if(board.chessBoard[y_pos][x_pos] == white_queen){ cout << "  Q |";
+            } else if(board.chessBoard[y_pos][x_pos] == white_king){ cout << "  K |";
+            } else if(board.chessBoard[y_pos][x_pos] == black_pawn){ cout << "  p |";
+            } else if(board.chessBoard[y_pos][x_pos] == black_knight){ cout << "  n |";
+            } else if(board.chessBoard[y_pos][x_pos] == black_bishop){ cout << "  b |";
+            } else if(board.chessBoard[y_pos][x_pos] == black_rook){ cout << "  r |";
+            } else if(board.chessBoard[y_pos][x_pos] == black_queen){ cout << "  q |";
+            } else if(board.chessBoard[y_pos][x_pos] == black_king){ cout << "  k |";
             } else{ cout << "  - |";
             }
         }
@@ -91,10 +89,10 @@ class Evaluation{
             int64_t material_eval = 0;
             for(int64_t i = 0; i < 8; i++){
                 for(int64_t j = 0; j < 8; j++){
-                    if(chessBoard[i][j] <= 6 && chessBoard[i][j] != 0){
-                        material_eval += value(chessBoard[i][j]);
-                    } else if(chessBoard[i][j] >= 11){
-                        material_eval -= value(chessBoard[i][j]);
+                    if(board.chessBoard[i][j] <= 6 && board.chessBoard[i][j] != 0){
+                        material_eval += value(board.chessBoard[i][j]);
+                    } else if(board.chessBoard[i][j] >= 11){
+                        material_eval -= value(board.chessBoard[i][j]);
                     }
                 }
             }
@@ -103,20 +101,20 @@ class Evaluation{
         int64_t development(){
             int64_t development;
             for(int i = 0; i < 8; i++){ for(int j = 0; j < 8; j++){
-                if(chessBoard[i][j] == white_pawn){ development += openingPawnHeatmap_white[i][j];
-                } else if(chessBoard[i][j] == black_pawn){ development += openingPawnHeatmap_white[i][j];
-                } else if(chessBoard[i][j] == white_knight){ development += openingKnightHeatmap_white[i][j];
-                } else if(chessBoard[i][j] == black_knight){ development += openingKnightHeatmap_black[i][j];}
+                if(board.chessBoard[i][j] == white_pawn){ development += openingPawnHeatmap_white[i][j];
+                } else if(board.chessBoard[i][j] == black_pawn){ development += openingPawnHeatmap_white[i][j];
+                } else if(board.chessBoard[i][j] == white_knight){ development += openingKnightHeatmap_white[i][j];
+                } else if(board.chessBoard[i][j] == black_knight){ development += openingKnightHeatmap_black[i][j];}
             }}
             return development;
         }
         int64_t endgamePiecePlacement(){
             int64_t placement = 0;
             for(int64_t i = 0; i <= 7; i++){ for(int64_t j = 0; j <= 7; j++){
-                if(chessBoard[i][j] == white_king){ placement += endgameKingHeatmap_white[i][j];
-                } else if(chessBoard[i][j] == black_king){ placement += endgameKingHeatmap_black[i][j];
-                } else if(chessBoard[i][j] == white_pawn){ placement += endgamePawnHeatmap_white[i][j];
-                } else if(chessBoard[i][j] == black_pawn){ placement += endgamePawnHeatmap_black[i][j];}
+                if(board.chessBoard[i][j] == white_king){ placement += endgameKingHeatmap_white[i][j];
+                } else if(board.chessBoard[i][j] == black_king){ placement += endgameKingHeatmap_black[i][j];
+                } else if(board.chessBoard[i][j] == white_pawn){ placement += endgamePawnHeatmap_white[i][j];
+                } else if(board.chessBoard[i][j] == black_pawn){ placement += endgamePawnHeatmap_black[i][j];}
             }}
             return placement;
         }
@@ -126,8 +124,8 @@ Evaluation evaluation;
 void order(int64_t boardHash){
     int64_t move_weights[n] = {0};
 
-    for(int i = 0; i < n; i++){ if(value(chessBoard[moveList[i][2]][moveList[i][3]]) >= 100 && moveList[i][4] == 0){
-        moveList[i][4] = value(chessBoard[moveList[i][2]][moveList[i][3]]) - value(chessBoard[moveList[i][0]][moveList[i][1]])/10;}
+    for(int i = 0; i < n; i++){ if(value(board.chessBoard[moveList[i][2]][moveList[i][3]]) >= 100 && moveList[i][4] == 0){
+        moveList[i][4] = value(board.chessBoard[moveList[i][2]][moveList[i][3]]) - value(board.chessBoard[moveList[i][0]][moveList[i][1]])/10;}
     }
 
     for(int i = 0; i < n; i++){ move_weights[i] = moveList[i][4];}
@@ -137,8 +135,6 @@ void order(int64_t boardHash){
         if(moveList[j][4] == move_weights[i]){ swap(moveList[i], moveList[j]); break;}
     }}
 }
-
-void assign(int64_t index){ move_y = moveList[index][0]; move_x = moveList[index][1]; moveTo_y = moveList[index][2]; moveTo_x = moveList[index][3];}
 
 int64_t staticEval(int64_t side, int64_t dtm){
     if(side == 1){
@@ -153,8 +149,8 @@ int64_t staticEval(int64_t side, int64_t dtm){
         }
         int64_t responses[219] = {0};
         for(int64_t i = 0; i < o; i++){
-            if(value(chessBoard[eml[i][2]][eml[i][3]]) > value(chessBoard[eml[i][0]][eml[i][1]])){
-                responses[i] = value(chessBoard[eml[i][2]][eml[i][3]]) - value(chessBoard[eml[i][0]][eml[i][1]]);
+            if(value(board.chessBoard[eml[i][2]][eml[i][3]]) > value(board.chessBoard[eml[i][0]][eml[i][1]])){
+                responses[i] = value(board.chessBoard[eml[i][2]][eml[i][3]]) - value(board.chessBoard[eml[i][0]][eml[i][1]]);
             }
         }
         eval += evaluation.material() + getMax(responses, o);
@@ -177,8 +173,8 @@ int64_t staticEval(int64_t side, int64_t dtm){
         }
         int64_t responses[219] = {0};
         for(int64_t i = 0; i < o; i++){
-            if(value(chessBoard[eml[i][2]][eml[i][3]]) > value(chessBoard[eml[i][0]][eml[i][1]])){
-                responses[i] = value(chessBoard[eml[i][2]][eml[i][3]]) - value(chessBoard[eml[i][0]][eml[i][1]]);
+            if(value(board.chessBoard[eml[i][2]][eml[i][3]]) > value(board.chessBoard[eml[i][0]][eml[i][1]])){
+                responses[i] = value(board.chessBoard[eml[i][2]][eml[i][3]]) - value(board.chessBoard[eml[i][0]][eml[i][1]]);
             }
         }
         eval += evaluation.material() - getMax(responses, o);
@@ -199,7 +195,7 @@ int search(int64_t depth, int64_t alpha, int64_t beta){
         TEST++;
         return eval;
     }
-    int64_t boardHash = Hash(chessBoard, (depth + 1) % 2);
+    int64_t boardHash = Hash(board.chessBoard, (depth + 1) % 2);
     generateMoves((depth + 1) % 2, 1);
     order(boardHash);
     if(n == 0){
@@ -208,18 +204,17 @@ int search(int64_t depth, int64_t alpha, int64_t beta){
         }
         return 0;
     }
-    memcpy(boardStates[depth], chessBoard, sizeof(chessBoard));
+    int64_t boardState[8][8] = {0}; memcpy(boardState, board.chessBoard, sizeof(board.chessBoard));
     int64_t eval;
     int64_t bestMove[4] = {0};
     if(TTable[boardHash].depthEvaluated >= depth){ return TTable[boardHash].evaluation;}
     // For move in moveList
     for(int i = 0; i < 219; i++){
-        assign(i);
-        if(move_y == 0 && move_x == 0 && moveTo_y == 0 && moveTo_x == 0){ break;}
-        playMove(0);
+        //assign(i);
+        if(moveList[i][0] == 0 && moveList[i][1] == 0 && moveList[i][2] == 0 && moveList[i][3] == 0){ break;}
+        board.playMove(0, moveList[i]);
         eval = -search(depth - 1, -beta, -alpha);
-        memcpy(chessBoard, boardStates[depth], sizeof(chessBoard));
-        memcpy(chessBoard_CC, chessBoard, sizeof(chessBoard));
+        board.unplayMove(boardState);
         generateMoves((depth + 1) % 2, 1);
         order(boardHash);
         if(eval > alpha){
@@ -239,21 +234,23 @@ int search(int64_t depth, int64_t alpha, int64_t beta){
 
 
 int64_t getMove_white(){
+    int64_t _move[4];
     generateMoves(1, 1);
     isLegalMove = false;
-    cout << "White's move ---> "; cin >> move_y; cin >> move_x; cin >> moveTo_y; cin >> moveTo_x;
+    cout << "White's move ---> "; cin >> _move[0]; cin >> _move[1]; cin >> _move[2]; cin >> _move[3];
     for(int64_t i = 0; i < n; i++){
-        if(move_y == moveList[i][0] && move_x == moveList[i][1] && moveTo_y == moveList[i][2] && moveTo_x == moveList[i][3]){ playMove(1); isLegalMove = true; return 0;}      
+        if(_move[0] == moveList[i][0] && _move[1] == moveList[i][1] && _move[2] == moveList[i][2] && _move[3] == moveList[i][3]){ board.playMove(1, _move); isLegalMove = true; return 0;}      
     }
     cout << "Illegal Move!" << endl;
     return 0;
 }
 int64_t getMove_black(){
+    int64_t _move[4];
     generateMoves(0, 1);
     isLegalMove = false;
-    cout << "Black's move ---> "; cin >> move_y; cin >> move_x; cin >> moveTo_y; cin >> moveTo_x;
+    cout << "Black's move ---> "; cin >> _move[0]; cin >> _move[1]; cin >> _move[2]; cin >> _move[3];
     for(int64_t i = 0; i < n; i++){
-        if(move_y == moveList[i][0] && move_x == moveList[i][1] && moveTo_y == moveList[i][2] && moveTo_x == moveList[i][3]){ playMove(1); isLegalMove = true; return 0;}      
+        if(_move[0] == moveList[i][0] && _move[1] == moveList[i][1] && _move[2] == moveList[i][2] && _move[3] == moveList[i][3]){ board.playMove(1, _move); isLegalMove = true; return 0;}      
     }
     cout << "Illegal Move!" << endl;
     return 0;
@@ -261,16 +258,17 @@ int64_t getMove_black(){
 class Engine{
     public:
         void move_white(int64_t _depth){
-            int64_t boardHash = Hash(chessBoard, 1);
+            int64_t boardHash = Hash(board.chessBoard, 1);
             int64_t sdepth = _depth;
             cout << "Evaluated at " << search(sdepth, -1000000000000, 1000000000000) << " with ";
             cout << TEST << " positions searched. Played - " << TTable[boardHash].best_move[0] << " " << TTable[boardHash].best_move[1] << " ";
             cout << TTable[boardHash].best_move[2] << " " << TTable[boardHash].best_move[3] << " " << endl;
-            move_y = TTable[boardHash].best_move[0];
-            move_x = TTable[boardHash].best_move[1];
-            moveTo_y = TTable[boardHash].best_move[2];
-            moveTo_x = TTable[boardHash].best_move[3];
-            playMove(1);
+            int64_t _move[4];
+            _move[0] = TTable[boardHash].best_move[0];
+            _move[1] = TTable[boardHash].best_move[1];
+            _move[2] = TTable[boardHash].best_move[2];
+            _move[3] = TTable[boardHash].best_move[3];
+            board.playMove(1, _move);
             TEST = 0;
             TTable.clear();
         }
@@ -278,6 +276,8 @@ class Engine{
 Engine engine;
 
 int main(void){
+
+    board.side = 1;
 
     std::random_device rd;
     std::mt19937_64 gen(rd());
@@ -298,7 +298,7 @@ int main(void){
     endgame = 0;
 
     //generateMoves(1, 1);
-    //order(Hash(chessBoard, 1));
+    //order(Hash(board.chessBoard, 1));
     //for(int i = 0; i < 60; i++){
     //    for(int j = 0; j < 5; j++){
     //        cout << moveList[i][j] << " ";
