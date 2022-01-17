@@ -8,7 +8,7 @@
 #include"arithmetic.cpp"
 using namespace std;
 
-string FEN = "r1b5/pp3r1p/2k3p1/5p2/P7/1P3N2/2P2PPP/R4RK1";
+string FEN = "8/2p3N1/6p1/5PB1/pp2Rn2/7k/P1p2K1P/3r4";
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
 struct TranspositionData{
@@ -189,17 +189,20 @@ int64_t staticEval(int64_t side, int64_t dtm){
 }
 
 
-int search(int64_t depth, int64_t alpha, int64_t beta){
+int search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
     if(depth == 0){
-        int64_t eval = staticEval(1, 0);
+        int64_t eval = 0;
+        if(board.side){ eval = staticEval(1, 0);}
+        else{ eval = -staticEval(0, 0);}
         TEST++;
         return eval;
     }
-    int64_t boardHash = Hash(board.chessBoard, (depth + 1) % 2);
-    generateMoves((depth + 1) % 2, 1);
+    int64_t boardHash = Hash(board.chessBoard, board.side);
+    generateMoves(board.side, 1);
     order(boardHash);
     if(n == 0){
-        if(check((depth + 1) % 2)){ 
+        if(check(board.side)){
+            if(board.side){return (1000000 + depth);}
             return -(1000000 + depth);
         }
         return 0;
@@ -210,12 +213,11 @@ int search(int64_t depth, int64_t alpha, int64_t beta){
     if(TTable[boardHash].depthEvaluated >= depth){ return TTable[boardHash].evaluation;}
     // For move in moveList
     for(int i = 0; i < 219; i++){
-        //assign(i);
         if(moveList[i][0] == 0 && moveList[i][1] == 0 && moveList[i][2] == 0 && moveList[i][3] == 0){ break;}
         board.playMove(0, moveList[i]);
-        eval = -search(depth - 1, -beta, -alpha);
+        eval = -search(depth - 1, cap, -beta, -alpha);
         board.unplayMove(boardState);
-        generateMoves((depth + 1) % 2, 1);
+        generateMoves(board.side, 1);
         order(boardHash);
         if(eval > alpha){
             bestMove[0] = moveList[i][0]; bestMove[1] = moveList[i][1]; bestMove[2] = moveList[i][2]; bestMove[3] = moveList[i][3];
@@ -260,7 +262,7 @@ class Engine{
         void move_white(int64_t _depth){
             int64_t boardHash = Hash(board.chessBoard, 1);
             int64_t sdepth = _depth;
-            cout << "Evaluated at " << search(sdepth, -1000000000000, 1000000000000) << " with ";
+            cout << "Evaluated at " << search(_depth, _depth, -1000000000000, 1000000000000) << " with ";
             cout << TEST << " positions searched. Played - " << TTable[boardHash].best_move[0] << " " << TTable[boardHash].best_move[1] << " ";
             cout << TTable[boardHash].best_move[2] << " " << TTable[boardHash].best_move[3] << " " << endl;
             int64_t _move[4];
@@ -270,7 +272,7 @@ class Engine{
             _move[3] = TTable[boardHash].best_move[3];
             board.playMove(1, _move);
             TEST = 0;
-            TTable.clear();
+            //TTable.clear();
         }
 };
 Engine engine;
@@ -309,10 +311,10 @@ int main(void){
         if(move_move == 15){ opening = false; middlegame = true;}
         if(pieceCount() < 15){ opening = false; middlegame = false; endgame = true;}
         cout << "Move - " << move_move << endl;
-        engine.move_white(6);
         //do{
         //    getMove_white();
         //} while(!isLegalMove);
+        engine.move_white(6);
 
         generateMoves(0, 1);
         if(n == 0 && check(0) == true){ printBoard(); cout << "Checkmate - white wins" << endl; break;

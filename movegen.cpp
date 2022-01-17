@@ -40,6 +40,7 @@ class Board{
         int64_t CC[8][8] = {0};
         bool side;
         void playMove(int64_t castlingRightsRemoved, int64_t _move[]){
+            side = !side;
             int64_t from_y = _move[0];
             int64_t from_x = _move[1];
             int64_t to_y = _move[2];
@@ -95,6 +96,7 @@ class Board{
             CC[y][x] = empty_square;
         }
         void unplayMove(int64_t prevBoard[8][8]){
+            side = !side;
             memcpy(chessBoard, prevBoard, sizeof(chessBoard));
             memcpy(CC, chessBoard, sizeof(chessBoard));
         }
