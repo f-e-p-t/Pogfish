@@ -99,12 +99,14 @@ class Evaluation{
             return material_eval;
         }
         int64_t development(){
-            int64_t development;
+            int64_t development = 0;
             for(int i = 0; i < 8; i++){ for(int j = 0; j < 8; j++){
-                if(board.chessBoard[i][j] == white_pawn){ development += openingPawnHeatmap_white[i][j];
-                } else if(board.chessBoard[i][j] == black_pawn){ development += openingPawnHeatmap_white[i][j];
-                } else if(board.chessBoard[i][j] == white_knight){ development += openingKnightHeatmap_white[i][j];
-                } else if(board.chessBoard[i][j] == black_knight){ development += openingKnightHeatmap_black[i][j];}
+                if(board.chessBoard[i][j] == white_knight){ development += openingKnightHeatmap_white[i][j];
+                } else if(board.chessBoard[i][j] == black_knight){ development += openingKnightHeatmap_black[i][j];
+                } else if(board.chessBoard[i][j] == white_bishop){ development += openingBishopHeatmap_white[i][j];
+                } else if(board.chessBoard[i][j] == black_bishop){ development += openingBishopHeatmap_black[i][j];
+                } else if(board.chessBoard[i][i] == white_rook){ development += openingRookHeatmap_white[i][j];
+                } else if(board.chessBoard[i][j] == black_rook){ development += openingRookHeatmap_black[i][j];}
             }}
             return development;
         }
@@ -202,26 +204,31 @@ int search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
     order(boardHash);
     if(n == 0){
         if(check(board.side)){
-            if(board.side){return (1000000 + depth);}
             return -(1000000 + depth);
         }
         return 0;
     }
     int64_t boardState[8][8] = {0}; memcpy(boardState, board.chessBoard, sizeof(board.chessBoard));
-    int64_t eval;
+    int64_t eval = 0;
+    int64_t alphaIncreased = 0;
     int64_t bestMove[4] = {0};
     if(TTable[boardHash].depthEvaluated >= depth){ return TTable[boardHash].evaluation;}
     // For move in moveList
     for(int i = 0; i < 219; i++){
         if(moveList[i][0] == 0 && moveList[i][1] == 0 && moveList[i][2] == 0 && moveList[i][3] == 0){ break;}
         board.playMove(0, moveList[i]);
-        eval = -search(depth - 1, cap, -beta, -alpha);
+        if(depth > 2 && alphaIncreased >= 5){ // LMR
+            eval = -search(depth - 2, cap, -beta, -alpha);
+        } else{
+            eval = -search(depth - 1, cap, -beta, -alpha);
+        }
         board.unplayMove(boardState);
-        generateMoves(board.side, 1);
+        if(depth != 1){ generateMoves(board.side, 1);}
         order(boardHash);
         if(eval > alpha){
+            alphaIncreased = 0;
             bestMove[0] = moveList[i][0]; bestMove[1] = moveList[i][1]; bestMove[2] = moveList[i][2]; bestMove[3] = moveList[i][3];
-        }
+        } else{ alphaIncreased++;}
         alpha = duoMax(eval, alpha);
         if(eval >= beta){
             TTable[boardHash].evaluation = alpha; TTable[boardHash].depthEvaluated = depth;
@@ -235,9 +242,9 @@ int search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
 }
 
 
-int64_t getMove_white(){
+int64_t getMove(){
     int64_t _move[4];
-    generateMoves(1, 1);
+    generateMoves(board.side, 1);
     isLegalMove = false;
     cout << "White's move ---> "; cin >> _move[0]; cin >> _move[1]; cin >> _move[2]; cin >> _move[3];
     for(int64_t i = 0; i < n; i++){
@@ -246,21 +253,10 @@ int64_t getMove_white(){
     cout << "Illegal Move!" << endl;
     return 0;
 }
-int64_t getMove_black(){
-    int64_t _move[4];
-    generateMoves(0, 1);
-    isLegalMove = false;
-    cout << "Black's move ---> "; cin >> _move[0]; cin >> _move[1]; cin >> _move[2]; cin >> _move[3];
-    for(int64_t i = 0; i < n; i++){
-        if(_move[0] == moveList[i][0] && _move[1] == moveList[i][1] && _move[2] == moveList[i][2] && _move[3] == moveList[i][3]){ board.playMove(1, _move); isLegalMove = true; return 0;}      
-    }
-    cout << "Illegal Move!" << endl;
-    return 0;
-}
 class Engine{
     public:
-        void move_white(int64_t _depth){
-            int64_t boardHash = Hash(board.chessBoard, 1);
+        void move(int64_t _depth){
+            int64_t boardHash = Hash(board.chessBoard, board.side);
             int64_t sdepth = _depth;
             cout << "Evaluated at " << search(_depth, _depth, -1000000000000, 1000000000000) << " with ";
             cout << TEST << " positions searched. Played - " << TTable[boardHash].best_move[0] << " " << TTable[boardHash].best_move[1] << " ";
@@ -272,7 +268,7 @@ class Engine{
             _move[3] = TTable[boardHash].best_move[3];
             board.playMove(1, _move);
             TEST = 0;
-            //TTable.clear();
+            TTable.clear();
         }
 };
 Engine engine;
@@ -312,9 +308,9 @@ int main(void){
         if(pieceCount() < 15){ opening = false; middlegame = false; endgame = true;}
         cout << "Move - " << move_move << endl;
         //do{
-        //    getMove_white();
+        //    getMove();
         //} while(!isLegalMove);
-        engine.move_white(6);
+        engine.move(7);
 
         generateMoves(0, 1);
         if(n == 0 && check(0) == true){ printBoard(); cout << "Checkmate - white wins" << endl; break;
@@ -324,9 +320,9 @@ int main(void){
         printBoard();
 
         do{
-            getMove_black();
+            getMove();
         } while(!isLegalMove);
-        //engine.move_white(7);
+        //engine.move(6);
 
         generateMoves(1, 1);
         if(n == 0 && check(1) == true){ printBoard(); cout << "Checkmate - black wins" << endl; break;
