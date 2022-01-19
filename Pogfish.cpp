@@ -8,7 +8,7 @@
 #include"arithmetic.cpp"
 using namespace std;
 
-string FEN = "r3r1k1/pp1n1ppp/2p1bn2/3q4/2BP1B2/P4N2/1P3PPP/R1Q2RK1";
+string FEN = "8/2p3N1/6p1/5PB1/pp2Rn2/7k/P1p2K1P/3r4";
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
 struct TranspositionData{
@@ -17,7 +17,7 @@ struct TranspositionData{
     int64_t best_move[4] = {0};
 };
 std::unordered_map<int64_t, TranspositionData> TTable;
-int64_t Hash(int64_t position[8][8], int side){
+int64_t Hash(int64_t position[8][8], bool side){
     int64_t hash = 0;
     for(int i = 0; i < 8; i++){ for(int j = 0; j < 8; j++){
         if(board.chessBoard[i][j] != empty_square){
@@ -186,9 +186,7 @@ int64_t search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
         return 0;
     }
     int64_t boardState[8][8] = {0}; memcpy(boardState, board.chessBoard, sizeof(board.chessBoard));
-    int64_t eval = 0;
-    int64_t alphaIncreased = 0;
-    int64_t bestMove[4] = {0};
+    int64_t eval = 0; int64_t alphaIncreased = 0; int64_t bestMove[4] = {0};
     if(TTable[boardHash].depthEvaluated >= depth){ return TTable[boardHash].evaluation;}
     // For move in moves.list
     for(int i = 0; i < 219; i++){
@@ -252,7 +250,7 @@ Engine engine;
 
 int main(void){
 
-    board.side = 0;
+    board.side = 1;
     List gameEnd;
 
     std::random_device rd;
