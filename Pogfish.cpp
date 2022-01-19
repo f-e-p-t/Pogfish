@@ -8,13 +8,13 @@
 #include"arithmetic.cpp"
 using namespace std;
 
-string FEN = "8/2p3N1/6p1/5PB1/pp2Rn2/7k/P1p2K1P/3r4";
+string FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
 struct TranspositionData{
     int64_t evaluation;
     int64_t depthEvaluated;
-    int64_t best_move[4] = {0};
+    int64_t best_move[5] = {0};
 };
 std::unordered_map<int64_t, TranspositionData> TTable;
 int64_t Hash(int64_t position[8][8], bool side){
@@ -125,9 +125,12 @@ Evaluation evaluation;
 
 List order(List moves, int64_t boardHash){
     int64_t move_weights[n] = {0};
+    if(TTable[boardHash].depthEvaluated > 0){ for(int i = 0; i < n; i++){
+        if(equal(begin(moves.list[i]), end(moves.list[i]), begin(TTable[boardHash].best_move))){ moves.list[i][4] += 1000;}
+    }}
 
-    for(int i = 0; i < n; i++){ if(value(board.chessBoard[moves.list[i][2]][moves.list[i][3]]) >= 100 && moves.list[i][4] == 0){
-        moves.list[i][4] = value(board.chessBoard[moves.list[i][2]][moves.list[i][3]]) - value(board.chessBoard[moves.list[i][0]][moves.list[i][1]])/10;}
+    for(int i = 0; i < n; i++){ if(value(board.chessBoard[moves.list[i][2]][moves.list[i][3]]) >= 100){
+        moves.list[i][4] += value(board.chessBoard[moves.list[i][2]][moves.list[i][3]]) - value(board.chessBoard[moves.list[i][0]][moves.list[i][1]])/10;}
     }
 
     for(int i = 0; i < n; i++){ move_weights[i] = moves.list[i][4];}
@@ -245,6 +248,13 @@ class Engine{
             TEST = 0;
             TTable.clear();
         }
+        void iterate(int64_t _depth){
+            int64_t boardHash = Hash(board.chessBoard, board.side);
+            int64_t sdepth = _depth;
+            //cout << "depth " << _depth << " - " << search(_depth, _depth, -1000000000000, 1000000000000) << endl;
+            search(_depth, _depth, -1000000000000, 1000000000000);
+            TEST = 0;
+        }
 };
 Engine engine;
 
@@ -287,7 +297,8 @@ int main(void){
         //do{
         //    getMove();
         //} while(!isLegalMove);
-        engine.move(7);
+        for(int i = 1; i <= 7; i++){ engine.iterate(i);}
+        engine.move(8);
 
         gameEnd = generateMoves(0);
         if(n == 0 && check(0) == true){ printBoard(); cout << "Checkmate - white wins" << endl; break;
