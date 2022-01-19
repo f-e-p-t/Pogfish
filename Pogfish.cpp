@@ -297,7 +297,7 @@ int main(void){
         //do{
         //    getMove();
         //} while(!isLegalMove);
-        for(int i = 1; i <= 7; i++){ engine.iterate(i);}
+        for(int i = 1; i < 8; i++){ engine.iterate(i);}
         engine.move(8);
 
         gameEnd = generateMoves(0);
