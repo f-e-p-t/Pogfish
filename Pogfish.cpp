@@ -8,7 +8,7 @@
 #include"arithmetic.cpp"
 using namespace std;
 
-string FEN = "6k1/1ppq2p1/1b1p1p2/p2P1r1p/4rBP1/3Q1R1P/P4PK1/8";
+string FEN = "r3r1k1/pp1n1ppp/2p1bn2/3q4/2BP1B2/P4N2/1P3PPP/R1Q2RK1";
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
 struct TranspositionData{
@@ -139,64 +139,40 @@ List order(List moves, int64_t boardHash){
     return moves;
 }
 
-int64_t staticEval(int64_t side, int64_t dtm){
-    if(side == 1){
-        int64_t eval = 0;
-        List moves = generateMoves(1);
-        if(n == 0){
-            if(check(1)){
-                return (-1000000 - dtm);
-            } else{
-                return 0;
-            }
+int64_t staticEval(int64_t dtm){
+    int64_t eval = 0;
+    List moves = generateMoves(board.side);
+    if(n == 0){
+        if(check(board.side)){
+            return (-1000000 - dtm);
+        } else{
+            return 0;
         }
-        int64_t responses[219] = {0};
-        for(int64_t i = 0; i < n; i++){
-            if(value(board.chessBoard[moves.list[i][2]][moves.list[i][3]]) > value(board.chessBoard[moves.list[i][0]][moves.list[i][1]])){
-                responses[i] = value(board.chessBoard[moves.list[i][2]][moves.list[i][3]]) - value(board.chessBoard[moves.list[i][0]][moves.list[i][1]]);
-            }
-        }
-        eval += evaluation.material() + getMax(responses, n);
-        if(opening){
-            eval += evaluation.development();
-        }
-        if(endgame){
-            eval += evaluation.endgamePiecePlacement();
-        }
-        return eval;
-    } else{
-        int64_t eval = 0;
-        List moves = generateMoves(0);
-        if(n == 0){
-            if(check(0)){
-                return (1000000 + dtm);
-            } else{
-                return 0;
-            }
-        }
-        int64_t responses[219] = {0};
-        for(int64_t i = 0; i < n; i++){
-            if(value(board.chessBoard[moves.list[i][2]][moves.list[i][3]]) > value(board.chessBoard[moves.list[i][0]][moves.list[i][1]])){
-                responses[i] = value(board.chessBoard[moves.list[i][2]][moves.list[i][3]]) - value(board.chessBoard[moves.list[i][0]][moves.list[i][1]]);
-            }
-        }
-        eval += evaluation.material() - getMax(responses, n);
-        if(opening){
-            eval += evaluation.development();
-        }
-        if(endgame){
-            eval += evaluation.endgamePiecePlacement();
-        }
-        return eval;    
     }
+    int64_t responses[219] = {0};
+    for(int64_t i = 0; i < n; i++){
+        if(value(board.chessBoard[moves.list[i][2]][moves.list[i][3]]) > value(board.chessBoard[moves.list[i][0]][moves.list[i][1]])){
+            responses[i] = value(board.chessBoard[moves.list[i][2]][moves.list[i][3]]) - value(board.chessBoard[moves.list[i][0]][moves.list[i][1]]);
+        }
+    }
+    eval += evaluation.material();
+    if(board.side){ eval += getMax(responses, n);}
+    else{ eval -= getMax(responses, n);}
+    if(opening){
+        eval += evaluation.development();
+    }
+    if(endgame){
+        eval += evaluation.endgamePiecePlacement();
+    }
+    return eval;
 }
 
 
 int64_t search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
     if(depth == 0){
         int64_t eval = 0;
-        if(board.side){ eval = staticEval(1, 0);}
-        else{ eval = -staticEval(0, 0);}
+        if(board.side){ eval = staticEval(0);}
+        else{ eval = -staticEval(0);}
         TEST++;
         return eval;
     }
@@ -276,7 +252,7 @@ Engine engine;
 
 int main(void){
 
-    board.side = 1;
+    board.side = 0;
     List gameEnd;
 
     std::random_device rd;
