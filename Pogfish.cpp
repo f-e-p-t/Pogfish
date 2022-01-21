@@ -8,7 +8,7 @@
 #include"arithmetic.cpp"
 using namespace std;
 
-string FEN = "rnb1kb1r/ppp2ppp/3p1n2/8/3P4/5N2/PPP1BPPP/RNB1K2R b KQkq - 0 7";
+string FEN = "8/2p3N1/6p1/5PB1/pp2Rn2/7k/P1p2K1P/3r4";
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
 struct TranspositionData{
@@ -199,7 +199,7 @@ int64_t search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
     for(int i = 0; i < 219; i++){
         if(moves.list[i][0] == 0 && moves.list[i][1] == 0 && moves.list[i][2] == 0 && moves.list[i][3] == 0){ break;}
         board.playMove(0, moves.list[i]);
-        if(depth > 2 && !alphaIncreased && i < 6){ // LMR
+        if(alphaIncreased > 5 && depth > 2){ // LMR
             eval = -search(depth - 2, cap, -beta, -alpha);
         } else{
             eval = -search(depth - 1, cap, -beta, -alpha);
@@ -264,7 +264,7 @@ Engine engine;
 
 int main(void){
 
-    board.side = 0;
+    board.side = 1;
     List gameEnd;
 
     std::random_device rd;
