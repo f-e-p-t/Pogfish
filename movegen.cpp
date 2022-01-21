@@ -10,7 +10,6 @@ bool KSCastlingRights_white = true;
 bool QSCastlingRights_white = true;
 bool KSCastlingRights_black = true;
 bool QSCastlingRights_black = true;
-int64_t best_index;
 
 int64_t y;
 int64_t x;

@@ -8,7 +8,7 @@
 #include"arithmetic.cpp"
 using namespace std;
 
-string FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+string FEN = "rnb1kb1r/ppp2ppp/3p1n2/8/3P4/5N2/PPP1BPPP/RNB1K2R b KQkq - 0 7";
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
 struct TranspositionData{
@@ -152,15 +152,19 @@ int64_t staticEval(int64_t dtm){
             return 0;
         }
     }
-    int64_t responses[219] = {0};
+    int64_t bestResponse = 0;
+    int64_t captureValue = 0;
+    int64_t recapturePenalty = 0;
     for(int64_t i = 0; i < n; i++){
-        if(value(board.chessBoard[moves.list[i][2]][moves.list[i][3]]) > value(board.chessBoard[moves.list[i][0]][moves.list[i][1]])){
-            responses[i] = value(board.chessBoard[moves.list[i][2]][moves.list[i][3]]) - value(board.chessBoard[moves.list[i][0]][moves.list[i][1]]);
+        captureValue = value(board.chessBoard[moves.list[i][2]][moves.list[i][3]]);
+        recapturePenalty = value(board.chessBoard[moves.list[i][0]][moves.list[i][1]]);
+        if(captureValue > recapturePenalty){
+            if(captureValue - recapturePenalty > bestResponse){ bestResponse = captureValue - recapturePenalty;}
         }
     }
     eval += evaluation.material();
-    if(board.side){ eval += getMax(responses, n);}
-    else{ eval -= getMax(responses, n);}
+    if(board.side){ eval += bestResponse;}
+    else{ eval -= bestResponse;}
     if(opening){
         eval += evaluation.development();
     }
@@ -190,12 +194,12 @@ int64_t search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
     }
     int64_t boardState[8][8] = {0}; memcpy(boardState, board.chessBoard, sizeof(board.chessBoard));
     int64_t eval = 0; int64_t alphaIncreased = 0; int64_t bestMove[4] = {0};
-    if(TTable[boardHash].depthEvaluated >= depth){ return TTable[boardHash].evaluation;}
+    if(TTable[boardHash].depthEvaluated > depth){ return TTable[boardHash].evaluation;}
     // For move in moves.list
     for(int i = 0; i < 219; i++){
         if(moves.list[i][0] == 0 && moves.list[i][1] == 0 && moves.list[i][2] == 0 && moves.list[i][3] == 0){ break;}
         board.playMove(0, moves.list[i]);
-        if(depth > 2 && alphaIncreased >= 5){ // LMR
+        if(depth > 2 && !alphaIncreased && i < 6){ // LMR
             eval = -search(depth - 2, cap, -beta, -alpha);
         } else{
             eval = -search(depth - 1, cap, -beta, -alpha);
@@ -260,7 +264,7 @@ Engine engine;
 
 int main(void){
 
-    board.side = 1;
+    board.side = 0;
     List gameEnd;
 
     std::random_device rd;
@@ -310,7 +314,8 @@ int main(void){
         do{
             getMove();
         } while(!isLegalMove);
-        //engine.move(6);
+        //for(int i = 1; i < 8; i++){ engine.iterate(i);}
+        //engine.move(8);
 
         gameEnd = generateMoves(1);
         if(n == 0 && check(1) == true){ printBoard(); cout << "Checkmate - black wins" << endl; break;

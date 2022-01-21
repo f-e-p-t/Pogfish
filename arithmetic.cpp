@@ -21,24 +21,6 @@ int64_t pieceIndex(int64_t piece){
     return pieceIndex;
 }
 
-int64_t getMax(int64_t values[], int64_t numValues){
-    int64_t best = values[0];
-    best_index = 0;
-    for(int64_t i = 0; i < numValues; i++){
-        if(values[i] > best){ best = values[i]; best_index = i;}
-    }
-    return best;
-}
-
-int64_t getMin(int64_t values[], int64_t numValues){
-    int64_t best = values[0];
-    best_index = 0;
-    for(int64_t i = 0; i < numValues; i++){
-        if(values[i] < best){ best = values[i]; best_index = i;}
-    }
-    return best;
-}
-
 int64_t duoMax(int64_t a, int64_t b){
     int64_t max;
     max = (a + b + abs(a - b))/2;
