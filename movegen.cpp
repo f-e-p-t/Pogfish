@@ -31,7 +31,6 @@ const int64_t black_queen = 15;
 const int64_t black_king = 16;
 
 int64_t n = 0;
-int64_t o = 0;
 int64_t TEST = 0;
 class Board{
     public:
@@ -103,7 +102,9 @@ class Board{
 Board board;
 
 struct List{
-    public: int64_t list[219][5] = {0};
+    public: 
+        int64_t list[219][5] = {0};
+        int64_t count = 0;
 };
 
 bool check(int64_t side){
