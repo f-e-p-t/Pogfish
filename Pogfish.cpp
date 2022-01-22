@@ -195,7 +195,6 @@ int64_t search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
     int64_t boardState[8][8] = {0}; memcpy(boardState, board.chessBoard, sizeof(board.chessBoard));
     int64_t eval = 0; int64_t alphaIncreased = 0; int64_t bestMove[4] = {0};
     if(TTable[boardHash].depthEvaluated > depth){ return TTable[boardHash].evaluation;}
-    // For move in moves.list
     for(int i = 0; i < moves.count; i++){
         board.playMove(0, moves.list[i]);
         if(alphaIncreased > 5 && depth > 2){ // LMR
