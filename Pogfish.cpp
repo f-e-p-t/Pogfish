@@ -8,7 +8,7 @@
 #include"arithmetic.cpp"
 using namespace std;
 
-string FEN = "r1b5/pp3r1p/2k3p1/5p2/P7/1P3N2/2P2PPP/R4RK1";
+string FEN = "7k/1p4R1/3bp2p/3p3N/p2P4/4NQPP/PP5K/2r1q3";
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
 struct TranspositionData{
@@ -124,19 +124,19 @@ class Evaluation{
 Evaluation evaluation;
 
 List order(List moves, int64_t boardHash){
-    int64_t move_weights[n] = {0};
-    if(TTable[boardHash].depthEvaluated > 0){ for(int i = 0; i < n; i++){
+    int64_t move_weights[moves.count] = {0};
+    if(TTable[boardHash].depthEvaluated > 0){ for(int i = 0; i < moves.count; i++){
         if(equal(begin(moves.list[i]), end(moves.list[i]), begin(TTable[boardHash].best_move))){ moves.list[i][4] += 1000;}
     }}
 
-    for(int i = 0; i < n; i++){ if(value(board.chessBoard[moves.list[i][2]][moves.list[i][3]]) >= 100){
+    for(int i = 0; i < moves.count; i++){ if(value(board.chessBoard[moves.list[i][2]][moves.list[i][3]]) >= 100){
         moves.list[i][4] += value(board.chessBoard[moves.list[i][2]][moves.list[i][3]]) - value(board.chessBoard[moves.list[i][0]][moves.list[i][1]])/10;}
     }
 
-    for(int i = 0; i < n; i++){ move_weights[i] = moves.list[i][4];}
-    sort(move_weights, move_weights + n, greater<int64_t>());
+    for(int i = 0; i < moves.count; i++){ move_weights[i] = moves.list[i][4];}
+    sort(move_weights, move_weights + moves.count, greater<int64_t>());
 
-    for(int i = 0; i < n; i++){ for(int j = 0; j < n; j++){ 
+    for(int i = 0; i < moves.count; i++){ for(int j = 0; j < moves.count; j++){ 
         if(moves.list[j][4] == move_weights[i]){ swap(moves.list[i], moves.list[j]); break;}
     }}
     return moves;
@@ -145,7 +145,7 @@ List order(List moves, int64_t boardHash){
 int64_t staticEval(int64_t dtm){
     int64_t eval = 0;
     List moves = generateMoves(board.side);
-    if(n == 0){
+    if(moves.count == 0){
         if(check(board.side)){
             return (-1000000 - dtm);
         } else{
@@ -155,7 +155,7 @@ int64_t staticEval(int64_t dtm){
     int64_t bestResponse = 0;
     int64_t captureValue = 0;
     int64_t recapturePenalty = 0;
-    for(int64_t i = 0; i < n; i++){
+    for(int64_t i = 0; i < moves.count; i++){
         captureValue = value(board.chessBoard[moves.list[i][2]][moves.list[i][3]]);
         recapturePenalty = value(board.chessBoard[moves.list[i][0]][moves.list[i][1]]);
         if(captureValue > recapturePenalty){
@@ -186,7 +186,7 @@ int64_t search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
     int64_t boardHash = Hash(board.chessBoard, board.side);
     List moves = generateMoves(board.side);
     moves = order(moves, boardHash);
-    if(n == 0){
+    if(moves.count == 0){
         if(check(board.side)){
             return -(1000000 + depth);
         }
@@ -196,8 +196,7 @@ int64_t search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
     int64_t eval = 0; int64_t alphaIncreased = 0; int64_t bestMove[4] = {0};
     if(TTable[boardHash].depthEvaluated > depth){ return TTable[boardHash].evaluation;}
     // For move in moves.list
-    for(int i = 0; i < 219; i++){
-        if(moves.list[i][0] == 0 && moves.list[i][1] == 0 && moves.list[i][2] == 0 && moves.list[i][3] == 0){ break;}
+    for(int i = 0; i < moves.count; i++){
         board.playMove(0, moves.list[i]);
         if(alphaIncreased > 5 && depth > 2){ // LMR
             eval = -search(depth - 2, cap, -beta, -alpha);
@@ -229,7 +228,7 @@ int64_t getMove(){
     if(board.side){ cout << "White's ";}
     else{ cout << "Black's ";}
     cout << "move ---> "; cin >> _move[0]; cin >> _move[1]; cin >> _move[2]; cin >> _move[3];
-    for(int64_t i = 0; i < n; i++){
+    for(int64_t i = 0; i < moves.count; i++){
         if(_move[0] == moves.list[i][0] && _move[1] == moves.list[i][1] && _move[2] == moves.list[i][2] && _move[3] == moves.list[i][3]){ board.playMove(1, _move); isLegalMove = true; return 0;}      
     }
     cout << "Illegal Move!" << endl;
@@ -287,7 +286,7 @@ int main(void){
 
     //List dsuga = generateMoves(board.side);
     //dsuga = order(dsuga, Hash(board.chessBoard, board.side));
-    ////cout << n << endl;
+    //cout << dsuga.count << endl;
     //for(int i = 0; i < 60; i++){
     //    for(int j = 0; j < 5; j++){
     //        cout << dsuga.list[i][j] << " ";
@@ -305,8 +304,8 @@ int main(void){
         engine.move(8);
 
         gameEnd = generateMoves(0);
-        if(n == 0 && check(0) == true){ printBoard(); cout << "Checkmate - white wins" << endl; break;
-        } else if(n == 0 && check(0) == false){ printBoard(); cout << "Stalemate - draw" << endl; break;
+        if(gameEnd.count == 0 && check(0) == true){ printBoard(); cout << "Checkmate - white wins" << endl; break;
+        } else if(gameEnd.count == 0 && check(0) == false){ printBoard(); cout << "Stalemate - draw" << endl; break;
         }
 
         printBoard();
@@ -318,8 +317,8 @@ int main(void){
         //engine.move(8);
 
         gameEnd = generateMoves(1);
-        if(n == 0 && check(1) == true){ printBoard(); cout << "Checkmate - black wins" << endl; break;
-        } else if(n == 0 && check(1) == false){ printBoard(); cout << "Stalemate - draw" << endl; break;
+        if(gameEnd.count == 0 && check(1) == true){ printBoard(); cout << "Checkmate - black wins" << endl; break;
+        } else if(gameEnd.count == 0 && check(1) == false){ printBoard(); cout << "Stalemate - draw" << endl; break;
         }
 
         printBoard();

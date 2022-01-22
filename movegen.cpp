@@ -30,7 +30,6 @@ const int64_t black_rook = 14;
 const int64_t black_queen = 15;
 const int64_t black_king = 16;
 
-int64_t n = 0;
 int64_t TEST = 0;
 class Board{
     public:
@@ -258,12 +257,12 @@ bool check(int64_t side){
 void insertMove_white(int64_t list[219][5]){
     board.playMove_CC(0);
     if(check(1)){ memcpy(board.CC, board.chessBoard, sizeof(board.chessBoard));
-    } else{ list[n][0] = y; list[n][1] = x; list[n][2] = y_to; list[n][3] = x_to; n++; memcpy(board.CC, board.chessBoard, sizeof(board.chessBoard));}
+    } else{ list[list[219][0]][0] = y; list[list[219][0]][1] = x; list[list[219][0]][2] = y_to; list[list[219][0]][3] = x_to; list[219][0]++; memcpy(board.CC, board.chessBoard, sizeof(board.chessBoard));}
 }
 void insertMove_black(int64_t list[219][5]){
     board.playMove_CC(0);
     if(check(0)){ memcpy(board.CC, board.chessBoard, sizeof(board.chessBoard));
-    } else{ list[n][0] = y; list[n][1] = x; list[n][2] = y_to; list[n][3] = x_to; n++; memcpy(board.CC, board.chessBoard, sizeof(board.chessBoard));}
+    } else{ list[list[219][0]][0] = y; list[list[219][0]][1] = x; list[list[219][0]][2] = y_to; list[list[219][0]][3] = x_to; list[219][0]++; memcpy(board.CC, board.chessBoard, sizeof(board.chessBoard));}
 }  
 
 class Move_gen{
@@ -474,8 +473,6 @@ Move_gen moveGen;
 
 List generateMoves(int64_t side){
     List moves;
-    int64_t count = 0;
-    n = 0;
     if(side == 1){
         for(int64_t i = 0; i < 8; i++){ y = i; for(int64_t j = 0; j < 8; j++){ x = j;
             if(board.chessBoard[y][x] == white_pawn){ moveGen.w_pawn(moves.list);
@@ -498,5 +495,6 @@ List generateMoves(int64_t side){
             }}
         }
     }
+    moves.count = moves.list[219][0];
     return moves;
 }
