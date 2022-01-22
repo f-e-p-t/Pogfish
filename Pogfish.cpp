@@ -8,7 +8,7 @@
 #include"arithmetic.cpp"
 using namespace std;
 
-string FEN = "7k/1p4R1/3bp2p/3p3N/p2P4/4NQPP/PP5K/2r1q3";
+string FEN = "3r3k/1b3q1p/pp2rP1Q/7N/P3pR2/4b3/1P4PP/5R1K";
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
 struct TranspositionData{
@@ -235,26 +235,41 @@ int64_t getMove(){
 }
 class Engine{
     public:
+        int64_t _alpha = 0;
+        int64_t _beta = 0;
+        int64_t prevResult = 0;
+        const int64_t windowWidth = 25;
         void move(int64_t _depth){
             int64_t boardHash = Hash(board.chessBoard, board.side);
             int64_t sdepth = _depth;
-            cout << "Evaluated at " << search(_depth, _depth, -1000000000000, 1000000000000) << " with ";
+            cout << "Iterations finished. Evaluated at ";
+            int64_t eval = search(_depth, _depth, this->prevResult - this->windowWidth, this->prevResult + this->windowWidth);
+            if(eval <= _alpha || eval >= _beta){
+                cout << "(research required) ";
+                eval = search(_depth, _depth, -1000000000000, 1000000000000);
+            }
+            cout << eval << " with ";
             cout << TEST << " positions searched. Played - " << TTable[boardHash].best_move[0] << " " << TTable[boardHash].best_move[1] << " ";
             cout << TTable[boardHash].best_move[2] << " " << TTable[boardHash].best_move[3] << " " << endl;
             int64_t _move[4];
-            _move[0] = TTable[boardHash].best_move[0];
-            _move[1] = TTable[boardHash].best_move[1];
-            _move[2] = TTable[boardHash].best_move[2];
-            _move[3] = TTable[boardHash].best_move[3];
+            _move[0] = TTable[boardHash].best_move[0]; _move[1] = TTable[boardHash].best_move[1];
+            _move[2] = TTable[boardHash].best_move[2]; _move[3] = TTable[boardHash].best_move[3];
             board.playMove(1, _move);
             TEST = 0;
             TTable.clear();
         }
         void iterate(int64_t _depth){
-            int64_t boardHash = Hash(board.chessBoard, board.side);
             int64_t sdepth = _depth;
-            //cout << "depth " << _depth << " - " << search(_depth, _depth, -1000000000000, 1000000000000) << endl;
-            search(_depth, _depth, -1000000000000, 1000000000000);
+            _alpha = this->prevResult - this->windowWidth;
+            _beta = this->prevResult + this->windowWidth;
+            if(_depth == 1){
+                this->prevResult = search(_depth, _depth, -1000000000000, 1000000000000);
+            } else{
+                this->prevResult = search(_depth, _depth, _alpha, _beta);
+                if(this->prevResult <= _alpha || this->prevResult >= _beta){
+                    this->prevResult = search(_depth, _depth, -1000000000000, 1000000000000);
+                }
+            }
             TEST = 0;
         }
 };
