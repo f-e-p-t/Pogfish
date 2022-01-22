@@ -474,6 +474,7 @@ Move_gen moveGen;
 
 List generateMoves(int64_t side){
     List moves;
+    int64_t count = 0;
     n = 0;
     if(side == 1){
         for(int64_t i = 0; i < 8; i++){ y = i; for(int64_t j = 0; j < 8; j++){ x = j;
