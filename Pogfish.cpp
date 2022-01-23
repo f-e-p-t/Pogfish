@@ -8,7 +8,7 @@
 #include"arithmetic.cpp"
 using namespace std;
 
-string FEN = "r1bq1rk1/1p3p2/p2pp1p1/7p/3n3P/2NB4/PPP2PP1/R2QK2R";
+string FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
 struct TranspositionData{
@@ -241,7 +241,6 @@ class Engine{
         const int64_t windowWidth = 50;
         void move(int64_t _depth){
             int64_t boardHash = Hash(board.chessBoard, board.side);
-            int64_t sdepth = _depth;
             _alpha = prevResult - windowWidth;
             _beta = prevResult + windowWidth;
             cout << "Iterations finished. Evaluated at ";
