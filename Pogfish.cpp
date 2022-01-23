@@ -8,7 +8,7 @@
 #include"arithmetic.cpp"
 using namespace std;
 
-string FEN = "5Bk1/1rpp1pp1/pp3q1p/4N3/1PB5/2NP3P/2P2PPR/1R1Q1K2";
+string FEN = "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4";
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
 struct TranspositionData{
@@ -238,7 +238,7 @@ class Engine{
         int64_t _alpha = 0;
         int64_t _beta = 0;
         int64_t prevResult = 0;
-        const int64_t windowWidth = 50;
+        const int64_t windowWidth = 100;
         void move(int64_t _depth){
             int64_t boardHash = Hash(board.chessBoard, board.side);
             _alpha = prevResult - windowWidth;
@@ -260,7 +260,6 @@ class Engine{
             TTable.clear();
         }
         void iterate(int64_t _depth){
-            int64_t sdepth = _depth;
             _alpha = prevResult - windowWidth;
             _beta = prevResult + windowWidth;
             if(_depth == 1){
@@ -295,7 +294,7 @@ int main(void){
 
     initializeBoard();
     printBoard();
-    opening = 0;
+    opening = 1;
     middlegame = 1;
     endgame = 0;
 
@@ -315,7 +314,7 @@ int main(void){
         //do{
         //    getMove();
         //} while(!isLegalMove);
-        for(int i = 1; i < 8; i++){ engine.iterate(i);}
+        for(int64_t i = 1; i < 8; i++){ engine.iterate(i);}
         engine.move(8);
         TTable.clear(); engine.prevResult = 0;
 

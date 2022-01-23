@@ -101,11 +101,10 @@ class Board{
 Board board;
 
 struct List{
-    public: 
+    public:
         int64_t list[219][5] = {0};
         int64_t count = 0;
 };
-
 bool check(int64_t side){
     if(side == 1){ int64_t kp_y = 0; int64_t kp_x = 0;
         for(int64_t i = 0; i <= 7; i++){ for(int64_t j = 0; j <= 7; j++){
