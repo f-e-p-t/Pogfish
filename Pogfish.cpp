@@ -8,7 +8,7 @@
 #include"arithmetic.cpp"
 using namespace std;
 
-string FEN = "3r3k/1b3q1p/pp2rP1Q/7N/P3pR2/4b3/1P4PP/5R1K";
+string FEN = "r1bq1rk1/1p3p2/p2pp1p1/7p/3n3P/2NB4/PPP2PP1/R2QK2R";
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
 struct TranspositionData{
@@ -238,12 +238,14 @@ class Engine{
         int64_t _alpha = 0;
         int64_t _beta = 0;
         int64_t prevResult = 0;
-        const int64_t windowWidth = 25;
+        const int64_t windowWidth = 50;
         void move(int64_t _depth){
             int64_t boardHash = Hash(board.chessBoard, board.side);
             int64_t sdepth = _depth;
+            _alpha = prevResult - windowWidth;
+            _beta = prevResult + windowWidth;
             cout << "Iterations finished. Evaluated at ";
-            int64_t eval = search(_depth, _depth, this->prevResult - this->windowWidth, this->prevResult + this->windowWidth);
+            int64_t eval = search(_depth, _depth, _alpha, _beta);
             if(eval <= _alpha || eval >= _beta){
                 cout << "(research required) ";
                 eval = search(_depth, _depth, -1000000000000, 1000000000000);
@@ -260,14 +262,14 @@ class Engine{
         }
         void iterate(int64_t _depth){
             int64_t sdepth = _depth;
-            _alpha = this->prevResult - this->windowWidth;
-            _beta = this->prevResult + this->windowWidth;
+            _alpha = prevResult - windowWidth;
+            _beta = prevResult + windowWidth;
             if(_depth == 1){
-                this->prevResult = search(_depth, _depth, -1000000000000, 1000000000000);
+                prevResult = search(_depth, _depth, -1000000000000, 1000000000000);
             } else{
-                this->prevResult = search(_depth, _depth, _alpha, _beta);
-                if(this->prevResult <= _alpha || this->prevResult >= _beta){
-                    this->prevResult = search(_depth, _depth, -1000000000000, 1000000000000);
+                prevResult = search(_depth, _depth, _alpha, _beta);
+                if(prevResult <= _alpha || prevResult >= _beta){
+                    prevResult = search(_depth, _depth, -1000000000000, 1000000000000);
                 }
             }
             TEST = 0;
@@ -316,6 +318,7 @@ int main(void){
         //} while(!isLegalMove);
         for(int i = 1; i < 8; i++){ engine.iterate(i);}
         engine.move(8);
+        TTable.clear(); engine.prevResult = 0;
 
         gameEnd = generateMoves(0);
         if(gameEnd.count == 0 && check(0) == true){ printBoard(); cout << "Checkmate - white wins" << endl; break;
@@ -329,6 +332,7 @@ int main(void){
         } while(!isLegalMove);
         //for(int i = 1; i < 8; i++){ engine.iterate(i);}
         //engine.move(8);
+        TTable.clear(); engine.prevResult = 0;
 
         gameEnd = generateMoves(1);
         if(gameEnd.count == 0 && check(1) == true){ printBoard(); cout << "Checkmate - black wins" << endl; break;
