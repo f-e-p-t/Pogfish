@@ -8,7 +8,7 @@
 #include"arithmetic.cpp"
 using namespace std;
 
-string FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+string FEN = "5Bk1/1rpp1pp1/pp3q1p/4N3/1PB5/2NP3P/2P2PPR/1R1Q1K2";
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
 struct TranspositionData{
@@ -295,7 +295,7 @@ int main(void){
 
     initializeBoard();
     printBoard();
-    opening = 1;
+    opening = 0;
     middlegame = 1;
     endgame = 0;
 
