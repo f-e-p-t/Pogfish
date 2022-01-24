@@ -245,9 +245,14 @@ class Engine{
             _beta = prevResult + windowWidth;
             cout << "Iterations finished. Evaluated at ";
             int64_t eval = search(_depth, _depth, _alpha, _beta);
-            if(eval <= _alpha || eval >= _beta){
+            if(eval <= _alpha){
                 cout << "(research required) ";
-                eval = search(_depth, _depth, -1000000000000, 1000000000000);
+                _alpha = -1000000000000;
+                eval = search(_depth, _depth, _alpha, _beta);
+            } else if(eval >= _beta){
+                cout << "(research required) ";
+                _beta = 1000000000000;
+                eval = search(_depth, _depth, _alpha, _beta);
             }
             cout << eval << " with ";
             cout << TEST << " positions searched. Played - " << TTable[boardHash].best_move[0] << " " << TTable[boardHash].best_move[1] << " ";
