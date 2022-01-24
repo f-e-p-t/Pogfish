@@ -8,7 +8,7 @@
 #include"arithmetic.cpp"
 using namespace std;
 
-string FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+string FEN = "r4k1r/5p2/bq2pNn1/p2pP1P1/1p1P4/4p3/PPR4P/2RQ2K1";
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
 struct TranspositionData{
@@ -266,9 +266,14 @@ class Engine{
                 prevResult = search(_depth, _depth, -1000000000000, 1000000000000);
             } else{
                 prevResult = search(_depth, _depth, _alpha, _beta);
-                if(prevResult <= _alpha || prevResult >= _beta){
+                if(prevResult <= _alpha){
                     TTable.clear();
-                    prevResult = search(_depth, _depth, -1000000000000, 1000000000000);
+                    _alpha = -1000000000000;
+                    prevResult = search(_depth, _depth, _alpha, _beta);
+                } else if(prevResult >= _beta){
+                    TTable.clear();
+                    _beta = 1000000000000;
+                    prevResult = search(_depth, _depth, _alpha, _beta);
                 }
             }
             TEST = 0;
