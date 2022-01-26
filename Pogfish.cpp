@@ -124,23 +124,23 @@ class Evaluation{
 };
 Evaluation evaluation;
 
-List order(List moves, int64_t boardHash){
-    int64_t move_weights[moves.count] = {0};
-    if(TTable[boardHash].depthEvaluated > 0){ for(int i = 0; i < moves.count; i++){
-        if(equal(begin(moves.list[i]), end(moves.list[i]), begin(TTable[boardHash].best_move))){ moves.list[i][4] += 1000;}
+void order(int64_t list[219][5], int64_t _count, int64_t boardHash){
+    int64_t move_weights[_count] = {0};
+
+    if(TTable[boardHash].depthEvaluated > 0){ for(int i = 0; i < _count; i++){
+        if(equal(begin(list[i]), end(list[i]), begin(TTable[boardHash].best_move))){ list[i][4] += 1000;}
     }}
 
-    for(int i = 0; i < moves.count; i++){ if(value(board.chessBoard[moves.list[i][2]][moves.list[i][3]]) >= 100){
-        moves.list[i][4] += value(board.chessBoard[moves.list[i][2]][moves.list[i][3]]) - value(board.chessBoard[moves.list[i][0]][moves.list[i][1]])/10;}
+    for(int i = 0; i < _count; i++){ if(value(board.chessBoard[list[i][2]][list[i][3]]) >= 100){
+        list[i][4] += value(board.chessBoard[list[i][2]][list[i][3]]) - value(board.chessBoard[list[i][0]][list[i][1]])/10;}
     }
 
-    for(int i = 0; i < moves.count; i++){ move_weights[i] = moves.list[i][4];}
-    sort(move_weights, move_weights + moves.count, greater<int64_t>());
+    for(int i = 0; i < _count; i++){ move_weights[i] = list[i][4];}
+    sort(move_weights, move_weights + _count, greater<int64_t>());
 
-    for(int i = 0; i < moves.count; i++){ for(int j = 0; j < moves.count; j++){ 
-        if(moves.list[j][4] == move_weights[i]){ swap(moves.list[i], moves.list[j]); break;}
+    for(int i = 0; i < _count; i++){ for(int j = 0; j < _count; j++){ 
+        if(list[j][4] == move_weights[i]){ swap(list[i], list[j]); break;}
     }}
-    return moves;
 }
 
 int64_t staticEval(int64_t dtm){
@@ -186,7 +186,7 @@ int64_t search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
     }
     int64_t boardHash = Hash(board.chessBoard, board.side);
     List moves = generateMoves(board.side);
-    moves = order(moves, boardHash);
+    order(moves.list, moves.count, boardHash);
     if(moves.count == 0){
         if(check(board.side)){
             return -(1000000 + depth);
@@ -339,6 +339,7 @@ int main(void){
         //do{
         //    getMove();
         //} while(!isLegalMove);
+
         for(int64_t i = 1; i < engine.searchDepth; i++){ engine.iterate(i);}
         engine.move(engine.searchDepth);
         TTable.clear(); engine.prevResult = 0;
