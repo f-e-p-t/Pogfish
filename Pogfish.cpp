@@ -8,12 +8,12 @@
 #include"arithmetic.cpp"
 using namespace std;
 
-string FEN = "r4k1r/5p2/bq2pNn1/p2pP1P1/1p1P4/4p3/PPR4P/2RQ2K1";
+string FEN = "r1bqkb1r/ppp3pp/2n2p2/3np1N1/2B4P/8/PPPP1PP1/RNBQK2R w KQkq - 0 7";
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
 struct TranspositionData{
-    int64_t evaluation;
-    int64_t depthEvaluated;
+    int64_t evaluation = 0;
+    int64_t depthEvaluated = 0;
     int64_t best_move[5] = {0};
 };
 std::unordered_map<int64_t, TranspositionData> TTable;
@@ -193,20 +193,20 @@ int64_t search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
         return 0;
     }
     int64_t boardState[8][8] = {0}; memcpy(boardState, board.chessBoard, sizeof(board.chessBoard));
-    int64_t eval = 0; int64_t alphaIncreased = 0; int64_t bestMove[4] = {0};
-    if(TTable[boardHash].depthEvaluated > depth){ return TTable[boardHash].evaluation;}
+    int64_t eval = 0; bool alphaIncreased = false; int64_t bestMove[4] = {0};
+    if(TTable[boardHash].depthEvaluated > depth + 1){ return TTable[boardHash].evaluation;}
     for(int i = 0; i < moves.count; i++){
         board.playMove(0, moves.list[i]);
-        if(alphaIncreased > 5 && depth > 2){ // LMR
+        if(!alphaIncreased && i > 4 && depth > 2){ // LMR
             eval = -search(depth - 2, cap, -beta, -alpha);
         } else{
             eval = -search(depth - 1, cap, -beta, -alpha);
         }
         board.unplayMove(boardState);
         if(eval > alpha){
-            alphaIncreased = 0;
+            alphaIncreased = true;
             bestMove[0] = moves.list[i][0]; bestMove[1] = moves.list[i][1]; bestMove[2] = moves.list[i][2]; bestMove[3] = moves.list[i][3];
-        } else{ alphaIncreased++;}
+        }
         alpha = duoMax(eval, alpha);
         if(eval >= beta){
             TTable[boardHash].evaluation = alpha; TTable[boardHash].depthEvaluated = depth;
@@ -238,19 +238,16 @@ class Engine{
         int64_t _alpha = 0;
         int64_t _beta = 0;
         int64_t prevResult = 0;
-        const int64_t windowWidth = 25;
+        const int64_t windowWidth = 100000000000;
         void move(int64_t _depth){
             int64_t boardHash = Hash(board.chessBoard, board.side);
             _alpha = prevResult - windowWidth;
             _beta = prevResult + windowWidth;
             cout << "Iterations finished. Evaluated at ";
             int64_t eval = search(_depth, _depth, _alpha, _beta);
-            if(eval <= _alpha){
+            if(eval <= _alpha || eval >= _beta){
                 cout << "(research required) ";
                 _alpha = -1000000000000;
-                eval = search(_depth, _depth, _alpha, _beta);
-            } else if(eval >= _beta){
-                cout << "(research required) ";
                 _beta = 1000000000000;
                 eval = search(_depth, _depth, _alpha, _beta);
             }
@@ -271,12 +268,9 @@ class Engine{
                 prevResult = search(_depth, _depth, -1000000000000, 1000000000000);
             } else{
                 prevResult = search(_depth, _depth, _alpha, _beta);
-                if(prevResult <= _alpha){
+                if(prevResult <= _alpha || prevResult >= _beta){
                     TTable.clear();
                     _alpha = -1000000000000;
-                    prevResult = search(_depth, _depth, _alpha, _beta);
-                } else if(prevResult >= _beta){
-                    TTable.clear();
                     _beta = 1000000000000;
                     prevResult = search(_depth, _depth, _alpha, _beta);
                 }
