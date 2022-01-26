@@ -3,13 +3,6 @@ using namespace std;
 
 int64_t move_move = 1;
 bool isLegalMove;
-bool opening;
-bool middlegame;
-bool endgame;
-bool KSCastlingRights_white = true;
-bool QSCastlingRights_white = true;
-bool KSCastlingRights_black = true;
-bool QSCastlingRights_black = true;
 
 int64_t y;
 int64_t x;
@@ -36,6 +29,13 @@ class Board{
         int64_t chessBoard[8][8] = {0};
         int64_t CC[8][8] = {0};
         bool side;
+        bool KSCastlingRights_white = true;
+        bool QSCastlingRights_white = true;
+        bool KSCastlingRights_black = true;
+        bool QSCastlingRights_black = true;
+        bool opening;
+        bool middlegame;
+        bool endgame;
         void playMove(int64_t castlingRightsRemoved, int64_t _move[]){
             side = !side;
             int64_t from_y = _move[0];
@@ -52,10 +52,10 @@ class Board{
             } else if(chessBoard[from_y][from_x] == white_rook && from_y == 0 && from_x == 7){
                 if(castlingRightsRemoved == 1){ KSCastlingRights_black = false;}
             }
-            if(chessBoard[from_y][from_x] == white_king && from_y == 7 && from_x == 4 && to_y == 7 && to_x == 6 && KSCastlingRights_white){ chessBoard[7][7] = empty_square; chessBoard[7][5] = white_rook;
-            } else if(chessBoard[from_y][from_x] == white_king && from_y == 7 && from_x == 4 && to_y == 7 && to_x == 2 && QSCastlingRights_white){ chessBoard[7][0] = empty_square; chessBoard[7][3] = white_rook;
-            } else if(chessBoard[from_y][from_x] == black_king && from_y == 0 && from_x == 4 && to_y == 0 && to_x == 6 && KSCastlingRights_black){ chessBoard[0][7] = empty_square; chessBoard[0][5] = black_rook;
-            } else if(chessBoard[from_y][from_x] == black_king && from_y == 0 && from_x == 4 && to_y == 0 && to_x == 2 && QSCastlingRights_black){ chessBoard[0][0] = empty_square; chessBoard[0][3] = black_rook;
+            if(chessBoard[from_y][from_x] == white_king && from_y == 7 && from_x == 4 && to_y == 7 && to_x == 6 && chessBoard[7][7] == white_rook && KSCastlingRights_white){ chessBoard[7][7] = empty_square; chessBoard[7][5] = white_rook;
+            } else if(chessBoard[from_y][from_x] == white_king && from_y == 7 && from_x == 4 && to_y == 7 && to_x == 2 && chessBoard[7][0] == white_rook && QSCastlingRights_white){ chessBoard[7][0] = empty_square; chessBoard[7][3] = white_rook;
+            } else if(chessBoard[from_y][from_x] == black_king && from_y == 0 && from_x == 4 && to_y == 0 && to_x == 6 && chessBoard[0][7] == black_rook && KSCastlingRights_black){ chessBoard[0][7] = empty_square; chessBoard[0][5] = black_rook;
+            } else if(chessBoard[from_y][from_x] == black_king && from_y == 0 && from_x == 4 && to_y == 0 && to_x == 2 && chessBoard[0][0] == black_rook && QSCastlingRights_black){ chessBoard[0][0] = empty_square; chessBoard[0][3] = black_rook;
             }
             if(chessBoard[from_y][from_x] == white_king){ if(castlingRightsRemoved == 1){ KSCastlingRights_white = false; QSCastlingRights_white = false;}}
             if(chessBoard[from_y][from_x] == black_king){ if(castlingRightsRemoved == 1){ KSCastlingRights_black = false; QSCastlingRights_black = false;}}
@@ -451,8 +451,8 @@ class Move_gen{
             if(board.chessBoard[y + 1][x - 1] == empty_square || board.chessBoard[y + 1][x - 1] >= 11){    if(y + 1 <= 7 && x - 1 >= 0){ y_to = y + 1; x_to = x - 1; insertMove_white(list);}}
             if(board.chessBoard[y - 1][x + 1] == empty_square || board.chessBoard[y - 1][x + 1] >= 11){    if(y - 1 >= 0 && x + 1 <= 7){ y_to = y - 1; x_to = x + 1; insertMove_white(list);}}
             if(board.chessBoard[y - 1][x - 1] == empty_square || board.chessBoard[y - 1][x - 1] >= 11){    if(y - 1 >= 0 && x - 1 >= 0){ y_to = y - 1; x_to = x - 1; insertMove_white(list);}}
-            if(y == 7 && x == 4 && KSCastlingRights_white && board.chessBoard[7][5] == empty_square && board.chessBoard[7][6] == empty_square){ y_to = y; x_to = x + 2; insertMove_white(list);}
-            if(y == 7 && x == 4 && QSCastlingRights_white && board.chessBoard[7][3] == 0 && board.chessBoard[7][2] == 0 && board.chessBoard[7][1] == 0){ y_to = y; x_to = x - 2; insertMove_white(list);}
+            if(y == 7 && x == 4 && board.KSCastlingRights_white && board.chessBoard[7][5] == empty_square && board.chessBoard[7][6] == empty_square){ y_to = y; x_to = x + 2; insertMove_white(list);}
+            if(y == 7 && x == 4 && board.QSCastlingRights_white && board.chessBoard[7][3] == 0 && board.chessBoard[7][2] == 0 && board.chessBoard[7][1] == 0){ y_to = y; x_to = x - 2; insertMove_white(list);}
         }
         void b_king(int64_t list[219][5]){
             if(board.chessBoard[y + 1][x] <= 6){    if(y + 1 <= 7){ y_to = y + 1; x_to = x; insertMove_black(list);}}
@@ -463,9 +463,9 @@ class Move_gen{
             if(board.chessBoard[y + 1][x - 1] <= 6){    if(y + 1 <= 7 && x - 1 >= 0){ y_to = y + 1; x_to = x - 1; insertMove_black(list);}}
             if(board.chessBoard[y - 1][x + 1] <= 6){    if(y - 1 >= 0 && x + 1 <= 7){ y_to = y - 1; x_to = x + 1; insertMove_black(list);}}
             if(board.chessBoard[y - 1][x - 1] <= 6){    if(y - 1 >= 0 && x - 1 >= 0){ y_to = y - 1; x_to = x - 1; insertMove_black(list);}}
-            if(y == 0 && x == 4 && KSCastlingRights_black && board.chessBoard[0][5] == empty_square && board.chessBoard[0][6] == empty_square){ y_to = y; x_to = x + 2; insertMove_black(list);
+            if(y == 0 && x == 4 && board.KSCastlingRights_black && board.chessBoard[0][5] == empty_square && board.chessBoard[0][6] == empty_square){ y_to = y; x_to = x + 2; insertMove_black(list);
             }
-            if(y == 0 && x == 4 && QSCastlingRights_black && board.chessBoard[0][3] == 0 && board.chessBoard[0][2] == 0 && board.chessBoard[0][1] == 0){ y_to = y; x_to = x - 2; insertMove_black(list);}
+            if(y == 0 && x == 4 && board.QSCastlingRights_black && board.chessBoard[0][3] == 0 && board.chessBoard[0][2] == 0 && board.chessBoard[0][1] == 0){ y_to = y; x_to = x - 2; insertMove_black(list);}
         }
 };
 Move_gen moveGen;

@@ -8,13 +8,14 @@
 #include"arithmetic.cpp"
 using namespace std;
 
-string FEN = "r1bqkb1r/ppp3pp/2n2p2/3np1N1/2B4P/8/PPPP1PP1/RNBQK2R w KQkq - 0 7";
+string FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
 struct TranspositionData{
     int64_t evaluation = 0;
     int64_t depthEvaluated = 0;
     int64_t best_move[5] = {0};
+    bool isCutNode = false;
 };
 std::unordered_map<int64_t, TranspositionData> TTable;
 int64_t Hash(int64_t position[8][8], bool side){
@@ -165,10 +166,10 @@ int64_t staticEval(int64_t dtm){
     eval += evaluation.material();
     if(board.side){ eval += bestResponse;}
     else{ eval -= bestResponse;}
-    if(opening){
+    if(board.opening){
         eval += evaluation.development();
     }
-    if(endgame){
+    if(board.endgame){
         eval += evaluation.endgamePiecePlacement();
     }
     return eval;
@@ -193,23 +194,23 @@ int64_t search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
         return 0;
     }
     int64_t boardState[8][8] = {0}; memcpy(boardState, board.chessBoard, sizeof(board.chessBoard));
-    int64_t eval = 0; bool alphaIncreased = false; int64_t bestMove[4] = {0};
-    if(TTable[boardHash].depthEvaluated > depth + 1){ return TTable[boardHash].evaluation;}
+    int64_t eval = 0; int64_t alphaIncreased = 0; int64_t bestMove[4] = {0};
+    if(TTable[boardHash].depthEvaluated > depth && !TTable[boardHash].isCutNode){ return TTable[boardHash].evaluation;}
     for(int i = 0; i < moves.count; i++){
         board.playMove(0, moves.list[i]);
-        if(!alphaIncreased && i > 4 && depth > 2){ // LMR
+        if(alphaIncreased > 5 && depth > 2){ // LMR
             eval = -search(depth - 2, cap, -beta, -alpha);
         } else{
             eval = -search(depth - 1, cap, -beta, -alpha);
         }
         board.unplayMove(boardState);
         if(eval > alpha){
-            alphaIncreased = true;
+            alphaIncreased = 0;
             bestMove[0] = moves.list[i][0]; bestMove[1] = moves.list[i][1]; bestMove[2] = moves.list[i][2]; bestMove[3] = moves.list[i][3];
-        }
+        } else{ alphaIncreased++;}
         alpha = duoMax(eval, alpha);
         if(eval >= beta){
-            TTable[boardHash].evaluation = alpha; TTable[boardHash].depthEvaluated = depth;
+            TTable[boardHash].evaluation = alpha; TTable[boardHash].depthEvaluated = depth; TTable[boardHash].isCutNode = true;
             for(int j = 0; j < 4; j++){ TTable[boardHash].best_move[j] = bestMove[j];}
             return beta;
         }
@@ -219,6 +220,25 @@ int64_t search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
     return alpha;
 }
 
+
+void cringe(){
+    int64_t boardHash = 0;
+    int64_t boardState[8][8] = {0};
+    int64_t _move[4] = {0};
+    memcpy(boardState, board.chessBoard, sizeof(board.chessBoard));
+    for(int i = 0; i < 8; i++){
+        boardHash = Hash(board.chessBoard, board.side);
+        if(TTable[boardHash].depthEvaluated > 0){
+            cout << "depth - " << TTable[boardHash].depthEvaluated << " played - " << TTable[boardHash].best_move[0] << " ";
+            cout << TTable[boardHash].best_move[1] << " " << TTable[boardHash].best_move[2] << " " << TTable[boardHash].best_move[3] << endl;
+            for(int j = 0; j < 4; j++){ _move[j] = TTable[boardHash].best_move[j];}
+        } else{
+            cout << "line ends" << endl;
+        }
+        board.playMove(0, _move);
+    }
+    board.unplayMove(boardState);
+}
 
 int64_t getMove(){
     int64_t _move[4];
@@ -235,10 +255,11 @@ int64_t getMove(){
 }
 class Engine{
     public:
+        int64_t searchDepth = 8;
         int64_t _alpha = 0;
         int64_t _beta = 0;
         int64_t prevResult = 0;
-        const int64_t windowWidth = 100000000000;
+        const int64_t windowWidth = 25;
         void move(int64_t _depth){
             int64_t boardHash = Hash(board.chessBoard, board.side);
             _alpha = prevResult - windowWidth;
@@ -269,7 +290,6 @@ class Engine{
             } else{
                 prevResult = search(_depth, _depth, _alpha, _beta);
                 if(prevResult <= _alpha || prevResult >= _beta){
-                    TTable.clear();
                     _alpha = -1000000000000;
                     _beta = 1000000000000;
                     prevResult = search(_depth, _depth, _alpha, _beta);
@@ -299,9 +319,9 @@ int main(void){
 
     initializeBoard();
     printBoard();
-    opening = 1;
-    middlegame = 1;
-    endgame = 0;
+    board.opening = 1;
+    board.middlegame = 1;
+    board.endgame = 0;
 
     //List dsuga = generateMoves(board.side);
     //dsuga = order(dsuga, Hash(board.chessBoard, board.side));
@@ -313,14 +333,14 @@ int main(void){
     //}
 
     while(move_move <= 5949){
-        if(move_move == 15){ opening = false; middlegame = true;}
-        if(pieceCount() < 15){ opening = false; middlegame = false; endgame = true;}
+        if(move_move == 15){ board.opening = false; board.middlegame = true;}
+        if(pieceCount() < 15){ board.opening = false; board.middlegame = false; board.endgame = true;}
         cout << "Move - " << move_move << endl;
         //do{
         //    getMove();
         //} while(!isLegalMove);
-        for(int64_t i = 1; i < 8; i++){ engine.iterate(i);}
-        engine.move(8);
+        for(int64_t i = 1; i < engine.searchDepth; i++){ engine.iterate(i);}
+        engine.move(engine.searchDepth);
         TTable.clear(); engine.prevResult = 0;
 
         gameEnd = generateMoves(0);
@@ -333,8 +353,8 @@ int main(void){
         do{
             getMove();
         } while(!isLegalMove);
-        //for(int i = 1; i < 8; i++){ engine.iterate(i);}
-        //engine.move(8);
+        //for(int i = 1; i < engine.searchDepth; i++){ engine.iterate(i);}
+        //engine.move(engine.searchDepth);
         TTable.clear(); engine.prevResult = 0;
 
         gameEnd = generateMoves(1);
