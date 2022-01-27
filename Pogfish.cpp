@@ -9,7 +9,7 @@
 #include"quiescence.cpp"
 using namespace std;
 
-string FEN = "r1bqkb1r/ppp3pp/2n2p2/3np1N1/2B4P/8/PPPP1PP1/RNBQK2R w KQkq - 0 7";
+string FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
 struct TranspositionData{
@@ -132,7 +132,7 @@ void order(int64_t list[219][5], int64_t _count, int64_t boardHash){
         if(equal(begin(list[i]), end(list[i]), begin(TTable[boardHash].best_move))){ list[i][4] += 1000;}
     }}
 
-    for(int i = 0; i < _count; i++){ if(value(board.chessBoard[list[i][2]][list[i][3]]) >= 100){
+    for(int i = 0; i < _count; i++){ if(board.chessBoard[list[i][2]][list[i][3]] != empty_square){
         list[i][4] += value(board.chessBoard[list[i][2]][list[i][3]]) - value(board.chessBoard[list[i][0]][list[i][1]])/10;}
     }
 
@@ -144,29 +144,33 @@ void order(int64_t list[219][5], int64_t _count, int64_t boardHash){
     }}
 }
 
+int64_t quiescence(int64_t alpha, int64_t beta){
+    int64_t stabiliser = 0; int64_t eval = 0;
+    if(board.side){ stabiliser = evaluation.material();}
+    else{ stabiliser = -evaluation.material();}
+    if(stabiliser >= beta){ return beta;}
+    if(stabiliser > alpha){ alpha = stabiliser;}
+    List moves = generateCaptures(board.side);
+    order(moves.list, moves.count, 0);
+    int64_t boardState[8][8] = {0}; memcpy(boardState, board.chessBoard, sizeof(board.chessBoard));
+    for(int i = 0; i < moves.count; i++){
+        board.playMove(0, moves.list[i]);
+        eval = -quiescence(-beta, -alpha);
+        board.unplayMove(boardState);
+        if(eval > alpha){ alpha = eval;}
+        if(eval >= beta){ return beta;}
+    }
+    return alpha;
+}
+
 int64_t staticEval(int64_t dtm){
     int64_t eval = 0; 
-    List moves = generateMoves(board.side);
-    if(moves.count == 0){
-        if(check(board.side)){
-            return (-1000000 - dtm);
-        } else{
-            return 0;
-        }
-    }
     int64_t bestResponse = 0;
     int64_t captureValue = 0;
     int64_t recapturePenalty = 0;
-    for(int64_t i = 0; i < moves.count; i++){
-        captureValue = value(board.chessBoard[moves.list[i][2]][moves.list[i][3]]);
-        recapturePenalty = value(board.chessBoard[moves.list[i][0]][moves.list[i][1]]);
-        if(captureValue > recapturePenalty){
-            if(captureValue - recapturePenalty > bestResponse){ bestResponse = captureValue - recapturePenalty;}
-        }
-    }
-    eval += evaluation.material();
-    if(board.side){ eval += bestResponse;}
-    else{ eval -= bestResponse;}
+    //eval += evaluation.material();
+    if(board.side){ eval += quiescence(-1000000000000, 1000000000000);}
+    else{ eval -= quiescence(-1000000000000, 1000000000000);}
     if(board.opening){
         eval += evaluation.development();
     }
@@ -206,10 +210,10 @@ int64_t search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
         }
         board.unplayMove(boardState);
         if(eval > alpha){
+            alpha = eval;
             alphaIncreased = 0;
             bestMove[0] = moves.list[i][0]; bestMove[1] = moves.list[i][1]; bestMove[2] = moves.list[i][2]; bestMove[3] = moves.list[i][3];
         } else{ alphaIncreased++;}
-        alpha = duoMax(eval, alpha);
         if(eval >= beta){
             TTable[boardHash].evaluation = alpha; TTable[boardHash].depthEvaluated = depth; TTable[boardHash].isCutNode = true;
             for(int j = 0; j < 4; j++){ TTable[boardHash].best_move[j] = bestMove[j];}
@@ -256,7 +260,7 @@ int64_t getMove(){
 }
 class Engine{
     public:
-        int64_t searchDepth = 8;
+        int64_t searchDepth = 12;
         int64_t _alpha = 0;
         int64_t _beta = 0;
         int64_t prevResult = 0;
@@ -324,14 +328,17 @@ int main(void){
     board.middlegame = 1;
     board.endgame = 0;
 
-    //List dsuga = generateMoves(board.side);
-    //dsuga = order(dsuga, Hash(board.chessBoard, board.side));
+    //List dsuga = generateCaptures(board.side);
+    //order(dsuga.list, dsuga.count, Hash(board.chessBoard, board.side));
     //cout << dsuga.count << endl;
     //for(int i = 0; i < 60; i++){
     //    for(int j = 0; j < 5; j++){
     //        cout << dsuga.list[i][j] << " ";
     //    } cout << endl;
     //}
+
+    //cout << quiescence(-1000000000000, 1000000000000) << endl;
+    //cout << staticEval(0) << endl;
 
     while(move_move <= 5949){
         if(move_move == 15){ board.opening = false; board.middlegame = true;}
