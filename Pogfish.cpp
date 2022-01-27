@@ -8,7 +8,7 @@
 #include"arithmetic.cpp"
 using namespace std;
 
-string FEN = "8/6p1/4pp2/2k1P3/1pP2PP1/3K4/8/8";
+string FEN = "8/8/8/3k4/8/8/8/5BNK";
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
 struct TranspositionData{
@@ -124,6 +124,8 @@ class Evaluation{
 };
 Evaluation evaluation;
 
+
+
 void order(int64_t list[219][5], int64_t _count, int64_t boardHash){
     int64_t move_weights[_count] = {0};
 
@@ -181,7 +183,7 @@ int64_t search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
         int64_t eval = 0;
         if(board.side){ eval = staticEval(0);}
         else{ eval = -staticEval(0);}
-        TEST++;
+        nodes++;
         return eval;
     }
     int64_t boardHash = Hash(board.chessBoard, board.side);
@@ -273,13 +275,13 @@ class Engine{
                 eval = search(_depth, _depth, _alpha, _beta);
             }
             cout << eval << " with ";
-            cout << TEST << " positions searched. Played - " << TTable[boardHash].best_move[0] << " " << TTable[boardHash].best_move[1] << " ";
+            cout << nodes << " positions searched. Played - " << TTable[boardHash].best_move[0] << " " << TTable[boardHash].best_move[1] << " ";
             cout << TTable[boardHash].best_move[2] << " " << TTable[boardHash].best_move[3] << " " << endl;
             int64_t _move[4];
             _move[0] = TTable[boardHash].best_move[0]; _move[1] = TTable[boardHash].best_move[1];
             _move[2] = TTable[boardHash].best_move[2]; _move[3] = TTable[boardHash].best_move[3];
             board.playMove(1, _move);
-            TEST = 0;
+            nodes = 0;
             TTable.clear();
         }
         void iterate(int64_t _depth){
@@ -295,7 +297,7 @@ class Engine{
                     prevResult = search(_depth, _depth, _alpha, _beta);
                 }
             }
-            TEST = 0;
+        nodes = 0;
         }
 };
 Engine engine;
