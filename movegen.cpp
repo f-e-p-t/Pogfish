@@ -22,8 +22,9 @@ const int64_t black_bishop = 13;
 const int64_t black_rook = 14;
 const int64_t black_queen = 15;
 const int64_t black_king = 16;
+const bool only_captures = true;
 
-int64_t TEST = 0;
+int64_t nodes = 0;
 class Board{
     public:
         int64_t chessBoard[8][8] = {0};
@@ -262,7 +263,7 @@ void insertMove_black(int64_t list[219][5]){
     board.playMove_CC(0);
     if(check(0)){ memcpy(board.CC, board.chessBoard, sizeof(board.chessBoard));
     } else{ list[list[218][0]][0] = y; list[list[218][0]][1] = x; list[list[218][0]][2] = y_to; list[list[218][0]][3] = x_to; list[218][0]++; memcpy(board.CC, board.chessBoard, sizeof(board.chessBoard));}
-}  
+}
 
 class Move_gen{
     public:     

@@ -6,9 +6,10 @@
 #include"movegen.cpp"
 #include"heatmaps.cpp"
 #include"arithmetic.cpp"
+#include"quiescence.cpp"
 using namespace std;
 
-string FEN = "8/8/8/3k4/8/8/8/5BNK";
+string FEN = "r1bqkb1r/ppp3pp/2n2p2/3np1N1/2B4P/8/PPPP1PP1/RNBQK2R w KQkq - 0 7";
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
 struct TranspositionData{
@@ -124,8 +125,6 @@ class Evaluation{
 };
 Evaluation evaluation;
 
-
-
 void order(int64_t list[219][5], int64_t _count, int64_t boardHash){
     int64_t move_weights[_count] = {0};
 
@@ -146,7 +145,7 @@ void order(int64_t list[219][5], int64_t _count, int64_t boardHash){
 }
 
 int64_t staticEval(int64_t dtm){
-    int64_t eval = 0;
+    int64_t eval = 0; 
     List moves = generateMoves(board.side);
     if(moves.count == 0){
         if(check(board.side)){
@@ -346,7 +345,7 @@ int main(void){
         engine.move(engine.searchDepth);
         TTable.clear(); engine.prevResult = 0;
 
-        gameEnd = generateMoves(0);
+        gameEnd = generateMoves(board.side);
         if(gameEnd.count == 0 && check(0) == true){ printBoard(); cout << "Checkmate - white wins" << endl; break;
         } else if(gameEnd.count == 0 && check(0) == false){ printBoard(); cout << "Stalemate - draw" << endl; break;
         }
@@ -360,7 +359,7 @@ int main(void){
         //engine.move(engine.searchDepth);
         TTable.clear(); engine.prevResult = 0;
 
-        gameEnd = generateMoves(1);
+        gameEnd = generateMoves(board.side);
         if(gameEnd.count == 0 && check(1) == true){ printBoard(); cout << "Checkmate - black wins" << endl; break;
         } else if(gameEnd.count == 0 && check(1) == false){ printBoard(); cout << "Stalemate - draw" << endl; break;
         }
