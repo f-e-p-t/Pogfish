@@ -1,5 +1,5 @@
 // Opening (Pawn maps currently out of use)
-int64_t openingPawnHeatmap_white[8][8] = {
+const int64_t openingPawnHeatmap_white[8][8] = {
     {0,  0,  0,  0,  0,  0,  0,  0},
     {0,  0,  0,  0,  0,  0,  0,  0},
     {0,  0,  0,  0,  0,  0,  0,  0},
@@ -10,7 +10,7 @@ int64_t openingPawnHeatmap_white[8][8] = {
     {0,  0,  0,  0,  0,  0,  0,  0}
 };
 
-int64_t openingPawnHeatmap_black[8][8] = {
+const int64_t openingPawnHeatmap_black[8][8] = {
     {0,  0,  0,  0,  0,  0,  0,  0},
     {0,  0,  0,  0,  0,  0,  0,  0},
     {0,  0, -10,-10,-10,-10, 0,  0},
@@ -21,7 +21,7 @@ int64_t openingPawnHeatmap_black[8][8] = {
     {0,  0,  0,  0,  0,  0,  0,  0}
 };
 
-int64_t openingKnightHeatmap_white[8][8] = {
+const int64_t openingKnightHeatmap_white[8][8] = {
     {0,  0,  0,  0,  0,  0,  0,  0},
     {0,  0,  0,  0,  0,  0,  0,  0},
     {0,  0,  0,  0,  0,  0,  0,  0},
@@ -32,7 +32,7 @@ int64_t openingKnightHeatmap_white[8][8] = {
     {0, -5,  0,  0,  0,  0, -5,  0}
 };
 
-int64_t openingKnightHeatmap_black[8][8] = {
+const int64_t openingKnightHeatmap_black[8][8] = {
     {0,  5,  0,  0,  0,  0,  5,  0},
     {0,  0,  0, -5, -5,  0,  0,  0},
     {10, 0, -15,-5, -5, -15, 0,  10},
@@ -43,7 +43,7 @@ int64_t openingKnightHeatmap_black[8][8] = {
     {0,  0,  0,  0,  0,  0,  0,  0}
 };
 
-int64_t openingBishopHeatmap_white[8][8] = {
+const int64_t openingBishopHeatmap_white[8][8] = {
     {0,  0,  0,  0,  0,  0,  0,  0},
     {0,  0,  0,  0,  0,  0,  0,  0},
     {0,  0,  0,  0,  0,  0,  0,  0},
@@ -54,7 +54,7 @@ int64_t openingBishopHeatmap_white[8][8] = {
     {0,  0,  0,  0,  0,  0,  0,  0}
 };
 
-int64_t openingBishopHeatmap_black[8][8]{
+const int64_t openingBishopHeatmap_black[8][8]{
     {0,  0,  0,  0,  0,  0,  0,  0},
     {0, -10,-5, -10,-10,-5, -10, 0},
     {0, -5, -10,-10,-10,-10,-5,  0},
@@ -65,7 +65,7 @@ int64_t openingBishopHeatmap_black[8][8]{
     {0,  0,  0,  0,  0,  0,  0,  0}
 };
 
-int64_t openingRookHeatmap_white[8][8]{
+const int64_t openingRookHeatmap_white[8][8]{
     {0,  0,  0,  0,  0,  0,  0,  0},
     {0,  0,  0,  0,  0,  0,  0,  0},
     {0,  0,  0,  0,  0,  0,  0,  0},
@@ -76,7 +76,7 @@ int64_t openingRookHeatmap_white[8][8]{
     {0,  0,  5,  10, 10, 5,  0,  0}
 };
 
-int64_t openingRookHeatmap_black[8][8]{
+const int64_t openingRookHeatmap_black[8][8]{
     {0,  0, -5, -10,-10,-5,  0,  0},
     {25, 0,  0,  0,  0,  0,  0,  25},
     {0,  0,  0,  0,  0,  0,  0,  0},
@@ -88,7 +88,7 @@ int64_t openingRookHeatmap_black[8][8]{
 };
 
 // Endgame
-int64_t endgamePawnHeatmap_white[8][8] = {
+const int64_t endgamePawnHeatmap_white[8][8] = {
     {0,  0,  0,  0,  0,  0,  0,  0},
    {50, 40, 40, 40, 40, 40, 40, 50},
    {25, 20, 20, 20, 20, 20, 20, 25},
@@ -99,7 +99,7 @@ int64_t endgamePawnHeatmap_white[8][8] = {
     {0,  0,  0,  0,  0,  0,  0,  0}
 };
 
-int64_t endgamePawnHeatmap_black[8][8] = {
+const int64_t endgamePawnHeatmap_black[8][8] = {
     {0,  0,  0,  0,  0,  0,  0,  0},
     {0,  0,  0,  0,  0,  0,  0,  0},
     {0,  0,  0,  0,  0,  0,  0,  0},
@@ -110,7 +110,7 @@ int64_t endgamePawnHeatmap_black[8][8] = {
     {0,  0,  0,  0,  0,  0,  0,  0}
 };
 
-int64_t endgameKingHeatmap_white[8][8] = {
+const int64_t endgameKingHeatmap_white[8][8] = {
    {-5, -5, -5, -5, -5, -5, -5, -5},
    {-5,  0,  0,  0,  0,  0,  0, -5},
    {-5,  0,  5,  5,  5,  5,  0, -5},
@@ -121,7 +121,7 @@ int64_t endgameKingHeatmap_white[8][8] = {
    {-5, -5, -5, -5, -5, -5, -5, -5}
 };
 
-int64_t endgameKingHeatmap_black[8][8] = {
+const int64_t endgameKingHeatmap_black[8][8] = {
    {5,  5,  5,  5,  5,  5,  5,  5},
    {5,  0,  0,  0,  0,  0,  0,  5},
    {5,  0, -5, -5, -5, -5,  0,  5},

@@ -152,7 +152,8 @@ int64_t quiescence(int64_t alpha, int64_t beta){
     if(stabiliser > alpha){ alpha = stabiliser;}
     List moves = generateCaptures(board.side);
     order(moves.list, moves.count, 0);
-    int64_t boardState[8][8] = {0}; memcpy(boardState, board.chessBoard, sizeof(board.chessBoard));
+    int64_t boardState[8][8] = {0};
+    memcpy(boardState, board.chessBoard, sizeof(board.chessBoard));
     for(int i = 0; i < moves.count; i++){
         board.playMove(0, moves.list[i]);
         eval = -quiescence(-beta, -alpha);
@@ -260,9 +261,8 @@ int64_t getMove(){
 }
 class Engine{
     public:
-        int64_t searchDepth = 12;
-        int64_t _alpha = 0;
-        int64_t _beta = 0;
+        int64_t searchDepth = 8;
+        int64_t _alpha = 0; int64_t _beta = 0;
         int64_t prevResult = 0;
         const int64_t windowWidth = 25;
         void move(int64_t _depth){
