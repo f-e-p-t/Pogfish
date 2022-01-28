@@ -1,9 +1,6 @@
 #include<iostream>
 using namespace std;
 
-int64_t move_move = 1;
-bool isLegalMove;
-
 int64_t y;
 int64_t x;
 int64_t y_to;

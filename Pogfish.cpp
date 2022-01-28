@@ -246,18 +246,17 @@ void cringe(){
     board.unplayMove(boardState);
 }
 
-int64_t getMove(){
+bool getMove(){
     int64_t _move[4];
     List moves = generateMoves(board.side);
-    isLegalMove = false;
     if(board.side){ cout << "White's ";}
     else{ cout << "Black's ";}
     cout << "move ---> "; cin >> _move[0]; cin >> _move[1]; cin >> _move[2]; cin >> _move[3];
     for(int64_t i = 0; i < moves.count; i++){
-        if(_move[0] == moves.list[i][0] && _move[1] == moves.list[i][1] && _move[2] == moves.list[i][2] && _move[3] == moves.list[i][3]){ board.playMove(1, _move); isLegalMove = true; return 0;}      
+        if(_move[0] == moves.list[i][0] && _move[1] == moves.list[i][1] && _move[2] == moves.list[i][2] && _move[3] == moves.list[i][3]){ board.playMove(1, _move); return true;}      
     }
     cout << "Illegal Move!" << endl;
-    return 0;
+    return false;
 }
 class Engine{
     public:
@@ -309,6 +308,7 @@ int main(void){
 
     board.side = 1;
     List gameEnd;
+    bool isLegalMove = 0;
 
     std::random_device rd;
     std::mt19937_64 gen(rd());
@@ -340,7 +340,7 @@ int main(void){
     //cout << quiescence(-1000000000000, 1000000000000) << endl;
     //cout << staticEval(0) << endl;
 
-    while(move_move <= 5949){
+    for(int64_t move_move = 1; move_move <= 5949; move_move++){
         if(move_move == 15){ board.opening = false; board.middlegame = true;}
         if(pieceCount() < 15){ board.opening = false; board.middlegame = false; board.endgame = true;}
         cout << "Move - " << move_move << endl;
@@ -360,7 +360,9 @@ int main(void){
         printBoard();
 
         do{
-            getMove();
+            if(getMove()){
+                isLegalMove = true;
+            }
         } while(!isLegalMove);
         //for(int i = 1; i < engine.searchDepth; i++){ engine.iterate(i);}
         //engine.move(engine.searchDepth);
@@ -372,6 +374,5 @@ int main(void){
         }
 
         printBoard();
-        move_move++;
     }
 }
