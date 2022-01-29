@@ -126,7 +126,7 @@ class Evaluation{
 Evaluation evaluation;
 
 void order(int64_t list[219][5], int64_t _count, int64_t boardHash){
-    int64_t move_weights[_count] = {0};
+    int64_t move_weights[_count] = {0}; // cry about it
 
     if(TTable[boardHash].depthEvaluated > 0){ for(int i = 0; i < _count; i++){
         if(equal(begin(list[i]), end(list[i]), begin(TTable[boardHash].best_move))){ list[i][4] += 1000;}
@@ -165,10 +165,7 @@ int64_t quiescence(int64_t alpha, int64_t beta){
 }
 
 int64_t staticEval(int64_t dtm){
-    int64_t eval = 0; 
-    int64_t bestResponse = 0;
-    int64_t captureValue = 0;
-    int64_t recapturePenalty = 0;
+    int64_t eval = 0;
     //eval += evaluation.material();
     if(board.side){ eval += quiescence(-1000000000000, 1000000000000);}
     else{ eval -= quiescence(-1000000000000, 1000000000000);}
@@ -182,7 +179,7 @@ int64_t staticEval(int64_t dtm){
 }
 
 
-int64_t search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
+int64_t search(int64_t depth, int64_t alpha, int64_t beta){
     if(depth == 0){
         int64_t eval = 0;
         if(board.side){ eval = staticEval(0);}
@@ -205,9 +202,9 @@ int64_t search(int64_t depth, int64_t cap, int64_t alpha, int64_t beta){
     for(int i = 0; i < moves.count; i++){
         board.playMove(0, moves.list[i]);
         if(alphaIncreased > 5 && depth > 2){ // LMR
-            eval = -search(depth - 2, cap, -beta, -alpha);
+            eval = -search(depth - 2, -beta, -alpha);
         } else{
-            eval = -search(depth - 1, cap, -beta, -alpha);
+            eval = -search(depth - 1, -beta, -alpha);
         }
         board.unplayMove(boardState);
         if(eval > alpha){
@@ -269,12 +266,12 @@ class Engine{
             _alpha = prevResult - windowWidth;
             _beta = prevResult + windowWidth;
             cout << "Iterations finished. Evaluated at ";
-            int64_t eval = search(_depth, _depth, _alpha, _beta);
+            int64_t eval = search(_depth, _alpha, _beta);
             if(eval <= _alpha || eval >= _beta){
                 cout << "(research required) ";
                 _alpha = -1000000000000;
                 _beta = 1000000000000;
-                eval = search(_depth, _depth, _alpha, _beta);
+                eval = search(_depth, _alpha, _beta);
             }
             cout << eval << " with ";
             cout << nodes << " positions searched. Played - " << TTable[boardHash].best_move[0] << " " << TTable[boardHash].best_move[1] << " ";
@@ -290,13 +287,13 @@ class Engine{
             _alpha = prevResult - windowWidth;
             _beta = prevResult + windowWidth;
             if(_depth == 1){
-                prevResult = search(_depth, _depth, -1000000000000, 1000000000000);
+                prevResult = search(_depth, -1000000000000, 1000000000000);
             } else{
-                prevResult = search(_depth, _depth, _alpha, _beta);
+                prevResult = search(_depth, _alpha, _beta);
                 if(prevResult <= _alpha || prevResult >= _beta){
                     _alpha = -1000000000000;
                     _beta = 1000000000000;
-                    prevResult = search(_depth, _depth, _alpha, _beta);
+                    prevResult = search(_depth, _alpha, _beta);
                 }
             }
         nodes = 0;
@@ -341,7 +338,7 @@ int main(void){
     //cout << staticEval(0) << endl;
 
     for(int64_t move_move = 1; move_move <= 5949; move_move++){
-        if(move_move == 15){ board.opening = false; board.middlegame = true;}
+        if(move_move == 23){ board.opening = false; board.middlegame = true;}
         if(pieceCount() < 15){ board.opening = false; board.middlegame = false; board.endgame = true;}
         cout << "Move - " << move_move << endl;
         //do{

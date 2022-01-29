@@ -41,15 +41,13 @@ class Board{
             int64_t to_y = _move[2];
             int64_t to_x = _move[3];
             // castling
-            if(chessBoard[from_y][from_x] == white_king || chessBoard[from_y][from_x] == black_king)
-            {
             if(chessBoard[from_y][from_x] == white_rook && from_y == 7 && from_x == 0){
                 if(castlingRightsRemoved == 1){ QSCastlingRights_white = false;}
             } else if(chessBoard[from_y][from_x] == white_rook && from_y == 7 && from_x == 7){
                 if(castlingRightsRemoved == 1){ KSCastlingRights_white = false;}
             } else if(chessBoard[from_y][from_x] == black_rook && from_y == 0 && from_x == 0){
                 if(castlingRightsRemoved == 1){ QSCastlingRights_black = false;}
-            } else if(chessBoard[from_y][from_x] == white_rook && from_y == 0 && from_x == 7){
+            } else if(chessBoard[from_y][from_x] == black_rook && from_y == 0 && from_x == 7){
                 if(castlingRightsRemoved == 1){ KSCastlingRights_black = false;}
             }
             if(chessBoard[from_y][from_x] == white_king && from_y == 7 && from_x == 4 && to_y == 7 && to_x == 6 && chessBoard[7][7] == white_rook && KSCastlingRights_white){ chessBoard[7][7] = empty_square; chessBoard[7][5] = white_rook;
@@ -59,7 +57,6 @@ class Board{
             }
             if(chessBoard[from_y][from_x] == white_king){ if(castlingRightsRemoved == 1){ KSCastlingRights_white = false; QSCastlingRights_white = false;}}
             if(chessBoard[from_y][from_x] == black_king){ if(castlingRightsRemoved == 1){ KSCastlingRights_black = false; QSCastlingRights_black = false;}}
-            }
             // promotion
             if(chessBoard[from_y][from_x] == white_pawn && to_y == 0){ chessBoard[from_y][from_x] = empty_square; chessBoard[to_y][to_x] = white_queen; memcpy(CC, chessBoard, sizeof(chessBoard)); return ;
             } else if(chessBoard[from_y][from_x] == black_pawn && to_y == 7){ chessBoard[from_y][from_x] = empty_square; chessBoard[to_y][to_x] = black_queen; memcpy(CC, chessBoard, sizeof(chessBoard)); return ;
