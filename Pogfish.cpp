@@ -9,7 +9,7 @@
 #include"quiescence.cpp"
 using namespace std;
 
-string FEN = "8/2p3N1/6p1/5PB1/pp2Rn2/7k/P1p2K1P/3r4";
+string FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
 struct TranspositionData{
@@ -264,7 +264,7 @@ class Engine{
             int64_t boardHash = Hash(board.chessBoard, board.side);
             _alpha = prevResult - windowWidth;
             _beta = prevResult + windowWidth;
-            cout << "Iterations finished.";
+            cout << "Iterations finished. Evaluated at ";
             int64_t eval = search(_depth, _alpha, _beta);
             if(eval <= _alpha || eval >= _beta){
                 cout << "(research required) ";
@@ -272,7 +272,7 @@ class Engine{
                 _beta = 1000000000000;
                 eval = search(_depth, _alpha, _beta);
             }
-            cout << " Evaluated at " << eval << " with ";
+            cout << eval << " with ";
             cout << nodes << " positions searched. Played - " << TTable[boardHash].best_move[0] << " " << TTable[boardHash].best_move[1] << " ";
             cout << TTable[boardHash].best_move[2] << " " << TTable[boardHash].best_move[3] << " " << endl;
             int64_t _move[4];

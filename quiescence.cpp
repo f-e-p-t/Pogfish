@@ -199,25 +199,25 @@ List generateCaptures(int64_t side){
     List moves;
     if(side == 1){
         for(int64_t i = 0; i < 8; i++){ y = i; for(int64_t j = 0; j < 8; j++){ x = j;
-            if(board.chessBoard[y][x] == white_pawn){ captureGen.w_pawn(moves.list);
-            } else if(board.chessBoard[y][x] == white_knight){ captureGen.w_knight(moves.list);
-            } else if(board.chessBoard[y][x] == white_bishop){ captureGen.w_bishop(moves.list);
-            } else if(board.chessBoard[y][x] == white_rook){ captureGen.w_rook(moves.list);
-            } else if(board.chessBoard[y][x] == white_queen){ captureGen.w_queen(moves.list);
-            } else if(board.chessBoard[y][x] == white_king){ captureGen.w_king(moves.list);
-            }}
-        }
+            switch(board.chessBoard[y][x]){
+                case 1: captureGen.w_pawn(moves.list); break;
+                case 2: captureGen.w_knight(moves.list); break;
+                case 3: captureGen.w_bishop(moves.list); break;
+                case 4: captureGen.w_rook(moves.list); break;
+                case 5: captureGen.w_queen(moves.list); break;
+                case 6: captureGen.w_king(moves.list); break;
+            }}}
     }
     else{
         for(int64_t i = 0; i < 8; i++){ y = i; for(int64_t j = 0; j < 8; j++){ x = j;
-            if(board.chessBoard[y][x] == black_pawn){ captureGen.b_pawn(moves.list);
-            } else if(board.chessBoard[y][x] == black_knight){ captureGen.b_knight(moves.list);
-            } else if(board.chessBoard[y][x] == black_bishop){ captureGen.b_bishop(moves.list);
-            } else if(board.chessBoard[y][x] == black_rook){ captureGen.b_rook(moves.list);
-            } else if(board.chessBoard[y][x] == black_queen){ captureGen.b_queen(moves.list);
-            } else if(board.chessBoard[y][x] == black_king){ captureGen.b_king(moves.list);
-            }}
-        }
+            switch(board.chessBoard[y][x]){
+                case 11: captureGen.b_pawn(moves.list); break;
+                case 12: captureGen.b_knight(moves.list); break;
+                case 13: captureGen.b_bishop(moves.list); break;
+                case 14: captureGen.b_rook(moves.list); break;
+                case 15: captureGen.b_queen(moves.list); break;
+                case 16: captureGen.b_king(moves.list); break;
+            }}}
     }
     moves.count = moves.list[218][0];
     return moves;
