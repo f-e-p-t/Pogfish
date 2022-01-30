@@ -13,7 +13,7 @@ void insertCapture_black(int64_t list[219][5]){
 }
 
 class Capture_gen{
-    public:     
+    public:
         void w_pawn(int64_t list[219][5]){
             if(board.chessBoard[y - 1][x + 1] >= 11){    if(x + 1 <= 7){ y_to = y - 1; x_to = x + 1; insertCapture_white(list);}}
             if(board.chessBoard[y - 1][x - 1] >= 11){    if(x - 1 >= 0){ y_to = y - 1; x_to = x - 1; insertCapture_white(list);}}
