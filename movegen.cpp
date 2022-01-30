@@ -34,7 +34,7 @@ class Board{
         bool opening;
         bool middlegame;
         bool endgame;
-        void playMove(int64_t castlingRightsRemoved, int64_t _move[]){
+        void playMove(bool castlingRightsRemoved, int64_t _move[]){
             side = !side;
             int64_t from_y = _move[0];
             int64_t from_x = _move[1];
@@ -42,21 +42,21 @@ class Board{
             int64_t to_x = _move[3];
             // castling
             if(chessBoard[from_y][from_x] == white_rook && from_y == 7 && from_x == 0){
-                if(castlingRightsRemoved == 1){ QSCastlingRights_white = false;}
+                if(castlingRightsRemoved){ QSCastlingRights_white = false;}
             } else if(chessBoard[from_y][from_x] == white_rook && from_y == 7 && from_x == 7){
-                if(castlingRightsRemoved == 1){ KSCastlingRights_white = false;}
+                if(castlingRightsRemoved){ KSCastlingRights_white = false;}
             } else if(chessBoard[from_y][from_x] == black_rook && from_y == 0 && from_x == 0){
-                if(castlingRightsRemoved == 1){ QSCastlingRights_black = false;}
+                if(castlingRightsRemoved){ QSCastlingRights_black = false;}
             } else if(chessBoard[from_y][from_x] == black_rook && from_y == 0 && from_x == 7){
-                if(castlingRightsRemoved == 1){ KSCastlingRights_black = false;}
+                if(castlingRightsRemoved){ KSCastlingRights_black = false;}
             }
             if(chessBoard[from_y][from_x] == white_king && from_y == 7 && from_x == 4 && to_y == 7 && to_x == 6 && chessBoard[7][7] == white_rook && KSCastlingRights_white){ chessBoard[7][7] = empty_square; chessBoard[7][5] = white_rook;
             } else if(chessBoard[from_y][from_x] == white_king && from_y == 7 && from_x == 4 && to_y == 7 && to_x == 2 && chessBoard[7][0] == white_rook && QSCastlingRights_white){ chessBoard[7][0] = empty_square; chessBoard[7][3] = white_rook;
             } else if(chessBoard[from_y][from_x] == black_king && from_y == 0 && from_x == 4 && to_y == 0 && to_x == 6 && chessBoard[0][7] == black_rook && KSCastlingRights_black){ chessBoard[0][7] = empty_square; chessBoard[0][5] = black_rook;
             } else if(chessBoard[from_y][from_x] == black_king && from_y == 0 && from_x == 4 && to_y == 0 && to_x == 2 && chessBoard[0][0] == black_rook && QSCastlingRights_black){ chessBoard[0][0] = empty_square; chessBoard[0][3] = black_rook;
             }
-            if(chessBoard[from_y][from_x] == white_king){ if(castlingRightsRemoved == 1){ KSCastlingRights_white = false; QSCastlingRights_white = false;}}
-            if(chessBoard[from_y][from_x] == black_king){ if(castlingRightsRemoved == 1){ KSCastlingRights_black = false; QSCastlingRights_black = false;}}
+            if(chessBoard[from_y][from_x] == white_king){ if(castlingRightsRemoved){ KSCastlingRights_white = false; QSCastlingRights_white = false;}}
+            if(chessBoard[from_y][from_x] == black_king){ if(castlingRightsRemoved){ KSCastlingRights_black = false; QSCastlingRights_black = false;}}
             // promotion
             if(chessBoard[from_y][from_x] == white_pawn && to_y == 0){ chessBoard[from_y][from_x] = empty_square; chessBoard[to_y][to_x] = white_queen; memcpy(CC, chessBoard, sizeof(chessBoard)); return ;
             } else if(chessBoard[from_y][from_x] == black_pawn && to_y == 7){ chessBoard[from_y][from_x] = empty_square; chessBoard[to_y][to_x] = black_queen; memcpy(CC, chessBoard, sizeof(chessBoard)); return ;
@@ -65,26 +65,26 @@ class Board{
             chessBoard[from_y][from_x] = empty_square;
             memcpy(CC, chessBoard, sizeof(chessBoard));
         }
-        void playMove_CC(int64_t castlingRightsRemoved){
+        void playMove_CC(bool castlingRightsRemoved){
             // castling
             if(CC[y][x] == white_king || CC[y][x] == black_king)
             {
             if(CC[y][x] == white_rook && y == 7 && x == 0){
-                if(castlingRightsRemoved == 1){ QSCastlingRights_white = false;}
+                if(castlingRightsRemoved){ QSCastlingRights_white = false;}
             } else if(CC[y][x] == white_rook && y == 7 && x == 7){
-                if(castlingRightsRemoved == 1){ KSCastlingRights_white = false;}
+                if(castlingRightsRemoved){ KSCastlingRights_white = false;}
             } else if(CC[y][x] == black_rook && y == 0 && x == 0){
-                if(castlingRightsRemoved == 1){ QSCastlingRights_black = false;}
+                if(castlingRightsRemoved){ QSCastlingRights_black = false;}
             } else if(CC[y][x] == white_rook && y == 0 && x == 7){
-                if(castlingRightsRemoved == 1){ KSCastlingRights_black = false;}
+                if(castlingRightsRemoved){ KSCastlingRights_black = false;}
             }
             if(CC[y][x] == white_king && y == 7 && x == 4 && y_to == 7 && x_to == 6 && KSCastlingRights_white){ CC[7][7] = empty_square; CC[7][5] = white_rook;
             } else if(CC[y][x] == white_king && y == 7 && x == 4 && y_to == 7 && x_to == 2 && QSCastlingRights_white){ CC[7][0] = empty_square; CC[7][3] = white_rook;
             } else if(CC[y][x] == black_king && y == 0 && x == 4 && y_to == 0 && x_to == 6 && KSCastlingRights_black){ CC[0][7] = empty_square; CC[0][5] = black_rook;
             } else if(CC[y][x] == black_king && y == 0 && x == 4 && y_to == 0 && x_to == 2 && QSCastlingRights_black){ CC[0][0] = empty_square; CC[0][3] = black_rook;
             }
-            if(CC[y][x] == white_king){ if(castlingRightsRemoved == 1){ KSCastlingRights_white = false; QSCastlingRights_white = false;}}
-            if(CC[y][x] == black_king){ if(castlingRightsRemoved == 1){ KSCastlingRights_black = false; QSCastlingRights_black = false;}}
+            if(CC[y][x] == white_king){ if(castlingRightsRemoved){ KSCastlingRights_white = false; QSCastlingRights_white = false;}}
+            if(CC[y][x] == black_king){ if(castlingRightsRemoved){ KSCastlingRights_black = false; QSCastlingRights_black = false;}}
             }
             // promotion
             if(CC[y][x] == white_pawn && y_to == 0){ CC[y][x] = empty_square; CC[y_to][x_to] = white_queen; return;
@@ -106,7 +106,7 @@ struct List{
         int64_t list[219][5] = {0};
         int64_t count = 0;
 };
-bool check(int64_t side){
+bool check(bool side){
     if(side == 1){ int64_t kp_y = 0; int64_t kp_x = 0;
         for(int64_t i = 0; i <= 7; i++){ for(int64_t j = 0; j <= 7; j++){
             if(board.CC[i][j] == white_king){ kp_y = i; kp_x = j; break;}}
@@ -258,11 +258,13 @@ void insertMove_white(int64_t list[219][5]){
     board.playMove_CC(0);
     if(check(1)){ memcpy(board.CC, board.chessBoard, sizeof(board.chessBoard));
     } else{ list[list[218][0]][0] = y; list[list[218][0]][1] = x; list[list[218][0]][2] = y_to; list[list[218][0]][3] = x_to; list[218][0]++; memcpy(board.CC, board.chessBoard, sizeof(board.chessBoard));}
+    nodes++;
 }
 void insertMove_black(int64_t list[219][5]){
     board.playMove_CC(0);
     if(check(0)){ memcpy(board.CC, board.chessBoard, sizeof(board.chessBoard));
     } else{ list[list[218][0]][0] = y; list[list[218][0]][1] = x; list[list[218][0]][2] = y_to; list[list[218][0]][3] = x_to; list[218][0]++; memcpy(board.CC, board.chessBoard, sizeof(board.chessBoard));}
+    nodes++;
 }
 
 class Move_gen{

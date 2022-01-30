@@ -184,7 +184,6 @@ int64_t search(int64_t depth, int64_t alpha, int64_t beta){
         int64_t eval = 0;
         if(board.side){ eval = staticEval(0);}
         else{ eval = -staticEval(0);}
-        nodes++;
         return eval;
     }
     int64_t boardHash = Hash(board.chessBoard, board.side);
@@ -265,7 +264,7 @@ class Engine{
             int64_t boardHash = Hash(board.chessBoard, board.side);
             _alpha = prevResult - windowWidth;
             _beta = prevResult + windowWidth;
-            cout << "Iterations finished. Evaluated at ";
+            cout << "Iterations finished.";
             int64_t eval = search(_depth, _alpha, _beta);
             if(eval <= _alpha || eval >= _beta){
                 cout << "(research required) ";
@@ -273,7 +272,7 @@ class Engine{
                 _beta = 1000000000000;
                 eval = search(_depth, _alpha, _beta);
             }
-            cout << eval << " with ";
+            cout << " Evaluated at " << eval << " with ";
             cout << nodes << " positions searched. Played - " << TTable[boardHash].best_move[0] << " " << TTable[boardHash].best_move[1] << " ";
             cout << TTable[boardHash].best_move[2] << " " << TTable[boardHash].best_move[3] << " " << endl;
             int64_t _move[4];
@@ -342,9 +341,10 @@ int main(void){
         if(pieceCount() < 15){ board.opening = false; board.middlegame = false; board.endgame = true;}
         cout << "Move - " << move_move << endl;
         //do{
-        //    getMove();
+        //    if(getMove()){
+        //        isLegalMove = true;
+        //    }
         //} while(!isLegalMove);
-
         for(int64_t i = 1; i < engine.searchDepth; i++){ engine.iterate(i);}
         engine.move(engine.searchDepth);
         TTable.clear(); engine.prevResult = 0;
@@ -361,8 +361,8 @@ int main(void){
                 isLegalMove = true;
             }
         } while(!isLegalMove);
-        //for(int i = 1; i < engine.searchDepth; i++){ engine.iterate(i);}
-        //engine.move(engine.searchDepth);
+        //for(int i = 1; i < 2; i++){ engine.iterate(i);}
+        //engine.move(2);
         TTable.clear(); engine.prevResult = 0;
 
         gameEnd = generateMoves(board.side);
