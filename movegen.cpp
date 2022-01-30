@@ -484,6 +484,7 @@ List generateMoves(int64_t side){
                 case 4: moveGen.w_rook(moves.list); break;
                 case 5: moveGen.w_queen(moves.list); break;
                 case 6: moveGen.w_king(moves.list); break;
+                default: break;
             }}}
     }
     else{
@@ -495,6 +496,7 @@ List generateMoves(int64_t side){
                 case 14: moveGen.b_rook(moves.list); break;
                 case 15: moveGen.b_queen(moves.list); break;
                 case 16: moveGen.b_king(moves.list); break;
+                default: break;
             }}}
     }
     moves.count = moves.list[218][0];

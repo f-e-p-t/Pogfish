@@ -206,6 +206,7 @@ List generateCaptures(int64_t side){
                 case 4: captureGen.w_rook(moves.list); break;
                 case 5: captureGen.w_queen(moves.list); break;
                 case 6: captureGen.w_king(moves.list); break;
+                default: break;
             }}}
     }
     else{
@@ -217,6 +218,7 @@ List generateCaptures(int64_t side){
                 case 14: captureGen.b_rook(moves.list); break;
                 case 15: captureGen.b_queen(moves.list); break;
                 case 16: captureGen.b_king(moves.list); break;
+                default: break;
             }}}
     }
     moves.count = moves.list[218][0];
