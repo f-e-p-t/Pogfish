@@ -9,7 +9,7 @@
 #include"quiescence.cpp"
 using namespace std;
 
-string FEN = "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4 ";
+string FEN = "5K2/8/5k2/8/8/8/7r/8";
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
 struct TranspositionData{
@@ -197,7 +197,7 @@ int64_t search(int64_t depth, int64_t alpha, int64_t beta){
     }
     int64_t boardState[8][8] = {0}; memcpy(boardState, board.chessBoard, sizeof(board.chessBoard));
     int64_t eval = 0; int64_t alphaIncreased = 0; int64_t bestMove[4] = {0};
-    if(TTable[boardHash].depthEvaluated > depth && !TTable[boardHash].isCutNode){ return TTable[boardHash].evaluation;}
+    if(TTable[boardHash].depthEvaluated > depth /* && !TTable[boardHash].isCutNode*/){ return TTable[boardHash].evaluation;}
     for(int i = 0; i < moves.count; i++){
         board.playMove(0, moves.list[i]);
         if(alphaIncreased > 5 && depth > 2){ // LMR
@@ -256,7 +256,7 @@ bool getMove(){
 }
 class Engine{
     public:
-        int64_t searchDepth = 8;
+        int64_t searchDepth = 10;
         int64_t _alpha = 0; int64_t _beta = 0;
         int64_t prevResult = 0;
         const int64_t windowWidth = 25;
@@ -302,7 +302,7 @@ Engine engine;
 
 int main(void){
 
-    board.side = 1;
+    board.side = 0;
     List gameEnd;
     bool isLegalMove = 0;
 
@@ -334,24 +334,24 @@ int main(void){
     //}
 
     //cout << quiescence(-1000000000000, 1000000000000) << endl;
-    //cout << staticEval(0) << endl;
 
     for(int64_t move_move = 1; move_move <= 5949; move_move++){
         if(move_move == 23){ board.opening = false; board.middlegame = true;}
-        if(pieceCount() < 15){ board.opening = false; board.middlegame = false; board.endgame = true;}
+        if(pieceCount() < 15){ board.opening = false; board.middlegame = false; board.endgame = true; engine.searchDepth = 10;}
         cout << "Move - " << move_move << endl;
         //do{
         //    if(getMove()){
         //        isLegalMove = true;
         //    }
         //} while(!isLegalMove);
+        //isLegalMove = false;
         for(int64_t i = 1; i < engine.searchDepth; i++){ engine.iterate(i);}
         engine.move(engine.searchDepth);
         TTable.clear(); engine.prevResult = 0;
 
         gameEnd = generateMoves(board.side);
-        if(gameEnd.count == 0 && check(0) == true){ printBoard(); cout << "Checkmate - white wins" << endl; break;
-        } else if(gameEnd.count == 0 && check(0) == false){ printBoard(); cout << "Stalemate - draw" << endl; break;
+        if(gameEnd.count == 0 && check(board.side) == true){ printBoard(); cout << "Checkmate" << endl; break;
+        } else if(gameEnd.count == 0 && !check(board.side)){ printBoard(); cout << "Stalemate" << endl; break;
         }
 
         printBoard();
@@ -361,13 +361,14 @@ int main(void){
                 isLegalMove = true;
             }
         } while(!isLegalMove);
-        //for(int i = 1; i < 2; i++){ engine.iterate(i);}
-        //engine.move(2);
+        isLegalMove = false;
+        //for(int i = 1; i < engine.searchDepth; i++){ engine.iterate(i);}
+        //engine.move(engine.searchDepth);
         TTable.clear(); engine.prevResult = 0;
 
         gameEnd = generateMoves(board.side);
-        if(gameEnd.count == 0 && check(1) == true){ printBoard(); cout << "Checkmate - black wins" << endl; break;
-        } else if(gameEnd.count == 0 && check(1) == false){ printBoard(); cout << "Stalemate - draw" << endl; break;
+        if(gameEnd.count == 0 && check(board.side)){ printBoard(); cout << "Checkmate" << endl; break;
+        } else if(gameEnd.count == 0 && !check(board.side)){ printBoard(); cout << "Stalemate" << endl; break;
         }
 
         printBoard();
