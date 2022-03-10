@@ -1,11 +1,6 @@
 #include<iostream>
 using namespace std;
 
-int64_t y;
-int64_t x;
-int64_t y_to;
-int64_t x_to;
-
 const int64_t empty_square = 0;
 const int64_t white_pawn = 1;
 const int64_t white_knight = 2;
@@ -19,7 +14,6 @@ const int64_t black_bishop = 13;
 const int64_t black_rook = 14;
 const int64_t black_queen = 15;
 const int64_t black_king = 16;
-const bool only_captures = true;
 
 int64_t nodes = 0;
 class Board{
@@ -65,7 +59,7 @@ class Board{
             chessBoard[from_y][from_x] = empty_square;
             memcpy(CC, chessBoard, sizeof(chessBoard));
         }
-        void playMove_CC(bool castlingRightsRemoved){
+        void playMove_CC(bool castlingRightsRemoved, int64_t y, int64_t x, int64_t y_to, int64_t x_to){
             // castling
             if(CC[y][x] == white_king || CC[y][x] == black_king)
             {
@@ -97,6 +91,29 @@ class Board{
             side = !side;
             memcpy(chessBoard, prevBoard, sizeof(chessBoard));
             memcpy(CC, chessBoard, sizeof(chessBoard));
+        }
+        void printBoard(){
+            cout << "-----------------------------------------" << endl;
+            for(int64_t i = 0; i < 8; i++){
+                cout << "|";
+                for(int64_t j = 0; j < 8; j++){
+                    if(chessBoard[i][j] == white_pawn){ cout << "  P |";
+                    } else if(chessBoard[i][j] == white_knight){ cout << "  N |";
+                    } else if(chessBoard[i][j] == white_bishop){ cout << "  B |";
+                    } else if(chessBoard[i][j] == white_rook){ cout << "  R |";
+                    } else if(chessBoard[i][j] == white_queen){ cout << "  Q |";
+                    } else if(chessBoard[i][j] == white_king){ cout << "  K |";
+                    } else if(chessBoard[i][j] == black_pawn){ cout << "  p |";
+                    } else if(chessBoard[i][j] == black_knight){ cout << "  n |";
+                    } else if(chessBoard[i][j] == black_bishop){ cout << "  b |";
+                    } else if(chessBoard[i][j] == black_rook){ cout << "  r |";
+                    } else if(chessBoard[i][j] == black_queen){ cout << "  q |";
+                    } else if(chessBoard[i][j] == black_king){ cout << "  k |";
+                    } else{ cout << "  - |";
+                    }
+                }
+                cout << endl; cout << "-----------------------------------------" << endl;
+            } cout << endl;
         }
 };
 Board board;
@@ -254,14 +271,14 @@ bool check(bool side){
         return false;
     }
 }
-void insertMove_white(int64_t list[219][5]){
-    board.playMove_CC(0);
+void insertMove_white(int64_t list[219][5], int64_t y, int64_t x, int64_t y_to, int64_t x_to){
+    board.playMove_CC(0, y, x, y_to, x_to);
     if(check(1)){ memcpy(board.CC, board.chessBoard, sizeof(board.chessBoard));
     } else{ list[list[218][0]][0] = y; list[list[218][0]][1] = x; list[list[218][0]][2] = y_to; list[list[218][0]][3] = x_to; list[218][0]++; memcpy(board.CC, board.chessBoard, sizeof(board.chessBoard));}
     nodes++;
 }
-void insertMove_black(int64_t list[219][5]){
-    board.playMove_CC(0);
+void insertMove_black(int64_t list[219][5], int64_t y, int64_t x, int64_t y_to, int64_t x_to){
+    board.playMove_CC(0, y, x, y_to, x_to);
     if(check(0)){ memcpy(board.CC, board.chessBoard, sizeof(board.chessBoard));
     } else{ list[list[218][0]][0] = y; list[list[218][0]][1] = x; list[list[218][0]][2] = y_to; list[list[218][0]][3] = x_to; list[218][0]++; memcpy(board.CC, board.chessBoard, sizeof(board.chessBoard));}
     nodes++;
@@ -269,206 +286,225 @@ void insertMove_black(int64_t list[219][5]){
 
 class Move_gen{
     public:     
-        void w_pawn(int64_t list[219][5]){
-            if(board.chessBoard[y - 1][x] == 0){ y_to = y - 1; x_to = x; insertMove_white(list);}
-            if(board.chessBoard[y - 1][x + 1] >= 11){    if(x + 1 <= 7){ y_to = y - 1; x_to = x + 1; insertMove_white(list);}}
-            if(board.chessBoard[y - 1][x - 1] >= 11){    if(x - 1 >= 0){ y_to = y - 1; x_to = x - 1; insertMove_white(list);}}
-            if(y == 6){    if(board.chessBoard[y - 1][x] == 0 && board.chessBoard[y - 2][x] == 0){ y_to = y - 2; x_to = x; insertMove_white(list);}} 
+        void w_pawn(int64_t list[219][5], int64_t y, int64_t x){
+            int64_t y_to = 0;
+            int64_t x_to = 0;
+            if(board.chessBoard[y - 1][x] == 0){ y_to = y - 1; x_to = x; insertMove_white(list, y, x, y_to, x_to);}
+            if(board.chessBoard[y - 1][x + 1] >= 11){    if(x + 1 <= 7){ y_to = y - 1; x_to = x + 1; insertMove_white(list, y, x, y_to, x_to);}}
+            if(board.chessBoard[y - 1][x - 1] >= 11){    if(x - 1 >= 0){ y_to = y - 1; x_to = x - 1; insertMove_white(list, y, x, y_to, x_to);}}
+            if(y == 6){    if(board.chessBoard[y - 1][x] == 0 && board.chessBoard[y - 2][x] == 0){ y_to = y - 2; x_to = x; insertMove_white(list, y, x, y_to, x_to);}} 
         }
-        void b_pawn(int64_t list[219][5]){
-            if(board.chessBoard[y + 1][x] == 0){ y_to = y + 1; x_to = x; insertMove_black(list);}
-            if(board.chessBoard[y + 1][x + 1] <= 6 && board.chessBoard[y + 1][x + 1] > 0){    if(x + 1 <= 7){ y_to = y + 1; x_to = x + 1; insertMove_black(list);}}
-            if(board.chessBoard[y + 1][x - 1] <= 6 && board.chessBoard[y + 1][x - 1] > 0){    if(x - 1 >= 0){ y_to = y + 1; x_to = x - 1; insertMove_black(list);}}
-            if(y == 1){    if(board.chessBoard[y + 1][x] == 0 && board.chessBoard[y + 2][x] == 0){ y_to = y + 2; x_to = x; insertMove_black(list);}} 
+        void b_pawn(int64_t list[219][5], int64_t y, int64_t x){
+            int64_t y_to = 0;
+            int64_t x_to = 0;
+            if(board.chessBoard[y + 1][x] == 0){ y_to = y + 1; x_to = x; insertMove_black(list, y, x, y_to, x_to);}
+            if(board.chessBoard[y + 1][x + 1] <= 6 && board.chessBoard[y + 1][x + 1] > 0){    if(x + 1 <= 7){ y_to = y + 1; x_to = x + 1; insertMove_black(list, y, x, y_to, x_to);}}
+            if(board.chessBoard[y + 1][x - 1] <= 6 && board.chessBoard[y + 1][x - 1] > 0){    if(x - 1 >= 0){ y_to = y + 1; x_to = x - 1; insertMove_black(list, y, x, y_to, x_to);}}
+            if(y == 1){    if(board.chessBoard[y + 1][x] == 0 && board.chessBoard[y + 2][x] == 0){ y_to = y + 2; x_to = x; insertMove_black(list, y, x, y_to, x_to);}} 
         }
-        void w_knight(int64_t list[219][5]){
+        void w_knight(int64_t list[219][5], int64_t y, int64_t x){
+            int64_t y_to = 0;
+            int64_t x_to = 0;
             if(board.chessBoard[y + 1][x + 2] >= 11 || board.chessBoard[y + 1][x + 2] == 0){
-                if(y + 1 <= 7 && x + 2 <= 7){ y_to = y + 1; x_to = x + 2; insertMove_white(list);}
+                if(y + 1 <= 7 && x + 2 <= 7){ y_to = y + 1; x_to = x + 2; insertMove_white(list, y, x, y_to, x_to);}
             }
             if(board.chessBoard[y - 1][x + 2] >= 11 || board.chessBoard[y - 1][x + 2] == 0){
-                if(y - 1 >= 0 && x + 2 <= 7){ y_to = y - 1; x_to = x + 2; insertMove_white(list);} 
+                if(y - 1 >= 0 && x + 2 <= 7){ y_to = y - 1; x_to = x + 2; insertMove_white(list, y, x, y_to, x_to);} 
             }
             if(board.chessBoard[y + 1][x - 2] >= 11 || board.chessBoard[y + 1][x - 2] == 0){
-                if(y + 1 <= 7 && x - 2 >= 0){ y_to = y + 1; x_to = x - 2; insertMove_white(list);}
+                if(y + 1 <= 7 && x - 2 >= 0){ y_to = y + 1; x_to = x - 2; insertMove_white(list, y, x, y_to, x_to);}
             }
             if(board.chessBoard[y - 1][x - 2] >= 11 || board.chessBoard[y - 1][x - 2] == 0){
-                if(y - 1 >= 0 && x - 2 >= 0){ y_to = y - 1; x_to = x - 2; insertMove_white(list);} 
+                if(y - 1 >= 0 && x - 2 >= 0){ y_to = y - 1; x_to = x - 2; insertMove_white(list, y, x, y_to, x_to);} 
             }
             if(board.chessBoard[y + 2][x + 1] >= 11 || board.chessBoard[y + 2][x + 1] == 0){
-                if(y + 2 <= 7 && x + 1 <= 7){ y_to = y + 2; x_to = x + 1; insertMove_white(list);}
+                if(y + 2 <= 7 && x + 1 <= 7){ y_to = y + 2; x_to = x + 1; insertMove_white(list, y, x, y_to, x_to);}
             }
             if(board.chessBoard[y - 2][x + 1] >= 11 || board.chessBoard[y - 2][x + 1] == 0){
-                if(y - 2 >= 0 && x + 1 <= 7){ y_to = y - 2; x_to = x + 1; insertMove_white(list);}
+                if(y - 2 >= 0 && x + 1 <= 7){ y_to = y - 2; x_to = x + 1; insertMove_white(list, y, x, y_to, x_to);}
             }
             if(board.chessBoard[y + 2][x - 1] >= 11 || board.chessBoard[y + 2][x - 1] == 0){
-                if(y + 2 <= 7 && x - 1 >= 0){ y_to = y + 2; x_to = x - 1; insertMove_white(list);}
+                if(y + 2 <= 7 && x - 1 >= 0){ y_to = y + 2; x_to = x - 1; insertMove_white(list, y, x, y_to, x_to);}
             }
             if(board.chessBoard[y - 2][x - 1] >= 11 || board.chessBoard[y - 2][x - 1] == 0){
-                if(y - 2 >= 0 && x - 1 >= 0){ y_to = y - 2; x_to = x - 1; insertMove_white(list);}
+                if(y - 2 >= 0 && x - 1 >= 0){ y_to = y - 2; x_to = x - 1; insertMove_white(list, y, x, y_to, x_to);}
             }
         }
-        void b_knight(int64_t list[219][5]){
+        void b_knight(int64_t list[219][5], int64_t y, int64_t x){
+            int64_t y_to = 0;
+            int64_t x_to = 0;
             if(board.chessBoard[y + 1][x + 2] <= 6 || board.chessBoard[y + 1][x + 2] == 0){
-                if(y + 1 <= 7 && x + 2 <= 7){ y_to = y + 1; x_to = x + 2; insertMove_black(list);}
+                if(y + 1 <= 7 && x + 2 <= 7){ y_to = y + 1; x_to = x + 2; insertMove_black(list, y, x, y_to, x_to);}
             }
             if(board.chessBoard[y - 1][x + 2] <= 6 || board.chessBoard[y - 1][x + 2] == 0){
-                if(y - 1 >= 0 && x + 2 <= 7){ y_to = y - 1; x_to = x + 2; insertMove_black(list);} 
+                if(y - 1 >= 0 && x + 2 <= 7){ y_to = y - 1; x_to = x + 2; insertMove_black(list, y, x, y_to, x_to);} 
             }
             if(board.chessBoard[y + 1][x - 2] <= 6 || board.chessBoard[y + 1][x - 2] == 0){
-                if(y + 1 <= 7 && x - 2 >= 0){ y_to = y + 1; x_to = x - 2; insertMove_black(list);}
+                if(y + 1 <= 7 && x - 2 >= 0){ y_to = y + 1; x_to = x - 2; insertMove_black(list, y, x, y_to, x_to);}
             }
             if(board.chessBoard[y - 1][x - 2] <= 6 || board.chessBoard[y - 1][x - 2] == 0){
-                if(y - 1 >= 0 && x - 2 >= 0){ y_to = y - 1; x_to = x - 2; insertMove_black(list);} 
+                if(y - 1 >= 0 && x - 2 >= 0){ y_to = y - 1; x_to = x - 2; insertMove_black(list, y, x, y_to, x_to);} 
             }
             if(board.chessBoard[y + 2][x + 1] <= 6 || board.chessBoard[y + 2][x + 1] == 0){
-                if(y + 2 <= 7 && x + 1 <= 7){ y_to = y + 2; x_to = x + 1; insertMove_black(list);}
+                if(y + 2 <= 7 && x + 1 <= 7){ y_to = y + 2; x_to = x + 1; insertMove_black(list, y, x, y_to, x_to);}
             }
             if(board.chessBoard[y - 2][x + 1] <= 6 || board.chessBoard[y - 2][x + 1] == 0){
-                if(y - 2 >= 0 && x + 1 <= 7){ y_to = y - 2; x_to = x + 1; insertMove_black(list);}
+                if(y - 2 >= 0 && x + 1 <= 7){ y_to = y - 2; x_to = x + 1; insertMove_black(list, y, x, y_to, x_to);}
             }
             if(board.chessBoard[y + 2][x - 1] <= 6 || board.chessBoard[y + 2][x - 1] == 0){
-                if(y + 2 <= 7 && x - 1 >= 0){ y_to = y + 2; x_to = x - 1; insertMove_black(list);}
+                if(y + 2 <= 7 && x - 1 >= 0){ y_to = y + 2; x_to = x - 1; insertMove_black(list, y, x, y_to, x_to);}
             }
             if(board.chessBoard[y - 2][x - 1] <= 6 || board.chessBoard[y - 2][x - 1] == 0){
-                if(y - 2 >= 0 && x - 1 >= 0){ y_to = y - 2; x_to = x - 1; insertMove_black(list);}
+                if(y - 2 >= 0 && x - 1 >= 0){ y_to = y - 2; x_to = x - 1; insertMove_black(list, y, x, y_to, x_to);}
             }
         }
-        void w_bishop(int64_t list[219][5]){
+        void w_bishop(int64_t list[219][5], int64_t y, int64_t x){
+            int64_t y_to = 0;
+            int64_t x_to = 0;
             for(int64_t i = 1; i < 8; i++){ // down & right
                 if(y + i > 7 || x + i > 7){ break;}
-                if(board.chessBoard[y + i][x + i] == empty_square){ y_to = y + i; x_to = x + i; insertMove_white(list);
+                if(board.chessBoard[y + i][x + i] == empty_square){ y_to = y + i; x_to = x + i; insertMove_white(list, y, x, y_to, x_to);
                 } else if(board.chessBoard[y + i][x + i] <= 6 && board.chessBoard[y + i][x + i] != empty_square){ break;
-                } else if(board.chessBoard[y + i][x + i] >= 11){ y_to = y + i; x_to = x + i; insertMove_white(list); break;}
+                } else if(board.chessBoard[y + i][x + i] >= 11){ y_to = y + i; x_to = x + i; insertMove_white(list, y, x, y_to, x_to); break;}
             }
             for(int64_t i = 1; i < 8; i++){ // down & left
                 if(y + i > 7 || x - i < 0){ break;}
-                if(board.chessBoard[y + i][x - i] == empty_square){ y_to = y + i; x_to = x - i; insertMove_white(list);
+                if(board.chessBoard[y + i][x - i] == empty_square){ y_to = y + i; x_to = x - i; insertMove_white(list, y, x, y_to, x_to);
                 } else if(board.chessBoard[y + i][x - i] <= 6 && board.chessBoard[y + i][x - i] != empty_square){ break;
-                } else if(board.chessBoard[y + i][x - i] >= 11){ y_to = y + i; x_to = x - i; insertMove_white(list); break;}
+                } else if(board.chessBoard[y + i][x - i] >= 11){ y_to = y + i; x_to = x - i; insertMove_white(list, y, x, y_to, x_to); break;}
             }
             for(int64_t i = 1; i < 8; i++){ // up & left
                 if(y - i < 0 || x - i < 0){ break;}
-                if(board.chessBoard[y - i][x - i] == empty_square){ y_to = y - i; x_to = x - i; insertMove_white(list);
+                if(board.chessBoard[y - i][x - i] == empty_square){ y_to = y - i; x_to = x - i; insertMove_white(list, y, x, y_to, x_to);
                 } else if(board.chessBoard[y - i][x - i] <= 6 && board.chessBoard[y - i][x - i] != empty_square){ break;
-                } else if(board.chessBoard[y - i][x - i] >= 11){ y_to = y - i; x_to = x - i; insertMove_white(list); break;}
+                } else if(board.chessBoard[y - i][x - i] >= 11){ y_to = y - i; x_to = x - i; insertMove_white(list, y, x, y_to, x_to); break;}
             }
             for(int64_t i = 1; i < 8; i++){ // up & right
                 if(y - i < 0 || x + i > 7){ break;}
-                if(board.chessBoard[y - i][x + i] == empty_square){ y_to = y - i; x_to = x + i; insertMove_white(list);
+                if(board.chessBoard[y - i][x + i] == empty_square){ y_to = y - i; x_to = x + i; insertMove_white(list, y, x, y_to, x_to);
                 } else if(board.chessBoard[y - i][x + i] <= 6 && board.chessBoard[y - i][x + i] != empty_square){ break;
-                } else if(board.chessBoard[y - i][x + i] >= 11){ y_to = y - i; x_to = x + i; insertMove_white(list); break;}
+                } else if(board.chessBoard[y - i][x + i] >= 11){ y_to = y - i; x_to = x + i; insertMove_white(list, y, x, y_to, x_to); break;}
             }
         }
-        void b_bishop(int64_t list[219][5]){
+        void b_bishop(int64_t list[219][5], int64_t y, int64_t x){
+            int64_t y_to = 0;
+            int64_t x_to = 0;
             for(int64_t i = 1; i < 8; i++){ // down & right
                 if(y + i > 7 || x + i > 7){ break;}
-                if(board.chessBoard[y + i][x + i] == empty_square){ y_to = y + i; x_to = x + i; insertMove_black(list);
+                if(board.chessBoard[y + i][x + i] == empty_square){ y_to = y + i; x_to = x + i; insertMove_black(list, y, x, y_to, x_to);
                 } else if(board.chessBoard[y + i][x + i] >= 11){ break;
-                } else if(board.chessBoard[y + i][x + i] <= 6 && board.chessBoard[y + i][x + i] != 0){ y_to = y + i; x_to = x + i; insertMove_black(list); break;}
+                } else if(board.chessBoard[y + i][x + i] <= 6 && board.chessBoard[y + i][x + i] != 0){ y_to = y + i; x_to = x + i; insertMove_black(list, y, x, y_to, x_to); break;}
             }
             for(int64_t i = 1; i < 8; i++){ // down & left
                 if(y + i > 7 || x - i < 0){ break;}
-                if(board.chessBoard[y + i][x - i] == empty_square){ y_to = y + i; x_to = x - i; insertMove_black(list);
+                if(board.chessBoard[y + i][x - i] == empty_square){ y_to = y + i; x_to = x - i; insertMove_black(list, y, x, y_to, x_to);
                 } else if(board.chessBoard[y + i][x - i] >= 11){break;
-                } else if(board.chessBoard[y + i][x - i] <= 6 && board.chessBoard[y + i][x - i] != 0){ y_to = y + i; x_to = x - i; insertMove_black(list); break;}
+                } else if(board.chessBoard[y + i][x - i] <= 6 && board.chessBoard[y + i][x - i] != 0){ y_to = y + i; x_to = x - i; insertMove_black(list, y, x, y_to, x_to); break;}
             }
             for(int64_t i = 1; i < 8; i++){ // up & left
                 if(y - i < 0 || x - i < 0){ break;}
-                if(board.chessBoard[y - i][x - i] == empty_square){ y_to = y - i; x_to = x - i; insertMove_black(list);
+                if(board.chessBoard[y - i][x - i] == empty_square){ y_to = y - i; x_to = x - i; insertMove_black(list, y, x, y_to, x_to);
                 } else if(board.chessBoard[y - i][x - i] >= 11){ break;
-                } else if(board.chessBoard[y - i][x - i] <= 6 && board.chessBoard[y - i][x - i] != empty_square){ y_to = y - i; x_to = x - i; insertMove_black(list); break;}
+                } else if(board.chessBoard[y - i][x - i] <= 6 && board.chessBoard[y - i][x - i] != empty_square){ y_to = y - i; x_to = x - i; insertMove_black(list, y, x, y_to, x_to); break;}
             }
             for(int64_t i = 1; i < 8; i++){ // up & right
                 if(y - i < 0 || x + i > 7){ break;}
-                if(board.chessBoard[y - i][x + i] == empty_square){ y_to = y - i; x_to = x + i; insertMove_black(list);
+                if(board.chessBoard[y - i][x + i] == empty_square){ y_to = y - i; x_to = x + i; insertMove_black(list, y, x, y_to, x_to);
                 } else if(board.chessBoard[y - i][x + i] >= 11){ break;
-                } else if(board.chessBoard[y - i][x + i] <= 6 && board.chessBoard[y - i][x + i] != empty_square){ y_to = y - i; x_to = x + i; insertMove_black(list); break;}
+                } else if(board.chessBoard[y - i][x + i] <= 6 && board.chessBoard[y - i][x + i] != empty_square){ y_to = y - i; x_to = x + i; insertMove_black(list, y, x, y_to, x_to); break;}
             }
         }
-        void w_rook(int64_t list[219][5]){
+        void w_rook(int64_t list[219][5], int64_t y, int64_t x){
+            int64_t y_to = 0;
+            int64_t x_to = 0;
             for(int64_t i = 1; i < 8; i++){ // down
                 if(y + i > 7){ break;
-                } else if(board.chessBoard[y + i][x] == empty_square){ y_to = y + i; x_to = x; insertMove_white(list);
+                } else if(board.chessBoard[y + i][x] == empty_square){ y_to = y + i; x_to = x; insertMove_white(list, y, x, y_to, x_to);
                 } else if(board.chessBoard[y + i][x] <= 6 && board.chessBoard[y + i][x] != empty_square){ break;
-                } else if(board.chessBoard[y + i][x] >= 11){ y_to = y + i; x_to = x; insertMove_white(list); break;}
+                } else if(board.chessBoard[y + i][x] >= 11){ y_to = y + i; x_to = x; insertMove_white(list, y, x, y_to, x_to); break;}
             }
             for(int64_t i = 1; i < 8; i++){ // left
                 if(x - i < 0){ break;
-                } else if(board.chessBoard[y][x - i] == empty_square){ y_to = y; x_to = x - i; insertMove_white(list);
+                } else if(board.chessBoard[y][x - i] == empty_square){ y_to = y; x_to = x - i; insertMove_white(list, y, x, y_to, x_to);
                 } else if(board.chessBoard[y][x - i] <= 6 && board.chessBoard[y][x - i] != empty_square){ break;
-                } else if(board.chessBoard[y][x - i] >= 11){ y_to = y; x_to = x - i; insertMove_white(list); break;}
+                } else if(board.chessBoard[y][x - i] >= 11){ y_to = y; x_to = x - i; insertMove_white(list, y, x, y_to, x_to); break;}
             }
             for(int64_t i = 1; i < 8; i++){ // up
                 if(y - i < 0){ break;
-                } else if(board.chessBoard[y - i][x] == empty_square){ y_to = y - i; x_to = x; insertMove_white(list);
+                } else if(board.chessBoard[y - i][x] == empty_square){ y_to = y - i; x_to = x; insertMove_white(list, y, x, y_to, x_to);
                 } else if(board.chessBoard[y - i][x] <= 6 && board.chessBoard[y - i][x] != empty_square){ break;
-                } else if(board.chessBoard[y - i][x] >= 11){ y_to = y - i; x_to = x; insertMove_white(list); break;}
+                } else if(board.chessBoard[y - i][x] >= 11){ y_to = y - i; x_to = x; insertMove_white(list, y, x, y_to, x_to); break;}
             }
             for(int64_t i = 1; i < 8; i++){ // right
                 if(x + i > 7){ break;
-                } else if(board.chessBoard[y][x + i] == empty_square){ y_to = y; x_to = x + i; insertMove_white(list);
+                } else if(board.chessBoard[y][x + i] == empty_square){ y_to = y; x_to = x + i; insertMove_white(list, y, x, y_to, x_to);
                 } else if(board.chessBoard[y][x + i] <= 6 && board.chessBoard[y][x + i] != empty_square){ break;
-                } else if(board.chessBoard[y][x + i] >= 11){ y_to = y; x_to = x + i; insertMove_white(list); break;}
+                } else if(board.chessBoard[y][x + i] >= 11){ y_to = y; x_to = x + i; insertMove_white(list, y, x, y_to, x_to); break;}
             }
         }
-        void b_rook(int64_t list[219][5]){
+        void b_rook(int64_t list[219][5], int64_t y, int64_t x){
+            int64_t y_to = 0;
+            int64_t x_to = 0;
             for(int64_t i = 1; i < 8; i++){ // down
                 if(y + i > 7){ break;
-                } else if(board.chessBoard[y + i][x] == empty_square){ y_to = y + i; x_to = x; insertMove_black(list);
+                } else if(board.chessBoard[y + i][x] == empty_square){ y_to = y + i; x_to = x; insertMove_black(list, y, x, y_to, x_to);
                 } else if(board.chessBoard[y + i][x] >= 11){ break;
-                } else if(board.chessBoard[y + i][x] <= 6 && board.chessBoard[y + i][x] != empty_square){ y_to = y + i; x_to = x; insertMove_black(list); break;}
+                } else if(board.chessBoard[y + i][x] <= 6 && board.chessBoard[y + i][x] != empty_square){ y_to = y + i; x_to = x; insertMove_black(list, y, x, y_to, x_to); break;}
             }
             for(int64_t i = 1; i < 8; i++){ // left
                 if(x - i < 0){ break;
-                } else if(board.chessBoard[y][x - i] == empty_square){ y_to = y; x_to = x - i; insertMove_black(list);
+                } else if(board.chessBoard[y][x - i] == empty_square){ y_to = y; x_to = x - i; insertMove_black(list, y, x, y_to, x_to);
                 } else if(board.chessBoard[y][x - i] >= 11){ break;
-                } else if(board.chessBoard[y][x - i] <= 6 && board.chessBoard[y][x - i] != empty_square){ y_to = y; x_to = x - i; insertMove_black(list); break;}
+                } else if(board.chessBoard[y][x - i] <= 6 && board.chessBoard[y][x - i] != empty_square){ y_to = y; x_to = x - i; insertMove_black(list, y, x, y_to, x_to); break;}
             }
             for(int64_t i = 1; i < 8; i++){ // up
                 if(y - i < 0){ break;
-                } else if(board.chessBoard[y - i][x] == empty_square){ y_to = y - i; x_to = x; insertMove_black(list);
+                } else if(board.chessBoard[y - i][x] == empty_square){ y_to = y - i; x_to = x; insertMove_black(list, y, x, y_to, x_to);
                 } else if(board.chessBoard[y - i][x] >= 11){ break;
-                } else if(board.chessBoard[y - i][x] <= 6 && board.chessBoard[y - i][x] != empty_square){ y_to = y - i; x_to = x; insertMove_black(list); break;}
+                } else if(board.chessBoard[y - i][x] <= 6 && board.chessBoard[y - i][x] != empty_square){ y_to = y - i; x_to = x; insertMove_black(list, y, x, y_to, x_to); break;}
             }
             for(int64_t i = 1; i < 8; i++){ // right
                 if(x + i > 7){ break;
-                } else if(board.chessBoard[y][x + i] == empty_square){ y_to = y; x_to = x + i; insertMove_black(list);
+                } else if(board.chessBoard[y][x + i] == empty_square){ y_to = y; x_to = x + i; insertMove_black(list, y, x, y_to, x_to);
                 } else if(board.chessBoard[y][x + i] >= 11){ break;
-                } else if(board.chessBoard[y][x + i] <= 6 && board.chessBoard[y][x + i] != empty_square){ y_to = y; x_to = x + i; insertMove_black(list); break;}
+                } else if(board.chessBoard[y][x + i] <= 6 && board.chessBoard[y][x + i] != empty_square){ y_to = y; x_to = x + i; insertMove_black(list, y, x, y_to, x_to); break;}
             }
         }
-        void w_queen(int64_t list[219][5]){
-            w_bishop(list);
-            w_rook(list);
+        void w_queen(int64_t list[219][5], int64_t y, int64_t x){
+            w_bishop(list, y, x);
+            w_rook(list, y, x);
         }
-        void b_queen(int64_t list[219][5]){
-            b_bishop(list);
-            b_rook(list);
+        void b_queen(int64_t list[219][5], int64_t y, int64_t x){
+            b_bishop(list, y, x);
+            b_rook(list, y, x);
         }
-        void w_king(int64_t list[219][5]){
-            if(board.chessBoard[y + 1][x] == empty_square || board.chessBoard[y + 1][x] >= 11){    if(y + 1 <= 7){ y_to = y + 1; x_to = x; insertMove_white(list);}}
-            if(board.chessBoard[y - 1][x] == empty_square || board.chessBoard[y - 1][x] >= 11){    if(y - 1 >= 0){ y_to = y - 1; x_to = x; insertMove_white(list);}}
-            if(board.chessBoard[y][x + 1] == empty_square || board.chessBoard[y][x + 1] >= 11){    if(x + 1 <= 7){ y_to = y; x_to = x + 1; insertMove_white(list);}}
-            if(board.chessBoard[y][x - 1] == empty_square || board.chessBoard[y][x - 1] >= 11){    if(x - 1 >= 0){ y_to = y; x_to = x - 1; insertMove_white(list);}}
-            if(board.chessBoard[y + 1][x + 1] == empty_square || board.chessBoard[y + 1][x + 1] >= 11){    if(y + 1 <= 7 && x + 1 <= 7){ y_to = y + 1; x_to = x + 1; insertMove_white(list);}}
-            if(board.chessBoard[y + 1][x - 1] == empty_square || board.chessBoard[y + 1][x - 1] >= 11){    if(y + 1 <= 7 && x - 1 >= 0){ y_to = y + 1; x_to = x - 1; insertMove_white(list);}}
-            if(board.chessBoard[y - 1][x + 1] == empty_square || board.chessBoard[y - 1][x + 1] >= 11){    if(y - 1 >= 0 && x + 1 <= 7){ y_to = y - 1; x_to = x + 1; insertMove_white(list);}}
-            if(board.chessBoard[y - 1][x - 1] == empty_square || board.chessBoard[y - 1][x - 1] >= 11){    if(y - 1 >= 0 && x - 1 >= 0){ y_to = y - 1; x_to = x - 1; insertMove_white(list);}}
-            if(y == 7 && x == 4 && board.KSCastlingRights_white && board.chessBoard[7][5] == empty_square && board.chessBoard[7][6] == empty_square){ y_to = y; x_to = x + 2; insertMove_white(list);}
-            if(y == 7 && x == 4 && board.QSCastlingRights_white && board.chessBoard[7][3] == 0 && board.chessBoard[7][2] == 0 && board.chessBoard[7][1] == 0){ y_to = y; x_to = x - 2; insertMove_white(list);}
+        void w_king(int64_t list[219][5], int64_t y, int64_t x){
+            int64_t y_to = 0;
+            int64_t x_to = 0;
+            if(board.chessBoard[y + 1][x] == empty_square || board.chessBoard[y + 1][x] >= 11){    if(y + 1 <= 7){ y_to = y + 1; x_to = x; insertMove_white(list, y, x, y_to, x_to);}}
+            if(board.chessBoard[y - 1][x] == empty_square || board.chessBoard[y - 1][x] >= 11){    if(y - 1 >= 0){ y_to = y - 1; x_to = x; insertMove_white(list, y, x, y_to, x_to);}}
+            if(board.chessBoard[y][x + 1] == empty_square || board.chessBoard[y][x + 1] >= 11){    if(x + 1 <= 7){ y_to = y; x_to = x + 1; insertMove_white(list, y, x, y_to, x_to);}}
+            if(board.chessBoard[y][x - 1] == empty_square || board.chessBoard[y][x - 1] >= 11){    if(x - 1 >= 0){ y_to = y; x_to = x - 1; insertMove_white(list, y, x, y_to, x_to);}}
+            if(board.chessBoard[y + 1][x + 1] == empty_square || board.chessBoard[y + 1][x + 1] >= 11){    if(y + 1 <= 7 && x + 1 <= 7){ y_to = y + 1; x_to = x + 1; insertMove_white(list, y, x, y_to, x_to);}}
+            if(board.chessBoard[y + 1][x - 1] == empty_square || board.chessBoard[y + 1][x - 1] >= 11){    if(y + 1 <= 7 && x - 1 >= 0){ y_to = y + 1; x_to = x - 1; insertMove_white(list, y, x, y_to, x_to);}}
+            if(board.chessBoard[y - 1][x + 1] == empty_square || board.chessBoard[y - 1][x + 1] >= 11){    if(y - 1 >= 0 && x + 1 <= 7){ y_to = y - 1; x_to = x + 1; insertMove_white(list, y, x, y_to, x_to);}}
+            if(board.chessBoard[y - 1][x - 1] == empty_square || board.chessBoard[y - 1][x - 1] >= 11){    if(y - 1 >= 0 && x - 1 >= 0){ y_to = y - 1; x_to = x - 1; insertMove_white(list, y, x, y_to, x_to);}}
+            if(y == 7 && x == 4 && board.KSCastlingRights_white && board.chessBoard[7][5] == empty_square && board.chessBoard[7][6] == empty_square){ y_to = y; x_to = x + 2; insertMove_white(list, y, x, y_to, x_to);}
+            if(y == 7 && x == 4 && board.QSCastlingRights_white && board.chessBoard[7][3] == 0 && board.chessBoard[7][2] == 0 && board.chessBoard[7][1] == 0){ y_to = y; x_to = x - 2; insertMove_white(list, y, x, y_to, x_to);}
         }
-        void b_king(int64_t list[219][5]){
-            if(board.chessBoard[y + 1][x] <= 6){    if(y + 1 <= 7){ y_to = y + 1; x_to = x; insertMove_black(list);}}
-            if(board.chessBoard[y - 1][x] <= 6){    if(y - 1 >= 0){ y_to = y - 1; x_to = x; insertMove_black(list);}}
-            if(board.chessBoard[y][x + 1] <= 6){    if(x + 1 <= 7){ y_to = y; x_to = x + 1; insertMove_black(list);}}
-            if(board.chessBoard[y][x - 1] <= 6){    if(x - 1 >= 0){ y_to = y; x_to = x - 1; insertMove_black(list);}}
-            if(board.chessBoard[y + 1][x + 1] <= 6){    if(y + 1 <= 7 && x + 1 <= 7){ y_to = y + 1; x_to = x + 1; insertMove_black(list);}}
-            if(board.chessBoard[y + 1][x - 1] <= 6){    if(y + 1 <= 7 && x - 1 >= 0){ y_to = y + 1; x_to = x - 1; insertMove_black(list);}}
-            if(board.chessBoard[y - 1][x + 1] <= 6){    if(y - 1 >= 0 && x + 1 <= 7){ y_to = y - 1; x_to = x + 1; insertMove_black(list);}}
-            if(board.chessBoard[y - 1][x - 1] <= 6){    if(y - 1 >= 0 && x - 1 >= 0){ y_to = y - 1; x_to = x - 1; insertMove_black(list);}}
-            if(y == 0 && x == 4 && board.KSCastlingRights_black && board.chessBoard[0][5] == empty_square && board.chessBoard[0][6] == empty_square){ y_to = y; x_to = x + 2; insertMove_black(list);
-            }
-            if(y == 0 && x == 4 && board.QSCastlingRights_black && board.chessBoard[0][3] == 0 && board.chessBoard[0][2] == 0 && board.chessBoard[0][1] == 0){ y_to = y; x_to = x - 2; insertMove_black(list);}
+        void b_king(int64_t list[219][5], int64_t y, int64_t x){
+            int64_t y_to = 0;
+            int64_t x_to = 0;
+            if(board.chessBoard[y + 1][x] <= 6){    if(y + 1 <= 7){ y_to = y + 1; x_to = x; insertMove_black(list, y, x, y_to, x_to);}}
+            if(board.chessBoard[y - 1][x] <= 6){    if(y - 1 >= 0){ y_to = y - 1; x_to = x; insertMove_black(list, y, x, y_to, x_to);}}
+            if(board.chessBoard[y][x + 1] <= 6){    if(x + 1 <= 7){ y_to = y; x_to = x + 1; insertMove_black(list, y, x, y_to, x_to);}}
+            if(board.chessBoard[y][x - 1] <= 6){    if(x - 1 >= 0){ y_to = y; x_to = x - 1; insertMove_black(list, y, x, y_to, x_to);}}
+            if(board.chessBoard[y + 1][x + 1] <= 6){    if(y + 1 <= 7 && x + 1 <= 7){ y_to = y + 1; x_to = x + 1; insertMove_black(list, y, x, y_to, x_to);}}
+            if(board.chessBoard[y + 1][x - 1] <= 6){    if(y + 1 <= 7 && x - 1 >= 0){ y_to = y + 1; x_to = x - 1; insertMove_black(list, y, x, y_to, x_to);}}
+            if(board.chessBoard[y - 1][x + 1] <= 6){    if(y - 1 >= 0 && x + 1 <= 7){ y_to = y - 1; x_to = x + 1; insertMove_black(list, y, x, y_to, x_to);}}
+            if(board.chessBoard[y - 1][x - 1] <= 6){    if(y - 1 >= 0 && x - 1 >= 0){ y_to = y - 1; x_to = x - 1; insertMove_black(list, y, x, y_to, x_to);}}
+            if(y == 0 && x == 4 && board.KSCastlingRights_black && board.chessBoard[0][5] == empty_square && board.chessBoard[0][6] == empty_square){ y_to = y; x_to = x + 2; insertMove_black(list, y, x, y_to, x_to);}
+            if(y == 0 && x == 4 && board.QSCastlingRights_black && board.chessBoard[0][3] == 0 && board.chessBoard[0][2] == 0 && board.chessBoard[0][1] == 0){ y_to = y; x_to = x - 2; insertMove_black(list, y, x, y_to, x_to);}
         }
 };
 Move_gen moveGen;
@@ -476,26 +512,26 @@ Move_gen moveGen;
 List generateMoves(int64_t side){
     List moves;
     if(side == 1){
-        for(int64_t i = 0; i < 8; i++){ y = i; for(int64_t j = 0; j < 8; j++){ x = j;
-            switch(board.chessBoard[y][x]){
-                case 1: moveGen.w_pawn(moves.list); break;
-                case 2: moveGen.w_knight(moves.list); break;
-                case 3: moveGen.w_bishop(moves.list); break;
-                case 4: moveGen.w_rook(moves.list); break;
-                case 5: moveGen.w_queen(moves.list); break;
-                case 6: moveGen.w_king(moves.list); break;
+        for(int64_t i = 0; i < 8; i++){ for(int64_t j = 0; j < 8; j++){
+            switch(board.chessBoard[i][j]){
+                case 1: moveGen.w_pawn(moves.list, i, j); break;
+                case 2: moveGen.w_knight(moves.list, i, j); break;
+                case 3: moveGen.w_bishop(moves.list, i, j); break;
+                case 4: moveGen.w_rook(moves.list, i, j); break;
+                case 5: moveGen.w_queen(moves.list, i, j); break;
+                case 6: moveGen.w_king(moves.list, i, j); break;
                 default: break;
             }}}
     }
     else{
-        for(int64_t i = 0; i < 8; i++){ y = i; for(int64_t j = 0; j < 8; j++){ x = j;
-            switch(board.chessBoard[y][x]){
-                case 11: moveGen.b_pawn(moves.list); break;
-                case 12: moveGen.b_knight(moves.list); break;
-                case 13: moveGen.b_bishop(moves.list); break;
-                case 14: moveGen.b_rook(moves.list); break;
-                case 15: moveGen.b_queen(moves.list); break;
-                case 16: moveGen.b_king(moves.list); break;
+        for(int64_t i = 0; i < 8; i++){ for(int64_t j = 0; j < 8; j++){
+            switch(board.chessBoard[i][j]){
+                case 11: moveGen.b_pawn(moves.list, i, j); break;
+                case 12: moveGen.b_knight(moves.list, i, j); break;
+                case 13: moveGen.b_bishop(moves.list, i, j); break;
+                case 14: moveGen.b_rook(moves.list, i, j); break;
+                case 15: moveGen.b_queen(moves.list, i, j); break;
+                case 16: moveGen.b_king(moves.list, i, j); break;
                 default: break;
             }}}
     }

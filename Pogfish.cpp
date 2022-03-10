@@ -9,7 +9,7 @@
 #include"quiescence.cpp"
 using namespace std;
 
-string FEN = "5K2/8/5k2/8/8/8/7r/8";
+string FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
 struct TranspositionData{
@@ -59,29 +59,6 @@ void initializeBoard(){
     }
     memcpy(board.CC, board.chessBoard, sizeof(board.chessBoard));
 }
-void printBoard(){
-    cout << "-----------------------------------------" << endl;
-    for(int64_t y_pos = 0; y_pos < 8; y_pos++){
-        cout << "|";
-        for(int64_t x_pos = 0; x_pos < 8; x_pos++){
-            if(board.chessBoard[y_pos][x_pos] == white_pawn){ cout << "  P |";
-            } else if(board.chessBoard[y_pos][x_pos] == white_knight){ cout << "  N |";
-            } else if(board.chessBoard[y_pos][x_pos] == white_bishop){ cout << "  B |";
-            } else if(board.chessBoard[y_pos][x_pos] == white_rook){ cout << "  R |";
-            } else if(board.chessBoard[y_pos][x_pos] == white_queen){ cout << "  Q |";
-            } else if(board.chessBoard[y_pos][x_pos] == white_king){ cout << "  K |";
-            } else if(board.chessBoard[y_pos][x_pos] == black_pawn){ cout << "  p |";
-            } else if(board.chessBoard[y_pos][x_pos] == black_knight){ cout << "  n |";
-            } else if(board.chessBoard[y_pos][x_pos] == black_bishop){ cout << "  b |";
-            } else if(board.chessBoard[y_pos][x_pos] == black_rook){ cout << "  r |";
-            } else if(board.chessBoard[y_pos][x_pos] == black_queen){ cout << "  q |";
-            } else if(board.chessBoard[y_pos][x_pos] == black_king){ cout << "  k |";
-            } else{ cout << "  - |";
-            }
-        }
-        cout << endl; cout << "-----------------------------------------" << endl;
-    } cout << endl;
-}
 
 // ----------------------------------------------------------------------- Search & Evaluation -----------------------------------------------------------------------
 
@@ -89,16 +66,21 @@ class Evaluation{
     public:
         int64_t material(){
             int64_t material_eval = 0;
-            for(int64_t i = 0; i < 8; i++){
-                for(int64_t j = 0; j < 8; j++){
+            for(int64_t i = 0; i < 8; i++){ for(int64_t j = 0; j < 8; j++){
                     if(board.chessBoard[i][j] <= 6 && board.chessBoard[i][j] != 0){
                         material_eval += value(board.chessBoard[i][j]);
                     } else if(board.chessBoard[i][j] >= 11){
                         material_eval -= value(board.chessBoard[i][j]);
                     }
-                }
-            }
+                }}
             return material_eval;
+        }
+        int64_t absoluteMaterial(){
+            int64_t material = 0;
+            for(int64_t i = 0; i < 8; i++){ for(int64_t j = 0; j < 8; j++){
+                material += value(board.chessBoard[i][j]);
+            }}
+            return material;
         }
         int64_t development(){
             int64_t development = 0;
@@ -256,7 +238,7 @@ bool getMove(){
 }
 class Engine{
     public:
-        int64_t searchDepth = 10;
+        int64_t searchDepth = 8;
         int64_t _alpha = 0; int64_t _beta = 0;
         int64_t prevResult = 0;
         const int64_t windowWidth = 25;
@@ -302,7 +284,7 @@ Engine engine;
 
 int main(void){
 
-    board.side = 0;
+    board.side = 1;
     List gameEnd;
     bool isLegalMove = 0;
 
@@ -319,7 +301,7 @@ int main(void){
     side_key = distrib(gen);
 
     initializeBoard();
-    printBoard();
+    board.printBoard();
     board.opening = 1;
     board.middlegame = 1;
     board.endgame = 0;
@@ -337,7 +319,7 @@ int main(void){
 
     for(int64_t move_move = 1; move_move <= 5949; move_move++){
         if(move_move == 23){ board.opening = false; board.middlegame = true;}
-        if(pieceCount() < 15){ board.opening = false; board.middlegame = false; board.endgame = true; engine.searchDepth = 10;}
+        if(evaluation.absoluteMaterial() < 3100){ board.opening = false; board.middlegame = false; board.endgame = true; engine.searchDepth += 2;}
         cout << "Move - " << move_move << endl;
         //do{
         //    if(getMove()){
@@ -350,11 +332,11 @@ int main(void){
         TTable.clear(); engine.prevResult = 0;
 
         gameEnd = generateMoves(board.side);
-        if(gameEnd.count == 0 && check(board.side) == true){ printBoard(); cout << "Checkmate" << endl; break;
-        } else if(gameEnd.count == 0 && !check(board.side)){ printBoard(); cout << "Stalemate" << endl; break;
+        if(gameEnd.count == 0 && check(board.side) == true){ board.printBoard(); cout << "Checkmate" << endl; break;
+        } else if(gameEnd.count == 0 && !check(board.side)){ board.printBoard(); cout << "Stalemate" << endl; break;
         }
 
-        printBoard();
+        board.printBoard();
 
         do{
             if(getMove()){
@@ -367,10 +349,10 @@ int main(void){
         TTable.clear(); engine.prevResult = 0;
 
         gameEnd = generateMoves(board.side);
-        if(gameEnd.count == 0 && check(board.side)){ printBoard(); cout << "Checkmate" << endl; break;
-        } else if(gameEnd.count == 0 && !check(board.side)){ printBoard(); cout << "Stalemate" << endl; break;
+        if(gameEnd.count == 0 && check(board.side)){ board.printBoard(); cout << "Checkmate" << endl; break;
+        } else if(gameEnd.count == 0 && !check(board.side)){ board.printBoard(); cout << "Stalemate" << endl; break;
         }
 
-        printBoard();
+        board.printBoard();
     }
 }
