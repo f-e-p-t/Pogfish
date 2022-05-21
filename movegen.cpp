@@ -15,7 +15,9 @@ const int64_t black_rook = 14;
 const int64_t black_queen = 15;
 const int64_t black_king = 16;
 
+// GLOBAL GLOBAL
 int64_t nodes = 0;
+
 class Board{
     public:
         int64_t chessBoard[8][8] = {0};

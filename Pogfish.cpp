@@ -9,7 +9,8 @@
 #include"quiescence.cpp"
 using namespace std;
 
-string FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+const string FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
 struct TranspositionData{
@@ -29,6 +30,13 @@ int64_t Hash(int64_t position[8][8], bool side){
     if(side == 1){ hash ^= side_key;}
     return hash;
 }
+
+// maybe
+struct KillerData{
+    bool hasKiller = 0;
+    int64_t killer_move[5] = {0};
+};
+std::unordered_map<int64_t, KillerData> KTable;
 
 void initializeBoard(){
     int64_t pos = 0;
@@ -85,7 +93,9 @@ class Evaluation{
         int64_t development(){
             int64_t development = 0;
             for(int i = 0; i < 8; i++){ for(int j = 0; j < 8; j++){
-                if(board.chessBoard[i][j] == white_knight){ development += openingKnightHeatmap_white[i][j];
+                if(board.chessBoard[i][j] == white_pawn){ development += openingPawnHeatmap_white[i][j];
+                } else if(board.chessBoard[i][j] == black_pawn){ development += openingPawnHeatmap_black[i][j];
+                } else if(board.chessBoard[i][j] == white_knight){ development += openingKnightHeatmap_white[i][j];
                 } else if(board.chessBoard[i][j] == black_knight){ development += openingKnightHeatmap_black[i][j];
                 } else if(board.chessBoard[i][j] == white_bishop){ development += openingBishopHeatmap_white[i][j];
                 } else if(board.chessBoard[i][j] == black_bishop){ development += openingBishopHeatmap_black[i][j];
@@ -108,10 +118,10 @@ class Evaluation{
 Evaluation evaluation;
 
 void order(int64_t list[219][5], int64_t _count, int64_t boardHash){
-    int64_t move_weights[_count] = {0}; // cry about it
+    int64_t move_weights[219] = {0};
 
     if(TTable[boardHash].depthEvaluated > 0){ for(int i = 0; i < _count; i++){
-        if(equal(begin(list[i]), end(list[i]), begin(TTable[boardHash].best_move))){ list[i][4] += 1000;}
+        if(equal(begin(list[i]), end(list[i]), begin(TTable[boardHash].best_move))){ list[i][4] += 1100;}
     }}
 
     for(int i = 0; i < _count; i++){ if(board.chessBoard[list[i][2]][list[i][3]] != empty_square){
@@ -146,9 +156,8 @@ int64_t quiescence(int64_t alpha, int64_t beta){
     return alpha;
 }
 
-int64_t staticEval(int64_t dtm){
+int64_t staticEval(){
     int64_t eval = 0;
-    //eval += evaluation.material();
     if(board.side){ eval += quiescence(-1000000000000, 1000000000000);}
     else{ eval -= quiescence(-1000000000000, 1000000000000);}
     if(board.opening){
@@ -164,8 +173,8 @@ int64_t staticEval(int64_t dtm){
 int64_t search(int64_t depth, int64_t alpha, int64_t beta){
     if(depth == 0){
         int64_t eval = 0;
-        if(board.side){ eval = staticEval(0);}
-        else{ eval = -staticEval(0);}
+        if(board.side){ eval = staticEval();}
+        else{ eval = -staticEval();}
         return eval;
     }
     int64_t boardHash = Hash(board.chessBoard, board.side);
@@ -195,34 +204,15 @@ int64_t search(int64_t depth, int64_t alpha, int64_t beta){
         } else{ alphaIncreased++;}
         if(eval >= beta){
             TTable[boardHash].evaluation = alpha; TTable[boardHash].depthEvaluated = depth; TTable[boardHash].isCutNode = true;
-            for(int j = 0; j < 4; j++){ TTable[boardHash].best_move[j] = bestMove[j];}
+            memcpy(TTable[boardHash].best_move, bestMove, sizeof(bestMove));
             return beta;
         }
     }
     TTable[boardHash].evaluation = alpha; TTable[boardHash].depthEvaluated = depth;
-    for(int j = 0; j < 4; j++){ TTable[boardHash].best_move[j] = bestMove[j];}
+    memcpy(TTable[boardHash].best_move, bestMove, sizeof(bestMove));
     return alpha;
 }
 
-
-void cringe(){
-    int64_t boardHash = 0;
-    int64_t boardState[8][8] = {0};
-    int64_t _move[4] = {0};
-    memcpy(boardState, board.chessBoard, sizeof(board.chessBoard));
-    for(int i = 0; i < 8; i++){
-        boardHash = Hash(board.chessBoard, board.side);
-        if(TTable[boardHash].depthEvaluated > 0){
-            cout << "depth - " << TTable[boardHash].depthEvaluated << " played - " << TTable[boardHash].best_move[0] << " ";
-            cout << TTable[boardHash].best_move[1] << " " << TTable[boardHash].best_move[2] << " " << TTable[boardHash].best_move[3] << endl;
-            for(int j = 0; j < 4; j++){ _move[j] = TTable[boardHash].best_move[j];}
-        } else{
-            cout << "line ends" << endl;
-        }
-        board.playMove(0, _move);
-    }
-    board.unplayMove(boardState);
-}
 
 bool getMove(){
     int64_t _move[4];
@@ -262,6 +252,7 @@ class Engine{
             _move[2] = TTable[boardHash].best_move[2]; _move[3] = TTable[boardHash].best_move[3];
             board.playMove(1, _move);
             nodes = 0;
+            //this->cringe(); board.side = 0;
             TTable.clear();
         }
         void iterate(int64_t _depth){
@@ -278,6 +269,24 @@ class Engine{
                 }
             }
         nodes = 0;
+        }
+        void cringe(){
+            int64_t boardHash = 0;
+            int64_t boardState[8][8] = {0};
+            int64_t _move[4] = {0};
+            memcpy(boardState, board.chessBoard, sizeof(board.chessBoard));
+            for(int i = 0; i < searchDepth; i++){
+                boardHash = Hash(board.chessBoard, board.side);
+                if(TTable[boardHash].depthEvaluated > 0){
+                    cout << "depth - " << TTable[boardHash].depthEvaluated << " played - " << TTable[boardHash].best_move[0] << " ";
+                    cout << TTable[boardHash].best_move[1] << " " << TTable[boardHash].best_move[2] << " " << TTable[boardHash].best_move[3] << endl;
+                    for(int j = 0; j < 4; j++){ _move[j] = TTable[boardHash].best_move[j];}
+                } else{
+                    cout << "line ends" << endl;
+                }
+                board.playMove(0, _move);
+            }
+            board.unplayMove(boardState);
         }
 };
 Engine engine;
@@ -305,21 +314,10 @@ int main(void){
     board.opening = 1;
     board.middlegame = 1;
     board.endgame = 0;
-
-    //List dsuga = generateCaptures(board.side);
-    //order(dsuga.list, dsuga.count, Hash(board.chessBoard, board.side));
-    //cout << dsuga.count << endl;
-    //for(int i = 0; i < 60; i++){
-    //    for(int j = 0; j < 5; j++){
-    //        cout << dsuga.list[i][j] << " ";
-    //    } cout << endl;
-    //}
-
-    //cout << quiescence(-1000000000000, 1000000000000) << endl;
-
+    
     for(int64_t move_move = 1; move_move <= 5949; move_move++){
         if(move_move == 23){ board.opening = false; board.middlegame = true;}
-        if(evaluation.absoluteMaterial() < 3100){ board.opening = false; board.middlegame = false; board.endgame = true; engine.searchDepth += 2;}
+        //if(!board.endgame && evaluation.absoluteMaterial() < 3100){ board.opening = false; board.middlegame = false; board.endgame = true; engine.searchDepth += 2;}
         cout << "Move - " << move_move << endl;
         //do{
         //    if(getMove()){
@@ -329,7 +327,7 @@ int main(void){
         //isLegalMove = false;
         for(int64_t i = 1; i < engine.searchDepth; i++){ engine.iterate(i);}
         engine.move(engine.searchDepth);
-        TTable.clear(); engine.prevResult = 0;
+        engine.prevResult = 0;
 
         gameEnd = generateMoves(board.side);
         if(gameEnd.count == 0 && check(board.side) == true){ board.printBoard(); cout << "Checkmate" << endl; break;
@@ -346,7 +344,7 @@ int main(void){
         isLegalMove = false;
         //for(int i = 1; i < engine.searchDepth; i++){ engine.iterate(i);}
         //engine.move(engine.searchDepth);
-        TTable.clear(); engine.prevResult = 0;
+        engine.prevResult = 0;
 
         gameEnd = generateMoves(board.side);
         if(gameEnd.count == 0 && check(board.side)){ board.printBoard(); cout << "Checkmate" << endl; break;
