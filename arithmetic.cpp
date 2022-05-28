@@ -21,12 +21,6 @@ int64_t pieceIndex(int64_t piece){
     return pieceIndex;
 }
 
-int64_t duoMax(int64_t a, int64_t b){
-    int64_t max;
-    max = (a + b + abs(a - b))/2;
-    return max;
-}
-
 int64_t pieceCount(){
     int64_t pieceCount = 0;
     for(int64_t i = 0; i < 8; i++){ for(int64_t j = 0; j < 8; j++){

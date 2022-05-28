@@ -9,7 +9,7 @@
 #include"quiescence.cpp"
 using namespace std;
 
-const string FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+const string FEN = "rnbq1rk1/ppppp1bp/5np1/5pB1/2PP4/2NBP3/PP3PPP/R2QK1NR b KQ - 2 6";
 
 int64_t zobrist_keys[12][8][8] = {0};
 int64_t side_key = 0;
@@ -181,7 +181,7 @@ int64_t search(int64_t depth, int64_t alpha, int64_t beta){
     List moves = generateMoves(board.side);
     order(moves.list, moves.count, boardHash);
     if(moves.count == 0){
-        if(check(board.side)){
+        if(board.check(board.side)){
             return -(1000000 + depth);
         }
         return 0;
@@ -252,7 +252,7 @@ class Engine{
             _move[2] = TTable[boardHash].best_move[2]; _move[3] = TTable[boardHash].best_move[3];
             board.playMove(1, _move);
             nodes = 0;
-            //this->cringe(); board.side = 0;
+            this->cringe();
             TTable.clear();
         }
         void iterate(int64_t _depth){
@@ -270,36 +270,63 @@ class Engine{
             }
         nodes = 0;
         }
+        void analyse(int64_t _depth){
+            cout << "Analysis:" << endl;
+            for(int64_t i = 1; i < searchDepth; i++){ iterate(i);}
+            int64_t boardHash = Hash(board.chessBoard, board.side);
+            _alpha = prevResult - windowWidth;
+            _beta = prevResult + windowWidth;
+            cout << "Iterations finished. Evaluated at ";
+            int64_t eval = search(_depth, _alpha, _beta);
+            if(eval <= _alpha || eval >= _beta){
+                cout << "(research required) ";
+                _alpha = -1000000000000;
+                _beta = 1000000000000;
+                eval = search(_depth, _alpha, _beta);
+            }
+            cout << eval << " with ";
+            cout << nodes << " positions searched. Best move - " << TTable[boardHash].best_move[0] << " " << TTable[boardHash].best_move[1] << " ";
+            cout << TTable[boardHash].best_move[2] << " " << TTable[boardHash].best_move[3] << " " << endl;
+            int64_t _move[4];
+            _move[0] = TTable[boardHash].best_move[0]; _move[1] = TTable[boardHash].best_move[1];
+            _move[2] = TTable[boardHash].best_move[2]; _move[3] = TTable[boardHash].best_move[3];
+            nodes = 0;
+            this->cringe();
+            TTable.clear();
+        }
         void cringe(){
             int64_t boardHash = 0;
+            bool boardSide = board.side;
             int64_t boardState[8][8] = {0};
             int64_t _move[4] = {0};
             memcpy(boardState, board.chessBoard, sizeof(board.chessBoard));
+            cout << "Calculations: " << endl;
             for(int i = 0; i < searchDepth; i++){
                 boardHash = Hash(board.chessBoard, board.side);
                 if(TTable[boardHash].depthEvaluated > 0){
-                    cout << "depth - " << TTable[boardHash].depthEvaluated << " played - " << TTable[boardHash].best_move[0] << " ";
+                    cout << "depth - " << TTable[boardHash].depthEvaluated << ", played - " << TTable[boardHash].best_move[0] << " ";
                     cout << TTable[boardHash].best_move[1] << " " << TTable[boardHash].best_move[2] << " " << TTable[boardHash].best_move[3] << endl;
                     for(int j = 0; j < 4; j++){ _move[j] = TTable[boardHash].best_move[j];}
                 } else{
-                    cout << "line ends" << endl;
+                    cout << "line ends" << endl; break;
                 }
                 board.playMove(0, _move);
             }
             board.unplayMove(boardState);
+            board.side = boardSide;
         }
 };
 Engine engine;
 
 int main(void){
 
-    board.side = 1;
+    board.side = 0;
     List gameEnd;
     bool isLegalMove = 0;
 
-    std::random_device rd;
-    std::mt19937_64 gen(rd());
-    std::uniform_int_distribution<long long int> distrib(0, 9223372036854775807);
+    random_device rd;
+    mt19937_64 gen(rd());
+    uniform_int_distribution<long long int> distrib(0, 9223372036854775807);
     for (int i = 0; i < 12; i++){
         for(int j = 0; j < 8; j++){
             for(int k = 0; k < 8; k++){
@@ -317,7 +344,7 @@ int main(void){
     
     for(int64_t move_move = 1; move_move <= 5949; move_move++){
         if(move_move == 23){ board.opening = false; board.middlegame = true;}
-        //if(!board.endgame && evaluation.absoluteMaterial() < 3100){ board.opening = false; board.middlegame = false; board.endgame = true; engine.searchDepth += 2;}
+        if(!board.endgame && evaluation.absoluteMaterial() < 2900){ board.opening = false; board.middlegame = false; board.endgame = true; engine.searchDepth += 2;}
         cout << "Move - " << move_move << endl;
         //do{
         //    if(getMove()){
@@ -330,8 +357,8 @@ int main(void){
         engine.prevResult = 0;
 
         gameEnd = generateMoves(board.side);
-        if(gameEnd.count == 0 && check(board.side) == true){ board.printBoard(); cout << "Checkmate" << endl; break;
-        } else if(gameEnd.count == 0 && !check(board.side)){ board.printBoard(); cout << "Stalemate" << endl; break;
+        if(gameEnd.count == 0 && board.check(board.side) == true){ board.printBoard(); cout << "Checkmate" << endl; break;
+        } else if(gameEnd.count == 0 && !board.check(board.side)){ board.printBoard(); cout << "Stalemate" << endl; break;
         }
 
         board.printBoard();
@@ -347,8 +374,8 @@ int main(void){
         engine.prevResult = 0;
 
         gameEnd = generateMoves(board.side);
-        if(gameEnd.count == 0 && check(board.side)){ board.printBoard(); cout << "Checkmate" << endl; break;
-        } else if(gameEnd.count == 0 && !check(board.side)){ board.printBoard(); cout << "Stalemate" << endl; break;
+        if(gameEnd.count == 0 && board.check(board.side)){ board.printBoard(); cout << "Checkmate" << endl; break;
+        } else if(gameEnd.count == 0 && !board.check(board.side)){ board.printBoard(); cout << "Stalemate" << endl; break;
         }
 
         board.printBoard();

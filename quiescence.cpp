@@ -3,13 +3,13 @@ using namespace std;
 
 void insertCapture_white(int64_t list[219][5], int64_t y, int64_t x, int64_t y_to, int64_t x_to){
     board.playMove_CC(0, y, x, y_to, x_to);
-    if(check(1)){ memcpy(board.CC, board.chessBoard, sizeof(board.chessBoard));
+    if(board.check(1)){ memcpy(board.CC, board.chessBoard, sizeof(board.chessBoard));
     } else{ list[list[218][0]][0] = y; list[list[218][0]][1] = x; list[list[218][0]][2] = y_to; list[list[218][0]][3] = x_to; list[218][0]++; memcpy(board.CC, board.chessBoard, sizeof(board.chessBoard));}
     nodes++;
 }
 void insertCapture_black(int64_t list[219][5], int64_t y, int64_t x, int64_t y_to, int64_t x_to){
     board.playMove_CC(0, y, x, y_to, x_to);
-    if(check(0)){ memcpy(board.CC, board.chessBoard, sizeof(board.chessBoard));
+    if(board.check(0)){ memcpy(board.CC, board.chessBoard, sizeof(board.chessBoard));
     } else{ list[list[218][0]][0] = y; list[list[218][0]][1] = x; list[list[218][0]][2] = y_to; list[list[218][0]][3] = x_to; list[218][0]++; memcpy(board.CC, board.chessBoard, sizeof(board.chessBoard));}
     nodes++;
 }
